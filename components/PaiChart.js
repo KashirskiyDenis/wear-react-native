@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
-import Svg, { Circle, G } from 'react-native-svg';
+import Svg, { Circle, G, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 const getRandom = () => {
   return Math.floor(Math.random() * 256);
@@ -11,7 +11,7 @@ const getRandomColor = () => {
   let green = getRandom();
   let blue = getRandom();
 
-  return `rgb(${red}, ${green}, ${blue}, 0.35)`;
+  return `rgb(${red}, ${green}, ${blue})`;
 };
 
 let roundTo = (num, to = 0) => {
@@ -20,9 +20,9 @@ let roundTo = (num, to = 0) => {
 };
 
 function PaiChart({ widthAndHeight, data }) {
-  const radius = '35';
-  const strokeWidth = '25';
-  const cxy = '47.5';
+  const radius = 35;
+  const strokeWidth = 25;
+  const cxy = 47.5;
   const cxyShadow = 52.5;
   const length = roundTo(2 * Math.PI * radius, 4);
 
@@ -54,18 +54,23 @@ function PaiChart({ widthAndHeight, data }) {
       style={{
         width: { widthAndHeight },
         height: { widthAndHeight },
-        alignItems: 'center',
+        justifyContent: 'center',
         padding: 10,
       }}>
-      <Svg width="100%" height="100%" viewBox="0 0 100 100" fill="none">
-        <Circle
-          cx={cxyShadow}
-          cy={cxyShadow}
-          r={radius}
-          fill="transparent"
-          stroke="#ebebeb"
-          strokeWidth={strokeWidth}
-        />
+      <Svg
+        width={widthAndHeight - 20}
+        height={widthAndHeight - 20}
+        viewBox="0 0 100 100"
+        fill="none">
+        <Defs>
+          <RadialGradient id="shadow">
+            <Stop offset="50%" stopColor="#ffffff" />
+            <Stop offset="60%" stopColor="#a8a8a8" />
+            <Stop offset="90%" stopColor="#a8a8a8" />
+            <Stop offset="100%" stopColor="#ffffff" />
+          </RadialGradient>
+        </Defs>
+        <Circle cx={cxyShadow} cy={cxyShadow} r={cxy} fill="url(#shadow)" />
         <Circle
           cx={cxy}
           cy={cxy}
@@ -73,9 +78,8 @@ function PaiChart({ widthAndHeight, data }) {
           fill="transparent"
           stroke="#ffffff"
           strokeWidth={strokeWidth}
-        />        
-        {
-          newData.map((chank) => {
+        />
+        {newData.map((chank) => {
           return (
             <G transform={chank.transform}>
               <Circle
@@ -84,13 +88,13 @@ function PaiChart({ widthAndHeight, data }) {
                 r={radius}
                 fill="transparent"
                 stroke={chank.color}
+                strokeOpacity="0.35"
                 strokeWidth={strokeWidth}
                 strokeDasharray={chank.strokeDasharray}
               />
             </G>
           );
-        })
-        }
+        })}
       </Svg>
     </View>
   );
