@@ -2,24 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle, G, Defs, RadialGradient, Stop } from 'react-native-svg';
 
-const getRandom = () => {
-  return Math.floor(Math.random() * 256);
-};
-
-const getRandomColor = () => {
-  let red = getRandom();
-  let green = getRandom();
-  let blue = getRandom();
-
-  return `rgb(${red}, ${green}, ${blue})`;
-};
-
 let roundTo = (num, to = 0) => {
   to = Math.pow(10, to);
   return Math.round(num * to) / to;
 };
 
-function PaiChart({ widthAndHeight, data }) {
+function DonutChart({ widthAndHeight, data, colors }) {
   const radius = 35;
   const strokeWidth = 25;
   const cxy = 47.5;
@@ -39,7 +27,7 @@ function PaiChart({ widthAndHeight, data }) {
     newData[i].dash = roundTo((data[i] / dataSum) * length, 4);
     newData[i].hole = length - newData[i].dash;
     newData[i].strokeDasharray = `${newData[i].dash} ${newData[i].hole}`;
-    newData[i].color = getRandomColor();
+    newData[i].color = colors[i];
     if (i == 0) {
       corner[i] = 0;
       newData[i].transform = 'rotate(0 47.5 47.5)';
@@ -53,7 +41,6 @@ function PaiChart({ widthAndHeight, data }) {
     <View
       style={{
         width: { widthAndHeight },
-        height: { widthAndHeight },
         justifyContent: 'center',
         padding: 10,
       }}>
@@ -88,7 +75,7 @@ function PaiChart({ widthAndHeight, data }) {
                 r={radius}
                 fill="transparent"
                 stroke={chank.color}
-                strokeOpacity="0.35"
+                strokeOpacity="0.5"
                 strokeWidth={strokeWidth}
                 strokeDasharray={chank.strokeDasharray}
               />
@@ -100,4 +87,4 @@ function PaiChart({ widthAndHeight, data }) {
   );
 }
 
-export default PaiChart;
+export default DonutChart;
