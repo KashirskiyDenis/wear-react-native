@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -83,15 +84,17 @@ function WardrobeScreen({ navigation }) {
       />
       <Text style={styles.allWear}>Всего вещей: {countWear}</Text>
       <SortList data={[30, 60, 90, 120, 60]} colors={colors} />
-      <TouchableHighlight
+      <TouchableOpacity 
+      activeOpacity={0.8}
         style={{
           position: 'absolute',
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('NewClothesScreen')}>
+        onPress={() => navigation.navigate('NewClothesScreen')}
+        >
         <AddButton />
-      </TouchableHighlight>
+      </TouchableOpacity >
     </View>
   );
 }
