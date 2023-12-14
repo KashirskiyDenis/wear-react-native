@@ -43,7 +43,7 @@ export default `
     
     function draw() {
       canvas.width = window.innerWidth;
-      canvas.height = this.height * 390 / this.width;
+      canvas.height = this.height * window.innerWidth / this.width;
       ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
       
       to2DArray(ctx.getImageData(0, 0, canvas.width, canvas.height));
@@ -108,7 +108,7 @@ export default `
       return a < 25 ? true : false;	
     }
     
-    function getCanvasColor(event) {
+    function filling(event) {
       let target = event.currentTarget
       let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
       let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
@@ -152,39 +152,39 @@ export default `
       }
     }
     
-    function canvasMouseMove(event) {
-      let target = event.currentTarget;
-      let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
-      let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
-      
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 10;
-      ctx.lineCap = 'round';
-      ctx.lineTo(shiftX, shiftY);
-      ctx.stroke();
-    }
-    
-    function cusorMove(event) {
-      let target = event.currentTarget;
-      let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
-      let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
-      
-      ctx.moveTo(shiftX, shiftY);
-    }
-    
-    function eraser(event) {
-      cusorMove(event);
-      
-      canvas.addEventListener('pointermove', canvasMouseMove);
-      canvas.addEventListener('pointerover', cusorMove);
-      
-      document.addEventListener('pointerup', () => {
-        canvas.removeEventListener('pointermove', canvasMouseMove);	
-        to2DArray(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      });
-    }
-    
-    inputImage.addEventListener('change', changeInput);
-    canvas.addEventListener('pointerdown', eraser);
-  });	
+	function canvasMouseMove(event) {
+		let target = event.currentTarget;
+		let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
+		let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
+		
+		ctx.globalCompositeOperation = 'destination-out';
+		ctx.lineWidth = 10;
+		ctx.lineCap = 'round';
+		ctx.lineTo(shiftX, shiftY);
+		ctx.stroke();
+	}
+	
+	function cusorMove(event) {
+		let target = event.currentTarget;
+		let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
+		let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
+		
+		ctx.moveTo(shiftX, shiftY);
+	}
+	
+	function eraser(event) {
+		cusorMove(event);
+		
+		canvas.addEventListener('pointermove', canvasMouseMove);
+		canvas.addEventListener('pointerover', cusorMove);
+		
+		document.addEventListener('pointerup', () => {
+			canvas.removeEventListener('pointermove', canvasMouseMove);	
+			to2DArray(ctx.getImageData(0, 0, canvas.width, canvas.height));
+		});
+	}
+	
+	inputImage.addEventListener('change', changeInput);
+	canvas.addEventListener('pointerdown', eraser);
+});	
 </script>`;

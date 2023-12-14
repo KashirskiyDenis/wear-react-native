@@ -51,7 +51,7 @@ function AddClothes() {
   let webViewMessage = async (event) => {
     const folderName = 'YourImageFolder';
     const fileName = 'saved_image.png';
-    // console.log(event.nativeEvent.data);
+    console.log(event.nativeEvent.data);
 /*
     try {
       const savedPath = await saveImageFromBase64(

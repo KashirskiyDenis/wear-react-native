@@ -17,10 +17,10 @@ export default `
 		</div>
 		<canvas id="canvas" width="0" height="0"></canvas>
 		<div class="container">
-			<label for="saveImage">Magic Eraser</label>
+			<label for="magicEraser">Magic Eraser</label>
 			<input type="button" id="magicEraser"/>
-			<label for="saveImage">Background Eraser</label>
-			<input type="button" id="backgroundEraser"/>
+			<label for="backgroundEraser">Background Eraser</label>
+			<input type="button" id="backgroundEraser"/>			
 		</div>
 		<div class="container">
 			<label for="saveImage">Сохранить картинку</label>
