@@ -18,6 +18,8 @@ function DonutChart({ widthAndHeight, data, colors }) {
   let corner = [];
   let newData = [];
 
+  widthAndHeight = roundTo(widthAndHeight);
+
   for (let i = 0; i < data.length; i++) {
     dataSum += data[i];
   }
@@ -25,22 +27,23 @@ function DonutChart({ widthAndHeight, data, colors }) {
   for (let i = 0; i < data.length; i++) {
     newData[i] = {};
     newData[i].dash = roundTo((data[i] / dataSum) * length, 4);
-    newData[i].hole = length - newData[i].dash;
+    newData[i].hole = roundTo(length - newData[i].dash, 4);
     newData[i].strokeDasharray = `${newData[i].dash} ${newData[i].hole}`;
     newData[i].color = colors[i];
     if (i == 0) {
-      corner[i] = 0;
-      newData[i].transform = 'rotate(0 47.5 47.5)';
+      corner[i] = 30;
+      newData[i].transform = 'rotate(30 47.5 47.5)';
       continue;
     }
-    corner[i] = roundTo((data[i - 1] / dataSum) * 360 + corner[i - 1]);
+    corner[i] = roundTo((data[i - 1] / dataSum) * 360 + corner[i - 1], 1);
     newData[i].transform = `rotate(${corner[i]} 47.5 47.5)`;
   }
 
   return (
     <View
       style={{
-        width: { widthAndHeight },
+        width: widthAndHeight,
+        height:  widthAndHeight,
         justifyContent: 'center',
         padding: 10,
       }}>

@@ -6,6 +6,27 @@ export default `
     let ctx = canvas.getContext('2d', {
       willReadFrequently: true,
     });
+    document.getElementById('backgroundEraser').addEventListener('click', () => {
+      canvas.removeEventListener('pointerdown', tools[tool]);
+      canvas.addEventListener('pointerdown', eraser);
+      tool = 'bgEraser';
+    });
+    document.getElementById('magicEraser').addEventListener('click', () => {
+      canvas.removeEventListener('pointerdown', tools[tool]);
+      canvas.addEventListener('pointerdown', filling);
+      tool = 'filling';
+    });
+    
+    document.getElementById('saveImage').addEventListener('click', () => {
+      window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
+    });
+    
+    let tools = {
+      bgEraser : eraser,
+      filling : filling
+    };
+    
+    let tool = 'bgEraser';
     let arrayChecked;
     let arrayData;
     let imageData;
@@ -21,7 +42,7 @@ export default `
     }
     
     function draw() {
-      canvas.width = 390;
+      canvas.width = window.innerWidth;
       canvas.height = this.height * 390 / this.width;
       ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
       
@@ -56,13 +77,12 @@ export default `
       let dataIndex = 0;
       
       for (let i = 0; i < height; i++) {
-        arrayData[i] = [];
-        let rowIndex = 0;
+        let row = [];
         for (let j = 0; j < width; j++) {
-          arrayData[i][rowIndex] = data.subarray(dataIndex, dataIndex + 4);
-          rowIndex++;
+          row[j] = data.subarray(dataIndex, dataIndex + 4);
           dataIndex += 4;
         }
+        arrayData[i] = row;
       }
     };
     
@@ -94,14 +114,14 @@ export default `
       let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
       let pixel = ctx.getImageData(shiftX, shiftY, 1, 1);
 
-      fillXORArray(shiftY, shiftX, pixel, canvas.width, canvas.height);
+      fillXORArray(shiftX, shiftY, pixel, canvas.width, canvas.height);
       toImageData(arrayData, canvas.width, canvas.height);
       ctx.putImageData(imageData, 0, 0);
       clearArrayChecked();
     }
     
     function fillXORArray(x, y, fg, width, height) {
-      const fillColor = new Uint8ClampedArray([0, 0, 255, 255]);
+      const fillColor = new Uint8ClampedArray([0, 0, 0, 0]);
       const neighbors = [
         { dx: 0, dy: -1 },
         { dx: 0, dy: 1 },
@@ -114,17 +134,16 @@ export default `
       
       while (stack.length) {
         let { x: currentX, y: currentY } = stack.pop();
-        arrayData[currentX][currentY].set(fillColor);
+        arrayData[currentY][currentX].set(fillColor);
         
         for (let neighbor of neighbors) {
           let newX = currentX + neighbor.dx;
           let newY = currentY + neighbor.dy;
           
-          if (
-            newX >= 0 && newY >= 0 &&
+          if (newX >= 0 && newY >= 0 &&
             newX < width && newY < height &&
             arrayChecked[newX][newY] !== 1 &&
-            compare(arrayData[newX][newY], fg.data)
+            compare(arrayData[newY][newX], fg.data)
             ) {
             stack.push({ x: newX, y: newY });
             arrayChecked[newX][newY] = 1;
@@ -133,7 +152,39 @@ export default `
       }
     }
     
+    function canvasMouseMove(event) {
+      let target = event.currentTarget;
+      let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
+      let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
+      
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';
+      ctx.lineTo(shiftX, shiftY);
+      ctx.stroke();
+    }
+    
+    function cusorMove(event) {
+      let target = event.currentTarget;
+      let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
+      let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
+      
+      ctx.moveTo(shiftX, shiftY);
+    }
+    
+    function eraser(event) {
+      cusorMove(event);
+      
+      canvas.addEventListener('pointermove', canvasMouseMove);
+      canvas.addEventListener('pointerover', cusorMove);
+      
+      document.addEventListener('pointerup', () => {
+        canvas.removeEventListener('pointermove', canvasMouseMove);	
+        to2DArray(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      });
+    }
+    
     inputImage.addEventListener('change', changeInput);
-    canvas.addEventListener('click', getCanvasColor);
+    canvas.addEventListener('pointerdown', eraser);
   });	
 </script>`;

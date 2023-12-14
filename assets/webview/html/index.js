@@ -6,15 +6,25 @@ export default `
 			Canvas editor
 		</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 		<style></style>
     <script></script>
 	</head>
 	<body>
-		<div id="container">
+		<div class="container">
 			<label for="inputImage">Выберите картинку</label>
 			<input type="file" id="inputImage" accept="image/*" />
 		</div>
-		<canvas id="canvas" width="390" height="390"></canvas>
+		<canvas id="canvas" width="0" height="0"></canvas>
+		<div class="container">
+			<label for="saveImage">Magic Eraser</label>
+			<input type="button" id="magicEraser"/>
+			<label for="saveImage">Background Eraser</label>
+			<input type="button" id="backgroundEraser"/>
+		</div>
+		<div class="container">
+			<label for="saveImage">Сохранить картинку</label>
+			<input type="button" id="saveImage"/>
+		</div>
 	</body>
 </html>`;
