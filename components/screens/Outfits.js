@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
-function OutfitScreen() {
+function OutfitsScreen() {
   return (
     <View
       style={{
@@ -15,4 +15,4 @@ function OutfitScreen() {
   );
 }
 
-export default OutfitScreen;
+export default OutfitsScreen;

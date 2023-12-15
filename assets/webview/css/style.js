@@ -5,6 +5,7 @@ body {
 	font-size: 20px;
 	margin: 0px;
 	user-select: none;
+  background: tranparent;
 }
 .container {
 	background-color: #ffffff;

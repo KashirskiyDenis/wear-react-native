@@ -18,7 +18,7 @@ export default `
     });
     
     document.getElementById('saveImage').addEventListener('click', () => {
-      window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
+     window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
     });
     
     let tools = {
@@ -157,9 +157,6 @@ export default `
 		let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
 		let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
 		
-		ctx.globalCompositeOperation = 'destination-out';
-		ctx.lineWidth = 10;
-		ctx.lineCap = 'round';
 		ctx.lineTo(shiftX, shiftY);
 		ctx.stroke();
 	}
@@ -169,7 +166,12 @@ export default `
 		let shiftX = ~~(event.clientX - target.getBoundingClientRect().left);
 		let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
 		
+		ctx.globalCompositeOperation = 'destination-out';
+		ctx.lineWidth = 10;
+		ctx.lineCap = 'round';		
 		ctx.moveTo(shiftX, shiftY);
+		ctx.lineTo(shiftX, shiftY);
+		ctx.stroke();		
 	}
 	
 	function eraser(event) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {  StyleSheet, Text, View } from 'react-native';
+import {  Text, View } from 'react-native';
 
 function SortList({ data, colors }) {
   return (
@@ -31,7 +31,5 @@ function SortList({ data, colors }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({ });
 
 export default SortList;

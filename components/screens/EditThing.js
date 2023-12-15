@@ -5,12 +5,12 @@ import {
   Image,
   Platform,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 
+import { useAppContext } from '../../AppContext';
 import htmlContent from '../../assets/webview/html/index';
 import cssContent from '../../assets/webview/css/style';
 import jsContent from '../../assets/webview/js/script';
@@ -21,7 +21,6 @@ let HTML = htmlContent
 
 const saveImageFromBase64 = async (base64Data, folderName, fileName) => {
   try {
-    // Проверяем, существует ли папка, если нет - создаем
     const folderInfo = await FileSystem.getInfoAsync(
       `${FileSystem.documentDirectory}${folderName}`
     );
@@ -32,38 +31,46 @@ const saveImageFromBase64 = async (base64Data, folderName, fileName) => {
       );
     }
 
-    // Создаем путь для сохранения изображения
     const filePath = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
 
-    // Сохраняем изображение
     await FileSystem.writeAsStringAsync(filePath, base64Data, {
       encoding: FileSystem.EncodingType.Base64,
     });
 
     return filePath;
   } catch (error) {
-    console.error('Error saving image:', error);
+    console.error('Error saving image:', error.message);
     throw error;
   }
 };
 
-function AddClothes() {
-  let webViewMessage = async (event) => {
-    const folderName = 'YourImageFolder';
-    const fileName = 'saved_image.png';
-    console.log(event.nativeEvent.data);
-/*
+function EditClothes() {
+  const { db } = useAppContext();
+  
+  let saveNewClothe = async (data, folderName, fileName) => {
     try {
       const savedPath = await saveImageFromBase64(
-        event.nativeEvent.data,
+        data,
         folderName,
         fileName
       );
       console.log('Image saved successfully:', savedPath);
+      db.transaction((tx) => {
+        tx.executeSql(
+          'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
+          [savedPath, 'category1', 'season1', 'color1']
+        );
+      });
     } catch (error) {
-      console.error('Error saving image:', error);
+      console.error('Error saving image:', error.message);
     }
-    */
+  };
+
+
+  let webViewMessage = (event) => {
+    const folderName = 'clothes';
+    const fileName = 'saved_image.png';
+    saveNewClothe(event.nativeEvent.data, folderName, fileName);
   };
 
   return (
@@ -80,4 +87,4 @@ function AddClothes() {
 
 const styles = StyleSheet.create({});
 
-export default AddClothes;
+export default EditClothes;

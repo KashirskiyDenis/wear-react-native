@@ -2,9 +2,8 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Home';
-import SettingsScreen from './screens/Settings';
-import NewClothesScreen from './screens/NewClothes';
-import NewOutfitScreen from './screens/NewOutfit';
+import EditThingScreen from './screens/EditThing';
+import EditOutfitScreen from './screens/EditOutfit';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,18 +17,21 @@ function TabsNavigator() {
         tabBarItemStyle: { width: 120 },
         tabBarStyle: { backgroundColor: 'powderblue' },
       }}>
-      <Stack.Screen name="WARDROBE" component={Home} />
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{ title: 'WARDROBE' }}
+      />
       <Stack.Screen
         name="NewClothesScreen"
-        component={NewClothesScreen}
-        options={{ title: 'Добавить Одежду' }}
+        component={EditThingScreen}
+        options={{ title: 'Добавить Вещь' }}
       />
       <Stack.Screen
         name="NewOutfitScreen"
-        component={NewOutfitScreen}
+        component={EditOutfitScreen}
         options={{ title: 'Добавить Образ' }}
       />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 }

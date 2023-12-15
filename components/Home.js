@@ -4,7 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 import Wardrobe from './screens/Wardrobe';
 import Clothes from './screens/Clothes';
-import Outfit from './screens/Outfit';
+import Outfits from './screens/Outfits';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -13,11 +13,9 @@ function Home() {
     <Tab.Navigator>
       <Tab.Screen name="Гардероб" component={Wardrobe} />
       <Tab.Screen name="Одежда" component={Clothes} />
-      <Tab.Screen name="Образы" component={Outfit} />      
+      <Tab.Screen name="Образы" component={Outfits} />      
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default Home;

@@ -12,7 +12,7 @@ export const AppProvider = ({ children }) => {
     tx.executeSql('DROP TABLE IF EXISTS clothes;');
     tx.executeSql('DROP TABLE IF EXISTS outfit;');
     tx.executeSql('DROP TABLE IF EXISTS outfit_clothes;');
-    
+
     tx.executeSql(createTable.clothes);
     tx.executeSql(createTable.outfit);
     tx.executeSql(createTable.outfit_clothes);

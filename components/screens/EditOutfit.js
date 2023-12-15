@@ -14,7 +14,7 @@ import AddButton from '../AddButton';
 
 const Stack = createNativeStackNavigator();
 
-function AddClothesScreen({ navigation }) {
+function EditOutfit({ navigation }) {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -40,4 +40,4 @@ function AddClothesScreen({ navigation }) {
 
 const styles = StyleSheet.create({});
 
-export default AddClothesScreen;
+export default EditOutfit;
