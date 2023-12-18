@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useAppContext } from '../../AppContext';
+import { DatabaseContext } from '../../DatabaseContext';
 
 function ClothesScreen() {
-  const { db } = useAppContext();
-  const [clothes, setClothes] = useState({});
-
+  const { clothes, readClothes } = useContext(DatabaseContext);
+  
   useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql('SELECT * FROM clothes;', [], (_, { rows }) => {
-        setClothes(rows._array);
-      });
-    });
-  }, [db]);
+    readClothes();
+  }, []);
 
   return (
     <View

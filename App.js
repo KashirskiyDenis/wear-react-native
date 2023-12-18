@@ -3,17 +3,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import TabsNavigator from './components/TabsNavigator';
-import { AppProvider } from './AppContext';
+import { DatabaseProvider } from './DatabaseContext';
 
 function App() {
   return (
-    <AppProvider>
+    <DatabaseProvider>
       <SafeAreaProvider>
         <NavigationContainer>
           <TabsNavigator />
         </NavigationContainer>
       </SafeAreaProvider>
-    </AppProvider>
+    </DatabaseProvider>
   );
 }
 

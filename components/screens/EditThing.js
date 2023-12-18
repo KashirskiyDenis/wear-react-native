@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Dimensions,
@@ -10,7 +10,7 @@ import {
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 
-import { useAppContext } from '../../AppContext';
+import { DatabaseContext } from '../../DatabaseContext';
 import htmlContent from '../../assets/webview/html/index';
 import cssContent from '../../assets/webview/css/style';
 import jsContent from '../../assets/webview/js/script';
@@ -45,7 +45,7 @@ const saveImageFromBase64 = async (base64Data, folderName, fileName) => {
 };
 
 function EditClothes() {
-  const { db } = useAppContext();
+  const { saveClothes } = useContext(DatabaseContext);
   
   let saveNewClothe = async (data, folderName, fileName) => {
     try {
@@ -55,12 +55,7 @@ function EditClothes() {
         fileName
       );
       console.log('Image saved successfully:', savedPath);
-      db.transaction((tx) => {
-        tx.executeSql(
-          'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
-          [savedPath, 'category1', 'season1', 'color1']
-        );
-      });
+      saveClothes(savedPath, 'category1', 'season1', 'color1');
     } catch (error) {
       console.error('Error saving image:', error.message);
     }

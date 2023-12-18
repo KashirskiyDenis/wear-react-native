@@ -1,37 +1,125 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useEffect, useState, useContext } from 'react';
 import * as SQLite from 'expo-sqlite';
 
 import * as createTable from './services/CreateTables';
 
-const AppContext = createContext();
+const db = SQLite.openDatabase('mydb.db');
+const DatabaseContext = createContext(db);
 
-export const AppProvider = ({ children }) => {
-  const db = SQLite.openDatabase('mydb.db');
+function DatabaseProvider({ children }) {
+  let [clothes, setClothes] = useState([]);
 
-  db.transaction((tx) => {
-    tx.executeSql('DROP TABLE IF EXISTS clothes;');
-    tx.executeSql('DROP TABLE IF EXISTS outfit;');
-    tx.executeSql('DROP TABLE IF EXISTS outfit_clothes;');
+  const readClothes = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM clothes;',
+        [],
+        (_, result) => {
+          setClothes(result.rows._array);
+        },
+        (_, error) => {
+          console.error('Error loading clothes', error);
+        }
+      );
+    });
+  };
 
-    tx.executeSql(createTable.clothes);
-    tx.executeSql(createTable.outfit);
-    tx.executeSql(createTable.outfit_clothes);
-  });
-
-  db.transaction((tx) => {
-    tx.executeSql(
-      'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
-      ['pathToFile1', 'category1', 'season1', 'color1']
+  const createClothes = (pathToFile, category, season, color) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?)',
+          [pathToFile, category, season, color],
+          () => {
+            readClothes();
+          },
+          (_, error) => {
+            console.error('Error save clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
     );
-    tx.executeSql(
-      'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
-      ['pathToFile2', 'category2', 'season2', 'color2']
+  };
+
+  const updateClothes = (pathToFile, category, season, color) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'UPDATE clothes SET pathToFile=? AND category=? AND season=? AND color=? WHERE id=?',
+          [pathToFile, category, season, color, id],
+          () => {
+            readClothes();
+          },
+          (_, error) => {
+            console.error('Error change clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
     );
-  });
+  };
 
-  return <AppContext.Provider value={{ db }}>{children}</AppContext.Provider>;
-};
+  const deleteClothes = (id) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'DELETE FROM WHERE id=?',
+          [id],
+          () => {
+            readClothes();
+          },
+          (_, error) => {
+            console.error('Error change clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
+    );
+  };
 
-export const useAppContext = () => {
-  return useContext(AppContext);
-};
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql('DROP TABLE IF EXISTS clothes;');
+      tx.executeSql('DROP TABLE IF EXISTS outfit;');
+      tx.executeSql('DROP TABLE IF EXISTS outfit_clothes;');
+
+      tx.executeSql(createTable.clothes);
+      tx.executeSql(createTable.outfit);
+      tx.executeSql(createTable.outfit_clothes);
+    });
+
+    db.transaction((tx) => {
+      tx.executeSql(
+        'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
+        ['pathToFile1', 'category1', 'season1', 'color1']
+      );
+      tx.executeSql(
+        'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
+        ['pathToFile2', 'category2', 'season2', 'color2']
+      );
+    });
+    readClothes();
+  }, []);
+
+  return (
+    <DatabaseContext.Provider
+      value={{
+        clothes,
+        createClothes,
+        readClothes,
+        updateClothes,
+        deleteClothes,
+      }}>
+      {children}
+    </DatabaseContext.Provider>
+  );
+}
+
+export { DatabaseContext, DatabaseProvider };
