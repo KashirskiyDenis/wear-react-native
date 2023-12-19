@@ -1,6 +1,7 @@
 let clothes = `CREATE TABLE IF NOT EXISTS clothes(
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	pathToFile TEXT NOT NULL,
+  title TEXT NOT NULL,
 	category TEXT NOT NULL,
 	season TEXT NOT NULL,
 	color TEXT NOT NULL

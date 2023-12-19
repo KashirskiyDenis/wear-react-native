@@ -9,6 +9,26 @@ const DatabaseContext = createContext(db);
 function DatabaseProvider({ children }) {
   let [clothes, setClothes] = useState([]);
 
+  const createClothes = (pathToFile, title, category, season, color) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'INSERT INTO clothes (title, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
+          [title, pathToFile, category, season, color],
+          () => {
+            readClothes();
+          },
+          (_, error) => {
+            console.error('Error save clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
+    );
+  };
+
   const readClothes = () => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -24,32 +44,27 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const createClothes = (pathToFile, category, season, color) => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?)',
-          [pathToFile, category, season, color],
-          () => {
-            readClothes();
-          },
-          (_, error) => {
-            console.error('Error save clothes', error);
-          }
-        );
-      },
-      (transactionError) => {
-        console.log(transactionError.message);
-      }
-    );
+    const readClothesById = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM clothes WHERE id=?;',
+        [id],
+        (_, result) => {
+          setClothes(result.rows._array);
+        },
+        (_, error) => {
+          console.error('Error loading clothes', error);
+        }
+      );
+    });
   };
 
-  const updateClothes = (pathToFile, category, season, color) => {
+  const updateClothes = (id, title, pathToFile, category, season, color) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          'UPDATE clothes SET pathToFile=? AND category=? AND season=? AND color=? WHERE id=?',
-          [pathToFile, category, season, color, id],
+          'UPDATE clothes SET title=? AND pathToFile=? AND category=? AND season=? AND color=? WHERE id=?',
+          [title, pathToFile, category, season, color, id],
           () => {
             readClothes();
           },
@@ -64,7 +79,27 @@ function DatabaseProvider({ children }) {
     );
   };
 
-  const deleteClothes = (id) => {
+  const deleteClothes = () => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'DELETE FROM;',
+          [],
+          () => {
+            readClothes();
+          },
+          (_, error) => {
+            console.error('Error change clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
+    );
+  };
+
+  const deleteClothesById = (id) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -95,16 +130,6 @@ function DatabaseProvider({ children }) {
       tx.executeSql(createTable.outfit_clothes);
     });
 
-    db.transaction((tx) => {
-      tx.executeSql(
-        'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
-        ['pathToFile1', 'category1', 'season1', 'color1']
-      );
-      tx.executeSql(
-        'INSERT INTO clothes (pathToFile, category, season, color) VALUES (?, ?, ?, ?);',
-        ['pathToFile2', 'category2', 'season2', 'color2']
-      );
-    });
     readClothes();
   }, []);
 

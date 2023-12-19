@@ -40,31 +40,29 @@ const saveImageFromBase64 = async (base64Data, folderName, fileName) => {
     return filePath;
   } catch (error) {
     console.error('Error saving image:', error.message);
-    throw error;
   }
 };
 
 function EditClothes() {
-  const { saveClothes } = useContext(DatabaseContext);
-  
+  const { createClothes } = useContext(DatabaseContext);
+
   let saveNewClothe = async (data, folderName, fileName) => {
     try {
-      const savedPath = await saveImageFromBase64(
-        data,
-        folderName,
-        fileName
-      );
-      console.log('Image saved successfully:', savedPath);
-      saveClothes(savedPath, 'category1', 'season1', 'color1');
+      const savedPath = await saveImageFromBase64(data, folderName, fileName);
+      createClothes(savedPath, 'title1', 'category1', 'season1', 'color1');
     } catch (error) {
       console.error('Error saving image:', error.message);
     }
   };
 
-
   let webViewMessage = (event) => {
     const folderName = 'clothes';
-    const fileName = 'saved_image.png';
+    const fileName =
+      new Date()
+        .toISOString()
+        .split('.')[0]
+        .replaceAll(':', '-')
+        .replace('T', '_') + '.png';
     saveNewClothe(event.nativeEvent.data, folderName, fileName);
   };
 
