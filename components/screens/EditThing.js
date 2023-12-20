@@ -73,11 +73,14 @@ function EditClothes() {
         scrollEnabled={false}
         javaScriptEnabled={true}
         onMessage={(event) => webViewMessage(event)}
+        scalesPageToFit={true}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+
+});
 
 export default EditClothes;
