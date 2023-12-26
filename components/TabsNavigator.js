@@ -3,6 +3,8 @@ import { Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Home';
 import EditThingScreen from './screens/EditThing';
+import ThingScreen from './screens/Thing';
+import EditClothesScreen from './screens/EditClothes';
 import EditOutfitScreen from './screens/EditOutfit';
 
 const Stack = createNativeStackNavigator();
@@ -10,7 +12,7 @@ const Stack = createNativeStackNavigator();
 function TabsNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="ThingScreen"
       screenOptions={{
         tabBarScrollEnabled: true,
         tabBarLabelStyle: { fontSize: 16, fontWeight: 600 },
@@ -23,10 +25,20 @@ function TabsNavigator() {
         options={{ title: 'WARDROBE' }}
       />
       <Stack.Screen
-        name="NewClothesScreen"
+        name="EditThingScreen"
         component={EditThingScreen}
         options={{ title: 'Добавить Вещь' }}
       />
+      <Stack.Screen
+        name="ThingScreen"
+        component={ThingScreen}
+        options={{ title: 'Вещь' }}
+      />      
+      <Stack.Screen
+        name="EditClothesScreen"
+        component={EditClothesScreen}
+        options={{ title: 'Добавить Вещь2' }}
+      />      
       <Stack.Screen
         name="NewOutfitScreen"
         component={EditOutfitScreen}

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 
 import DonutChart from '../DonutChart';
 import SortList from '../SortList';
@@ -95,7 +94,7 @@ function WardrobeScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('NewClothesScreen')}>
+        onPress={() => navigation.navigate('EditThingScreen')}>
         <AddButton />
       </TouchableOpacity>
     </View>

@@ -1,6 +1,7 @@
 export default `
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    let base64 = null;
     let inputImage = document.getElementById('inputImage');
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d', {
@@ -20,6 +21,12 @@ export default `
     document.getElementById('saveImage').addEventListener('click', () => {
      window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
     });
+    
+    if (base64 != null) {
+      let image = new Image();
+      image.src = base64;
+      image.onload = draw.bind(image);
+    }
     
     let tools = {
       bgEraser : eraser,

@@ -4,7 +4,10 @@ import {
   Dimensions,
   Image,
   Platform,
+  Pressable,
   StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -15,41 +18,62 @@ import htmlContent from '../../assets/webview/html/index';
 import cssContent from '../../assets/webview/css/style';
 import jsContent from '../../assets/webview/js/script';
 
-let HTML = htmlContent
-  .replace('<style></style>', cssContent)
-  .replace('<script></script>', jsContent);
+let HTML;
 
-const saveImageFromBase64 = async (base64Data, folderName, fileName) => {
-  try {
-    const folderInfo = await FileSystem.getInfoAsync(
-      `${FileSystem.documentDirectory}${folderName}`
-    );
-    if (!folderInfo.exists) {
-      await FileSystem.makeDirectoryAsync(
-        `${FileSystem.documentDirectory}${folderName}`,
-        { intermediates: true }
+function EditClothes({ navigation, route }) {
+  let saveImageFromBase64 = async (base64Data, folderName, fileName) => {
+    try {
+      const folderInfo = await FileSystem.getInfoAsync(
+        `${FileSystem.documentDirectory}${folderName}`
+      );
+      if (!folderInfo.exists) {
+        await FileSystem.makeDirectoryAsync(
+          `${FileSystem.documentDirectory}${folderName}`,
+          { intermediates: true }
+        );
+      }
+
+      const filePath = route.params?.thingInfo.pathToFile
+        ? route.params.thingInfo.pathToFile
+        : `${FileSystem.documentDirectory}${folderName}/${fileName}`;
+
+      await FileSystem.writeAsStringAsync(filePath, base64Data, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      return filePath;
+    } catch (error) {
+      console.error('Error saving image:', error.message);
+    }
+  };
+
+  const { createClothes, updateClothes } = useContext(DatabaseContext);
+
+  let init = () => {
+    let newJS = `${jsContent}`;
+    if (route.params) {
+      newJS = newJS.replace(
+        'let base64 = null;',
+        `let base64 = '${route.params.thingInfo.uri}';`
       );
     }
+    HTML = htmlContent
+      .replace('<style></style>', cssContent)
+      .replace('<script></script>', newJS);
+  };
 
-    const filePath = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
+  init();
 
-    await FileSystem.writeAsStringAsync(filePath, base64Data, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    return filePath;
-  } catch (error) {
-    console.error('Error saving image:', error.message);
-  }
-};
-
-function EditClothes() {
-  const { createClothes } = useContext(DatabaseContext);
-
-  let saveNewClothe = async (data, folderName, fileName) => {
+  let saveNewThing = async (data, folderName, fileName, thing) => {
     try {
       const savedPath = await saveImageFromBase64(data, folderName, fileName);
-      createClothes(savedPath, 'title1', 'category1', 'season1', 'color1');
+      createClothes(
+        savedPath,
+        thing.title,
+        thing.category,
+        thing.season,
+        thing.color
+      );
     } catch (error) {
       console.error('Error saving image:', error.message);
     }
@@ -63,24 +87,39 @@ function EditClothes() {
         .split('.')[0]
         .replaceAll(':', '-')
         .replace('T', '_') + '.png';
-    saveNewClothe(event.nativeEvent.data, folderName, fileName);
+    if (route.params) {
+      let thing = route.params.thingInfo;
+      updateClothes(
+        thing.id,
+        thing.title,
+        thing.pathToFile,
+        thing.category,
+        thing.season,
+        thing.color
+      );
+    } else {
+      let thing = {
+        title: 'Title 1',
+        category: 'Category 1',
+        season: 'Season 1',
+        color: 'Color 1',
+      };
+      saveNewThing(event.nativeEvent.data, folderName, fileName, thing);
+    }
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1 }}>
       <WebView
         source={{ html: HTML }}
         scrollEnabled={false}
         javaScriptEnabled={true}
         onMessage={(event) => webViewMessage(event)}
-        scalesPageToFit={true}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 export default EditClothes;
