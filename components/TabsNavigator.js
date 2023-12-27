@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Home';
-import EditThingScreen from './screens/EditThing';
+import EditPhotoScreen from './screens/EditPhoto';
 import ThingScreen from './screens/Thing';
 import EditClothesScreen from './screens/EditClothes';
 import EditOutfitScreen from './screens/EditOutfit';
@@ -25,9 +25,9 @@ function TabsNavigator() {
         options={{ title: 'WARDROBE' }}
       />
       <Stack.Screen
-        name="EditThingScreen"
-        component={EditThingScreen}
-        options={{ title: 'Добавить Вещь' }}
+        name="EditPhotoScreen"
+        component={EditPhotoScreen}
+        options={{ title: 'Редактировать фото' }}
       />
       <Stack.Screen
         name="ThingScreen"

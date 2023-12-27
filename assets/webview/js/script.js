@@ -21,13 +21,13 @@ export default `
     document.getElementById('saveImage').addEventListener('click', () => {
      window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
     });
-    
-    if (base64 != null) {
+
+    window.addEventListener('message', function(event) {
       let image = new Image();
-      image.src = base64;
+      image.src = event.data;
       image.onload = draw.bind(image);
-    }
-    
+    });
+
     let tools = {
       bgEraser : eraser,
       filling : filling

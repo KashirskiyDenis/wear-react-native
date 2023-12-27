@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import htmlContent from '../../assets/webview/html/index';
@@ -21,6 +22,9 @@ import jsContent from '../../assets/webview/js/script';
 let HTML;
 
 function EditClothes({ navigation, route }) {
+  const { createClothes, updateClothes } = useContext(DatabaseContext);
+  let webViewRef = useRef(null);
+
   let saveImageFromBase64 = async (base64Data, folderName, fileName) => {
     try {
       const folderInfo = await FileSystem.getInfoAsync(
@@ -47,15 +51,16 @@ function EditClothes({ navigation, route }) {
     }
   };
 
-  const { createClothes, updateClothes } = useContext(DatabaseContext);
-
   let init = () => {
     let newJS = `${jsContent}`;
     if (route.params) {
+      //console.log(route.params);
+      /*
       newJS = newJS.replace(
         'let base64 = null;',
-        `let base64 = '${route.params.thingInfo.uri}';`
+        `let base64 = '${route.params.source}';`
       );
+      */
     }
     HTML = htmlContent
       .replace('<style></style>', cssContent)
@@ -64,22 +69,7 @@ function EditClothes({ navigation, route }) {
 
   init();
 
-  let saveNewThing = async (data, folderName, fileName, thing) => {
-    try {
-      const savedPath = await saveImageFromBase64(data, folderName, fileName);
-      createClothes(
-        savedPath,
-        thing.title,
-        thing.category,
-        thing.season,
-        thing.color
-      );
-    } catch (error) {
-      console.error('Error saving image:', error.message);
-    }
-  };
-
-  let webViewMessage = (event) => {
+  let onMessage = (event) => {
     const folderName = 'clothes';
     const fileName =
       new Date()
@@ -108,18 +98,42 @@ function EditClothes({ navigation, route }) {
     }
   };
 
+  let postMessage = () => {
+    webView.current.postMessage('post message');
+  };
+
+  let pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.2,
+      base64: true, 
+    });
+
+    if (!result.canceled) {
+      webViewRef.current.postMessage('data:image/png;base64,' + result.assets[0].base64);
+    }
+  };
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
+    <Button title="Выберите изображение" onPress={pickImage} />
       <WebView
+        ref={webViewRef}
         source={{ html: HTML }}
         scrollEnabled={false}
         javaScriptEnabled={true}
-        onMessage={(event) => webViewMessage(event)}
+        onMessage={(event) => onMessage(event)}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default EditClothes;
