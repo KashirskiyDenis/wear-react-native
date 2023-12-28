@@ -33,6 +33,10 @@ function EditClothes({ navigation, route }) {
     }
   };
 
+  useEffect(() => {
+    console.log(route);
+  }, [route]);
+
   // <Button title="Изменить фото" onPress={() => navigation.navigate('EditThingScreen', route.params.thingInfo.uri)} />
   return (
     <View style={styles.container}>
@@ -44,7 +48,11 @@ function EditClothes({ navigation, route }) {
         />
         <Button
           title="Изменить фото"
-          onPress={() => navigation.navigate('EditPhotoScreen', { source : require('../../assets/icon.jpg')} )}
+          onPress={() =>
+            navigation.navigate('EditPhotoScreen', {
+              source: require('../../assets/icon.jpg'),
+            })
+          }
         />
       </View>
       <View>

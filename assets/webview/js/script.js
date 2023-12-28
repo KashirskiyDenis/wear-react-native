@@ -2,7 +2,6 @@ export default `
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     let base64 = null;
-    let inputImage = document.getElementById('inputImage');
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d', {
       willReadFrequently: true,
@@ -193,7 +192,6 @@ export default `
 		});
 	}
 	
-	inputImage.addEventListener('change', changeInput);
 	canvas.addEventListener('pointerdown', eraser);
 });	
 </script>`;

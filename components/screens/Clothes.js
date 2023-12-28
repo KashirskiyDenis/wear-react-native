@@ -86,9 +86,9 @@ function ClothesScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('EditThingScreen')}>
+        onPress={() => navigation.navigate('ThingScreen')}>
         <AddButton />
-      </TouchableOpacity>      
+      </TouchableOpacity>
     </View>
   );
 }
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     height: 75,
     resizeMode: 'cover',
     marginRight: 15,
-    borderRadius: 75
+    borderRadius: 75,
   },
   thingTitle: {
     fontSize: 24,

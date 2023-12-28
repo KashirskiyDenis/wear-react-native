@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator();
 function TabsNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="ThingScreen"
+      initialRouteName="Home"
       screenOptions={{
         tabBarScrollEnabled: true,
         tabBarLabelStyle: { fontSize: 16, fontWeight: 600 },

@@ -11,10 +11,6 @@ export default `
     <script></script>
 	</head>
 	<body>
-		<div class="container">
-			<label for="inputImage">Выберите фото</label>
-			<input type="file" id="inputImage" accept="image/*" />
-		</div>
 		<canvas id="canvas" width="0" height="0"></canvas>
 		<div class="container">
 			<label for="magicEraser">Magic Eraser</label>
