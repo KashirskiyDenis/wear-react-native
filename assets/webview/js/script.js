@@ -21,11 +21,19 @@ export default `
      window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
     });
 
-    window.addEventListener('message', function(event) {
-      let image = new Image();
-      image.src = event.data;
-      image.onload = draw.bind(image);
-    });
+    if (navigator.platform == 'iPhone' || navigator.platform == 'iPad' || navigator.platform == 'iPhone Simulator') {
+      window.addEventListener('message', function(event) {
+        let image = new Image();
+        image.src = event.data;
+        image.onload = draw.bind(image);
+      });
+    } else if (navigator.platform == 'Android' || navigator.platform == 'Android Simulator' || navigator.platform == 'Linux armv8l') {
+      document.addEventListener('message', function(event) {
+        let image = new Image();
+        image.src = event.data;
+        image.onload = draw.bind(image);
+      });      
+    }
 
     let tools = {
       bgEraser : eraser,
@@ -37,16 +45,12 @@ export default `
     let arrayData;
     let imageData;
     
-    function changeInput() {
+    if (base64 != null) {
       let image = new Image();
-      image.onload = draw;
-      image.onerror = () => {
-        console.log('Error loading')
-      };
-      if (this.files[0])
-        image.src = URL.createObjectURL(this.files[0]);
+      image.src = base64;
+      image.onload = draw.bind(image);
     }
-    
+
     function draw() {
       canvas.width = window.innerWidth;
       canvas.height = this.height * window.innerWidth / this.width;

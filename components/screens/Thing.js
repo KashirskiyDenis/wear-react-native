@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   Button,
   Image,
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
@@ -13,16 +13,25 @@ import { DatabaseContext } from '../../DatabaseContext';
 
 function EditClothes({ navigation, route }) {
   const { createClothes, updateClothes } = useContext(DatabaseContext);
-  /*
-  let [title, setTitle] = useState(route.params.thingInfo.title);
-  let [category, setCategory] = useState(route.params.thingInfo.category);
-  let [season, setSeason] = useState(route.params.thingInfo.season);
-  let [color, setColor] = useState(route.params.thingInfo.color);  
-*/
-  let [title, setTitle] = useState('Название вещи');
-  let [category, setCategory] = useState('Платье');
-  let [season, setSeason] = useState('Лето');
-  let [color, setColor] = useState('Синий');
+
+  let [title, setTitle] = useState(
+    route.params?.title ? route.params.title : ''
+  );
+  let [category, setCategory] = useState(
+    route.params?.category ? route.params.category : ''
+  );
+  let [season, setSeason] = useState(
+    route.params?.season ? route.params.season : ''
+  );
+  let [color, setColor] = useState(
+    route.params?.color ? route.params.color : ''
+  );
+
+  let [image, setImage] = useState(require('../../assets/thing_grey.png'));
+  let fadeAnim = useRef(new Animated.Value(0)).current;
+  let [snackbarText, setSnackbarText] = useState('65464654654');
+  let [snackbarStatus, setSnackbarStatus] = useState('');
+  let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   let saveNewThing = async (data, folderName, fileName, thing) => {
     try {
@@ -34,24 +43,53 @@ function EditClothes({ navigation, route }) {
   };
 
   useEffect(() => {
-    console.log(route);
+    if (route.params?.data) {
+      setImage('data:image/png;base64,' + route.params.uri);
+    }
   }, [route]);
 
-  // <Button title="Изменить фото" onPress={() => navigation.navigate('EditThingScreen', route.params.thingInfo.uri)} />
+  let fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0.7,
+      duration: 0,
+      useNativeDriver: true,
+    }).start(() => {
+      fadeOut();
+    });
+  };
+
+  let fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start(() => {
+      setSnackbarVisible('none');
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ alignItems: 'center' }}>
         <Image
           style={styles.thingImage}
-          source={require('../../assets/icon.jpg')}
-          // source={{ uri: route.params.thingInfo.uri }}
+          source={
+            route.params?.uri
+              ? {
+                  uri: 'data:image/png;base64,' + route.params?.uri,
+                }
+              : image
+          }
         />
         <Button
           title="Изменить фото"
           onPress={() =>
-            navigation.navigate('EditPhotoScreen', {
-              source: require('../../assets/icon.jpg'),
-            })
+            navigation.navigate(
+              'EditPhotoScreen',
+              route.params?.uri
+                ? { uri: 'data:image/png;base64,' + route.params.uri }
+                : null
+            )
           }
         />
       </View>
@@ -82,8 +120,27 @@ function EditClothes({ navigation, route }) {
         />
       </View>
       <View style={styles.saveView}>
-        <Button title="Сохранить" />
+        <Button
+          title="Сохранить"
+          onPress={() => {
+            setSnackbarVisible('block');
+            setSnackbarText('Изменения сохранены');
+            setSnackbarStatus('seccess');
+            fadeIn();
+          }}
+        />
       </View>
+      <Animated.View
+        style={[
+          styles.snackbar,
+          snackbarStatus == 'error'
+            ? styles.snackbarError
+            : styles.snackbarSuccess,
+          { opacity: fadeAnim },
+          { display: snackbarVisible },
+        ]}>
+        <Text style={styles.snackbarText}>{snackbarText}</Text>
+      </Animated.View>
     </View>
   );
 }
@@ -122,6 +179,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     marginBottom: 10,
+  },
+  snackbar: {
+    position: 'absolute',
+    opacity: 0.7,
+    bottom: 0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 15,
+    paddingBottom: 25,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  snackbarText: {
+    fontSize: 18,
+    color: '#ffffff',
+  },
+  snackbarError: {
+    backgroundColor: '#f44336',
+  },
+  snackbarSuccess: {
+    backgroundColor: '#29BB42',
   },
 });
 

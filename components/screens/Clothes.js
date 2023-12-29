@@ -13,7 +13,7 @@ import AddButton from '../AddButton';
 
 function ClothesScreen({ navigation }) {
   const { clothes, readClothes } = useContext(DatabaseContext);
-  const [list, setList] = React.useState();
+  const [list, setList] = useState();
 
   useEffect(() => {
     readClothes();
@@ -41,7 +41,7 @@ function ClothesScreen({ navigation }) {
       for (let i = 0; i < clothes.length; i++) {
         array[i] = {
           id: clothes[i].id,
-          pathToFile: clothes[i].pathToFile,
+          path: clothes[i].pathToFile,
           uri: await getImage(clothes[i].pathToFile),
           title: clothes[i].title,
           category: clothes[i].category,
@@ -65,7 +65,7 @@ function ClothesScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              navigation.navigate('ThingScreen', { thingInfo: item })
+              navigation.navigate('ThingScreen', { ...item })
             }>
             <View style={styles.item}>
               <View>

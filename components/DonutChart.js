@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import Svg, { Circle, G, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 let roundTo = (num, to = 0) => {

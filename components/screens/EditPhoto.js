@@ -1,22 +1,15 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Button,
-  Dimensions,
-  Image,
-  Platform,
-  Pressable,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
-import { DatabaseContext } from '../../DatabaseContext';
 import htmlContent from '../../assets/webview/html/index';
 import cssContent from '../../assets/webview/css/style';
 import jsContent from '../../assets/webview/js/script';
@@ -24,13 +17,12 @@ import jsContent from '../../assets/webview/js/script';
 let HTML;
 
 function EditClothes({ navigation, route }) {
-  const { createClothes, updateClothes } = useContext(DatabaseContext);
   let webViewRef = useRef(null);
   let fadeAnim = useRef(new Animated.Value(0)).current;
-  let [snackbarText, setSnackbarText] = useState('Изменения сохранены');
+  let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
-  let saveImage = null;
-  let dataSave = false;
+  let [pathFile, setPathFile] = useState('');
+  let [base64, setBase64] = useState('');
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     try {
@@ -52,16 +44,8 @@ function EditClothes({ navigation, route }) {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      setSnackbarText('Изменения сохранены');
-      setSnackbarStatus('seccess');
-      fadeIn();
-      dataSave = true;
-
-      return { path: path, data: base64Data };
+      return path;
     } catch (error) {
-      setSnackbarText('Ошибка сохранения');
-      setSnackbarStatus('error');
-      fadeIn();
       console.error('Error saving image:', error.message);
     }
   };
@@ -71,7 +55,7 @@ function EditClothes({ navigation, route }) {
     if (route.params) {
       newJS = newJS.replace(
         'let base64 = null;',
-        `let base64 = '${route.params.source}';`
+        `let base64 = '${route.params.uri}';`
       );
     }
     HTML = htmlContent
@@ -82,11 +66,11 @@ function EditClothes({ navigation, route }) {
   init();
 
   let onMessage = (event) => {
-    console.log('Save');
-    if (route.params?.pathToFile) {
-      saveImage = saveImageFromBase64(
+    let tmp;
+    if (route.params?.path) {
+      tmp = saveImageFromBase64(
         event.nativeEvent.data,
-        route.params.pathToFile
+        route.params.path
       );
     } else {
       let folderName = 'clothes';
@@ -96,12 +80,18 @@ function EditClothes({ navigation, route }) {
           .split('.')[0]
           .replaceAll(':', '-')
           .replace('T', '_') + '.png';
-      saveImage = saveImageFromBase64(
-        event.nativeEvent.data,
-        null,
-        folderName,
-        fileName
-      );
+      tmp = saveImageFromBase64(event.nativeEvent.data, null, folderName, fileName);
+    }
+    if (tmp) {
+      setSnackbarText('Изменения сохранены');
+      setSnackbarStatus('seccess');
+      fadeIn();
+      setPathFile(tmp);
+      setBase64(event.nativeEvent.data);
+    } else {
+      setSnackbarText('Ошибка сохранения');
+      setSnackbarStatus('error');
+      fadeIn();
     }
   };
 
@@ -140,14 +130,11 @@ function EditClothes({ navigation, route }) {
   };
 
   navigation.addListener('blur', () => {
-    if (dataSave) {
-      console.log(saveImage);
-      navigation.navigate({
-        name: 'ThingScreen',
-        params: { data: saveImage.data, path: saveImage.path },
-        merge: true,
-      });
-    }
+    navigation.navigate({
+      name: 'ThingScreen',
+      params: { uri: base64, path: pathFile._v },
+      merge: true,
+    });    
   });
 
   return (
