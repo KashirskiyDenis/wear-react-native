@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Button,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Button, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,13 +10,13 @@ import jsContent from '../../assets/webview/js/script';
 
 let HTML;
 
-function EditClothes({ navigation, route }) {
+function EditPhoto({ navigation, route }) {
   let webViewRef = useRef(null);
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [pathFile, setPathFile] = useState('');
-  let [base64, setBase64] = useState('');
+  let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     try {
@@ -55,7 +49,7 @@ function EditClothes({ navigation, route }) {
     if (route.params) {
       newJS = newJS.replace(
         'let base64 = null;',
-        `let base64 = '${route.params.uri}';`
+        `let base64 = 'data:image/png;base64,${route.params.uri}';`
       );
     }
     HTML = htmlContent
@@ -68,10 +62,7 @@ function EditClothes({ navigation, route }) {
   let onMessage = (event) => {
     let tmp;
     if (route.params?.path) {
-      tmp = saveImageFromBase64(
-        event.nativeEvent.data,
-        route.params.path
-      );
+      tmp = saveImageFromBase64(event.nativeEvent.data, route.params.path);
     } else {
       let folderName = 'clothes';
       let fileName =
@@ -80,7 +71,12 @@ function EditClothes({ navigation, route }) {
           .split('.')[0]
           .replaceAll(':', '-')
           .replace('T', '_') + '.png';
-      tmp = saveImageFromBase64(event.nativeEvent.data, null, folderName, fileName);
+      tmp = saveImageFromBase64(
+        event.nativeEvent.data,
+        null,
+        folderName,
+        fileName
+      );
     }
     if (tmp) {
       setSnackbarText('Изменения сохранены');
@@ -134,7 +130,7 @@ function EditClothes({ navigation, route }) {
       name: 'ThingScreen',
       params: { uri: base64, path: pathFile._v },
       merge: true,
-    });    
+    });
   });
 
   return (
@@ -142,6 +138,7 @@ function EditClothes({ navigation, route }) {
       <Button title="Выберите изображение" onPress={pickImage} />
       <WebView
         ref={webViewRef}
+        originWhitelist={['*']}
         source={{ html: HTML }}
         scrollEnabled={false}
         javaScriptEnabled={true}
@@ -192,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditClothes;
+export default EditPhoto;

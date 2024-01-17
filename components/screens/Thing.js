@@ -29,16 +29,34 @@ function EditClothes({ navigation, route }) {
 
   let [image, setImage] = useState(require('../../assets/thing_grey.png'));
   let fadeAnim = useRef(new Animated.Value(0)).current;
-  let [snackbarText, setSnackbarText] = useState('65464654654');
+  let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
-  let saveNewThing = async (data, folderName, fileName, thing) => {
+  let saveClothes = async () => {
     try {
-      const savedPath = await saveImageFromBase64(data, folderName, fileName);
-      createClothes(savedPath, title, category, season, color);
+      if (title == '' || category == '' || season == '' || color == '')
+        throw new Error('Not all fields are filled in');
+
+      if (route.params?.id) {
+        updateClothes(route.params.pathToFile, title, category, season, color);
+      } else {
+        if (route.params?.path)
+          createClothes(route.params.path, title, category, season, color);
+        else
+          throw new Error('Not all fields are filled in');
+      }
+      setSnackbarVisible('block');
+      setSnackbarText('Изменения сохранены');
+      setSnackbarStatus('seccess');
+      fadeIn();
     } catch (error) {
       console.error('Error saving image:', error.message);
+
+      setSnackbarVisible('block');
+      setSnackbarText('Не сохранено. Заполните все поля.');
+      setSnackbarStatus('error');
+      fadeIn();
     }
   };
 
@@ -76,7 +94,7 @@ function EditClothes({ navigation, route }) {
           source={
             route.params?.uri
               ? {
-                  uri: 'data:image/png;base64,' + route.params?.uri,
+                  uri: 'data:image/png;base64,' + route.params.uri,
                 }
               : image
           }
@@ -86,9 +104,7 @@ function EditClothes({ navigation, route }) {
           onPress={() =>
             navigation.navigate(
               'EditPhotoScreen',
-              route.params?.uri
-                ? { uri: 'data:image/png;base64,' + route.params.uri }
-                : null
+              route.params?.uri ? { uri: route.params.uri } : null
             )
           }
         />
@@ -123,10 +139,7 @@ function EditClothes({ navigation, route }) {
         <Button
           title="Сохранить"
           onPress={() => {
-            setSnackbarVisible('block');
-            setSnackbarText('Изменения сохранены');
-            setSnackbarStatus('seccess');
-            fadeIn();
+            saveClothes();
           }}
         />
       </View>

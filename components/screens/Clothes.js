@@ -32,7 +32,7 @@ function ClothesScreen({ navigation }) {
     } catch (error) {
       console.log('Error to load file: ' + error.message);
     }
-    return 'data:image/png;base64,' + data;
+    return data;
   };
 
   let createListClothes = async () => {
@@ -69,7 +69,7 @@ function ClothesScreen({ navigation }) {
             }>
             <View style={styles.item}>
               <View>
-                <Image style={styles.thingImage} source={{ uri: item.uri }} />
+                <Image style={styles.thingImage} source={{ uri: 'data:image/png;base64,' + item.uri }} />
               </View>
               <View>
                 <Text style={styles.thingTitle}>{item.title}</Text>

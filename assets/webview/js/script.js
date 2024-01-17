@@ -177,7 +177,7 @@ export default `
 		let shiftY = ~~(event.clientY - target.getBoundingClientRect().top);
 		
 		ctx.globalCompositeOperation = 'destination-out';
-		ctx.lineWidth = 10;
+		ctx.lineWidth = 15;
 		ctx.lineCap = 'round';		
 		ctx.moveTo(shiftX, shiftY);
 		ctx.lineTo(shiftX, shiftY);
