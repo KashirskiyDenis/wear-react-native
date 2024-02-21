@@ -1,7 +1,8 @@
-import * as React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
+import { DatabaseContext } from '../../DatabaseContext';
+import AddButton from '../AddButton';
 
-function OutfitsScreen() {
+function OutfitsScreen({ navigation }) {
   return (
     <View
       style={{
@@ -11,6 +12,16 @@ function OutfitsScreen() {
         alignItems: 'center',
       }}>
       <Text>Outfit!</Text>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={{
+          position: 'absolute',
+          right: 15,
+          bottom: 15,
+        }}
+        onPress={() => navigation.navigate('EditOutfitScreen')}>
+        <AddButton />
+      </TouchableOpacity>
     </View>
   );
 }

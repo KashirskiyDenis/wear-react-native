@@ -44,7 +44,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-    const readClothesById = (id) => {
+  const readClothesById = (id) => {
     db.transaction((tx) => {
       tx.executeSql(
         'SELECT * FROM clothes WHERE id=?;',

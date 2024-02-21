@@ -2,7 +2,7 @@
   "expo": {
     "name": "wear",
     "slug": "snack-ee18cfe5-9a36-4bb5-84b9-30886cd715ba",
-    "version": "1.0.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {

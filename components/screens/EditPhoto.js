@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
@@ -113,8 +113,8 @@ function EditPhoto({ navigation, route }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.2,
+      aspect: [1, 1],
+      quality: 0.5,
       base64: true,
     });
 
@@ -143,7 +143,6 @@ function EditPhoto({ navigation, route }) {
         scrollEnabled={false}
         javaScriptEnabled={true}
         onMessage={(event) => onMessage(event)}
-        style={styles.webView}
       />
       <Animated.View
         style={[
@@ -164,7 +163,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  webView: {},
   snackbar: {
     position: 'absolute',
     opacity: 0.7,
