@@ -14,23 +14,52 @@ import * as ImagePicker from 'expo-image-picker';
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = WIDTH;
 const resizes = ['nw-resize', 'ne-resize', 'se-resize', 'sw-resize'];
-const filter = 'drop-shadow(5px 5px 5px #aaaaaa)';
 
 let draggbleFigure;
 let shiftX, shiftY;
 let startRotationX;
 let startRotationY;
 let startRotationAngle = 0;
+let lineA, lineB;
+let currentCorner;
+let cornerShiftX;
+let cornerShiftY;
+let startX, startY;
+let startWidth, startHeight;
 
 function EditOutfit({ navigation, route }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
   let [cornerRadius] = useState(8);
   let [corners, setCorners] = useState({
-    'nw-resize': { cx: 0, cy: 0, display: 'none', opacity: 0.5 },
-    'ne-resize': { cx: 0, cy: 0, display: 'none', opacity: 0.5 },
-    'se-resize': { cx: 0, cy: 0, display: 'none', opacity: 0.5 },
-    'sw-resize': { cx: 0, cy: 0, display: 'none', opacity: 0.5 },
+    'nw-resize': {
+      id: 'nw-resize',
+      cx: 0,
+      cy: 0,
+      display: 'none',
+      opacity: 0.5,
+    },
+    'ne-resize': {
+      id: 'ne-resize',
+      cx: 0,
+      cy: 0,
+      display: 'none',
+      opacity: 0.5,
+    },
+    'se-resize': {
+      id: 'se-resize',
+      cx: 0,
+      cy: 0,
+      display: 'none',
+      opacity: 0.5,
+    },
+    'sw-resize': {
+      id: 'sw-resize',
+      cx: 0,
+      cy: 0,
+      display: 'none',
+      opacity: 0.5,
+    },
   });
   let [figures, setFigures] = useState([]);
   let [currentFigure, setCurrentFigure] = useState(null);
@@ -186,7 +215,6 @@ function EditOutfit({ navigation, route }) {
   let figureMouseDownAndMove = (event) => {
     draggbleFigure.x = event.nativeEvent.locationX - shiftX;
     draggbleFigure.y = event.nativeEvent.locationY - shiftY;
-    // draggbleFigure.filter = filter;
 
     changeRotateCoordinates();
 
@@ -195,9 +223,6 @@ function EditOutfit({ navigation, route }) {
   };
 
   let figureMouseUp = () => {
-    // svg.removeEventListener('pointermove', figureMouseDownAndMove);
-    // draggbleFigure.removeAttribute('filter');
-
     cornersMove();
     cornersDisplayBlock();
     rotateArrowMove();
@@ -210,6 +235,7 @@ function EditOutfit({ navigation, route }) {
     borderRotate.width = draggbleFigure.width;
     borderRotate.height = draggbleFigure.height;
     borderRotate.transform = draggbleFigure.transform;
+    borderRotate.display = 'block';
 
     setBorderRotate(borderRotate);
   };
@@ -218,8 +244,36 @@ function EditOutfit({ navigation, route }) {
     addBorderRotate();
     cornersDisplayNone();
 
+    let rotate = draggbleFigure.transform;
+
+    if (rotate) {
+      startRotationAngle = +rotate.split('(')[1].split(',')[0];
+    }
+
     startRotationX = event.nativeEvent.locationX;
     startRotationY = event.nativeEvent.locationY;
+  };
+
+  let rotateArrowMouseDownAndMove = (event) => {
+    let { rotateX, rotateY } = calculateCenterCoordinates();
+    if (event.nativeEvent.locationX < 0 || event.nativeEvent.locationY < 0)
+      return;
+    let angle = angleBetweenVectors(
+      { x: rotateX, y: rotateY },
+      { x: startRotationX, y: startRotationY },
+      { x: rotateX, y: rotateY },
+      { x: event.nativeEvent.locationX, y: event.nativeEvent.locationY }
+    );
+
+    borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
+  };
+
+  let rotateArrowMouseUp = () => {
+    draggbleFigure.transform = borderRotate.transform;
+    borderRotate.display = 'none';
+    cornersMove();
+    cornersDisplayBlock();
+    rotateArrowMove();
   };
 
   let angleBetweenVectors = (
@@ -248,23 +302,176 @@ function EditOutfit({ navigation, route }) {
     return ~~(angleInDegrees % 360);
   };
 
-  let toggle = () => {
+  let getCenterCornerCoordinates = (corner) => {
+    let angleInRadians = 0;
+    let rotate = draggbleFigure.transform;
+
+    if (rotate) {
+      let angle = +rotate.split('(')[1].split(',')[0];
+      angleInRadians = (angle * Math.PI) / 180;
+    }
+
+    let cx = corner.cx;
+    let cy = corner.cy;
+    let { rotateX, rotateY } = calculateCenterCoordinates();
+    let newX =
+      rotateX +
+      (cx - rotateX) * Math.cos(angleInRadians) -
+      (cy - rotateY) * Math.sin(angleInRadians);
+    let newY =
+      rotateY +
+      (cx - rotateX) * Math.sin(angleInRadians) +
+      (cy - rotateY) * Math.cos(angleInRadians);
+
+    return { x: newX, y: newY };
+  };
+
+  let getCoordinatesLineA = (corner) => {
+    let cornerA;
+
+    if (corner.id == 'nw-resize') {
+      cornerA = getCenterCornerCoordinates(corners['sw-resize']);
+    } else if (corner.id == 'ne-resize') {
+      cornerA = getCenterCornerCoordinates(corners['nw-resize']);
+    } else if (corner.id == 'se-resize') {
+      cornerA = getCenterCornerCoordinates(corners['sw-resize']);
+    } else if (corner.id == 'sw-resize') {
+      cornerA = getCenterCornerCoordinates(corners['nw-resize']);
+    }
+
+    return { x: cornerA.x, y: cornerA.y };
+  };
+
+  let cornerMouseDown = (id, event) => {
+    currentCorner = corners[id];
+    lineB = getCenterCornerCoordinates(currentCorner);
+    lineA = getCoordinatesLineA(currentCorner);
+
+    cornerShiftX = lineB.x - event.nativeEvent.locationX;
+    cornerShiftY = lineB.y - event.nativeEvent.locationY;
+
+    startWidth = draggbleFigure.width;
+    startHeight = draggbleFigure.height;
+    startX = draggbleFigure.x;
+    startY = draggbleFigure.y;
+
+    cornersDisplayNoneBesides(currentCorner);
+    rotateArrow.display = 'none';
+  };
+
+  let pointRelativeToLine = (a, b, c) => {
+    let p = c.x * (b.y - a.y) - c.y * (b.x - a.x) + a.y * b.x - a.x * b.y;
+    return p;
+  };
+
+  let distanceFromPointToLine = (a, b, c) => {
+    let p = Math.abs(pointRelativeToLine(a, b, c));
+    let base = Math.sqrt((b.y - a.y) ** 2 + (b.x - a.x) ** 2);
+
+    return p / base;
+  };
+
+  let cornerMouseDownAndMove = (event) => {
+    let newWidth = startWidth;
+    let newHeight = startHeight;
+    let newX = startX;
+    let newY = startY;
+    let currentX = event.nativeEvent.locationX + cornerShiftX;
+    let currentY = event.nativeEvent.locationY + cornerShiftY;
+
+    let p = pointRelativeToLine(lineA, lineB, { x: currentX, y: currentY });
+    let distance = distanceFromPointToLine(lineA, lineB, {
+      x: currentX,
+      y: currentY,
+    });
+
+    if (currentCorner.id == 'nw-resize') {
+      distance = p < 0 ? -1 * distance : distance;
+      newX -= distance;
+      newY -= distance;
+    } else if (currentCorner.id == 'ne-resize') {
+      distance = p < 0 ? -1 * distance : distance;
+      newY -= distance;
+    } else if (currentCorner.id == 'se-resize') {
+      distance = p < 0 ? distance : -1 * distance;
+    } else if (currentCorner.id == 'sw-resize') {
+      distance = p < 0 ? distance : -1 * distance;
+      newX -= distance;
+    }
+
+    newWidth += distance;
+    newHeight += distance;
+    newWidth = newWidth < 0 ? 1 : newWidth;
+    newHeight = newHeight < 0 ? 1 : newHeight;
+
+    draggbleFigure.x = newX;
+    draggbleFigure.y = newY;
+    draggbleFigure.width = newWidth;
+    draggbleFigure.height = newHeight;
+
+    cornersMove();
+  };
+
+  let cornerMouseUp = () => {
+    repositionfigureAfterScale();
+    rotateArrowMove();
     cornersDisplayBlock();
     rotateArrow.display = 'block';
-    setRotateArrow(rotateArrow);
   };
+
+  let repositionfigureAfterScale = () => {
+    let coord = [];
+    let angleInRadians;
+    let rotate = draggbleFigure.transform;
+    let rotateX, rotateY;
+    let newRotateX, newRotateY;
+
+    if (rotate) {
+      let angle = +rotate.split('(')[1].split(',')[0];
+      angleInRadians = (angle * Math.PI) / 180;
+      rotateX = +rotate.split(', ')[1];
+      rotateY = +rotate.split(', ')[2].slice(0, -1);
+
+      for (let i = 0; i < 4; i++) {
+        coord[i] = {
+          cx: corners[resizes[i]].cx,
+          cy: corners[resizes[i]].cy,
+        };
+        coord[i].x =
+          rotateX +
+          (coord[i].cx - rotateX) * Math.cos(angleInRadians) -
+          (coord[i].cy - rotateY) * Math.sin(angleInRadians);
+        coord[i].y =
+          rotateY +
+          (coord[i].cx - rotateX) * Math.sin(angleInRadians) +
+          (coord[i].cy - rotateY) * Math.cos(angleInRadians);
+      }
+      newRotateX = (coord[0].x + coord[1].x + coord[2].x + coord[3].x) / 4;
+      newRotateY = (coord[0].y + coord[1].y + coord[2].y + coord[3].y) / 4;
+
+      let delta = draggbleFigure.width / 2;
+      let x = newRotateX - delta;
+      let y = newRotateY - delta;
+
+      draggbleFigure.x = x;
+      draggbleFigure.y = y;
+      draggbleFigure.transform = `rotate(${angle}, ${newRotateX}, ${newRotateY})`;
+    }
+  };
+
+  let toggle = () => {};
 
   let addFigure = () => {
     let newRect = { type: 'rect' };
     newRect.id = +new Date();
     newRect.x = 50;
     newRect.y = 50;
-    newRect.width = 290;
-    newRect.height = 290;
+    newRect.width = 150;
+    newRect.height = 150;
     newRect.fill = '#d5e8d4';
     newRect.opacity = 0.8;
     newRect.filter = '';
-    newRect.transform = 'rotate(15, 195, 195)';
+    newRect.transform = 'rotate(15, 125, 125)';
     setFigures([...figures, newRect]);
   };
 
@@ -274,6 +481,17 @@ function EditOutfit({ navigation, route }) {
       <Button title="Добавить фигуру" onPress={addFigure} />
       <View style={styles.svgContainer}>
         <Svg width={WIDTH} height={HEIGHT} fill="none" ref={svgRef}>
+          <Rect
+            x={borderRotate.x}
+            y={borderRotate.y}
+            width={borderRotate.width}
+            height={borderRotate.height}
+            fill="transparent"
+            stroke="#29b6f2"
+            display={borderRotate.display}
+            strokeDasharray={3}
+            transform={borderRotate.transform}
+          />
           {figures.map((figure) => {
             return (
               <Rect
@@ -282,7 +500,6 @@ function EditOutfit({ navigation, route }) {
                 width={figure.width}
                 height={figure.height}
                 fill="#d5e8d4"
-                filter="drop-shadow(5px 5px 5px #aaaaaa)"
                 opacity={figure.opacity}
                 transform={figure.transform}
                 onPressIn={(event) => figureMouseDown(figure.id, event)}
@@ -301,61 +518,29 @@ function EditOutfit({ navigation, route }) {
             transform={rotateArrow.transform}
             display={rotateArrow.display}
             style={styles.svgRotate}
+            onPressIn={(event) => rotateArrowMouseDown(event)}
+            onResponderMove={(event) => rotateArrowMouseDownAndMove(event)}
+            onResponderEnd={rotateArrowMouseUp}
           />
-          <Rect
-            x={borderRotate.x}
-            y={borderRotate.y}
-            width={borderRotate.width}
-            height={borderRotate.height}
-            fill="transparent"
-            stroke="#29b6f2"
-            display={borderRotate.display}
-            strokeDasharray={3}
-            transform={borderRotate.transform}
-            onPressIn={(event) => figureMouseDown(figure.id, event)}
-            onResponderMove={(event) => figureMouseDownAndMove(event)}
-            onResponderEnd={figureMouseUp}
-          />
-          <Circle
-            id="nw-resize"
-            cx={corners['nw-resize'].cx}
-            cy={corners['nw-resize'].cy}
-            r={cornerRadius}
-            fill="#29b6f2"
-            display={corners['nw-resize'].display}
-            opacity={corners['nw-resize'].opacity}
-            transform={corners['nw-resize'].transform}
-          />
-          <Circle
-            id="ne-resize"
-            cx={corners['ne-resize'].cx}
-            cy={corners['ne-resize'].cy}
-            r={cornerRadius}
-            fill="#29b6f2"
-            display={corners['ne-resize'].display}
-            opacity={corners['ne-resize'].opacity}
-            transform={corners['ne-resize'].transform}
-          />
-          <Circle
-            id="se-resize"
-            cx={corners['se-resize'].cx}
-            cy={corners['se-resize'].cy}
-            r={cornerRadius}
-            fill="#29b6f2"
-            display={corners['se-resize'].display}
-            opacity={corners['se-resize'].opacity}
-            transform={corners['se-resize'].transform}
-          />
-          <Circle
-            id="sw-resize"
-            cx={corners['sw-resize'].cx}
-            cy={corners['sw-resize'].cy}
-            r={cornerRadius}
-            fill="#29b6f2"
-            display={corners['sw-resize'].display}
-            opacity={corners['sw-resize'].opacity}
-            transform={corners['sw-resize'].transform}
-          />
+          {resizes.map((resize) => {
+            return (
+              <Circle
+                id={resize}
+                cx={corners[resize].cx}
+                cy={corners[resize].cy}
+                r={cornerRadius}
+                fill="#29b6f2"
+                display={corners[resize].display}
+                opacity={corners[resize].opacity}
+                transform={corners[resize].transform}
+                onPressIn={(event) => cornerMouseDown(resize, event)}
+                onResponderMove={(event) => {
+                  cornerMouseDownAndMove(event);
+                }}
+                onResponderEnd={cornerMouseUp}
+              />
+            );
+          })}
         </Svg>
       </View>
       <Button title="Toogle" onPress={toggle} />

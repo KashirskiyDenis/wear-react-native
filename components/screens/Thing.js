@@ -68,7 +68,7 @@ function EditClothes({ navigation, route }) {
 
   let fadeIn = () => {
     Animated.timing(fadeAnim, {
-      toValue: 0.7,
+      toValue: 1.0,
       duration: 0,
       useNativeDriver: true,
     }).start(() => {
@@ -78,8 +78,8 @@ function EditClothes({ navigation, route }) {
 
   let fadeOut = () => {
     Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 2000,
+      toValue: 0.5,
+      duration: 3000,
       useNativeDriver: true,
     }).start(() => {
       setSnackbarVisible('none');
@@ -195,15 +195,10 @@ const styles = StyleSheet.create({
   },
   snackbar: {
     position: 'absolute',
-    opacity: 0.7,
-    bottom: 0,
-    width: '100%',
+    width: 390,
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 15,
-    paddingBottom: 25,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
   },
   snackbarText: {
     fontSize: 18,
