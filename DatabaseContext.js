@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useContext } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import * as SQLite from 'expo-sqlite';
 
 import * as createTable from './services/CreateTables';
@@ -36,6 +36,7 @@ function DatabaseProvider({ children }) {
         [],
         (_, result) => {
           setClothes(result.rows._array);
+          console.log(result.rows._array.length);
         },
         (_, error) => {
           console.error('Error loading clothes', error);
@@ -60,6 +61,7 @@ function DatabaseProvider({ children }) {
   };
 
   const updateClothes = (id, title, pathToFile, category, season, color) => {
+    console.log(id, title, pathToFile, category, season, color);
     db.transaction(
       (tx) => {
         tx.executeSql(

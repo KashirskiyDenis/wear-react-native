@@ -266,6 +266,7 @@ function EditOutfit({ navigation, route }) {
     );
 
     borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
+    borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
   };
 
   let rotateArrowMouseUp = () => {
@@ -459,8 +460,6 @@ function EditOutfit({ navigation, route }) {
     }
   };
 
-  let toggle = () => {};
-
   let addFigure = () => {
     let newRect = { type: 'rect' };
     newRect.id = +new Date();
@@ -474,6 +473,8 @@ function EditOutfit({ navigation, route }) {
     newRect.transform = 'rotate(15, 125, 125)';
     setFigures([...figures, newRect]);
   };
+
+  let saveOutfit = () => {};
 
   return (
     <View style={styles.container}>
@@ -543,7 +544,7 @@ function EditOutfit({ navigation, route }) {
           })}
         </Svg>
       </View>
-      <Button title="Toogle" onPress={toggle} />
+      <Button title="Сохранить" onPress={saveOutfit} />
       <Animated.View
         style={[
           styles.snackbar,

@@ -15,33 +15,30 @@ function EditPhoto({ navigation, route }) {
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
+  let [snackbarVisible, setSnackbarVisible] = useState('none');
   let [pathFile, setPathFile] = useState('');
   let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
-    try {
-      if (!path) {
-        let folderInfo = await FileSystem.getInfoAsync(
-          `${FileSystem.documentDirectory}${folderName}`
+    if (!path) {
+      let folderInfo = await FileSystem.getInfoAsync(
+        `${FileSystem.documentDirectory}${folderName}`
+      );
+      if (!folderInfo.exists) {
+        await FileSystem.makeDirectoryAsync(
+          `${FileSystem.documentDirectory}${folderName}`,
+          { intermediates: true }
         );
-        if (!folderInfo.exists) {
-          await FileSystem.makeDirectoryAsync(
-            `${FileSystem.documentDirectory}${folderName}`,
-            { intermediates: true }
-          );
-        }
-
-        path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
       }
 
-      await FileSystem.writeAsStringAsync(path, base64Data, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      return path;
-    } catch (error) {
-      console.error('Error saving image:', error.message);
+      path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
     }
+
+    await FileSystem.writeAsStringAsync(path, base64Data, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    return path;
   };
 
   let init = () => {
@@ -59,32 +56,34 @@ function EditPhoto({ navigation, route }) {
 
   init();
 
-  let onMessage = (event) => {
+  let onMessage = async (event) => {
     let tmp;
-    if (route.params?.path) {
-      tmp = saveImageFromBase64(event.nativeEvent.data, route.params.path);
-    } else {
-      let folderName = 'clothes';
-      let fileName =
-        new Date()
-          .toISOString()
-          .split('.')[0]
-          .replaceAll(':', '-')
-          .replace('T', '_') + '.png';
-      tmp = saveImageFromBase64(
-        event.nativeEvent.data,
-        null,
-        folderName,
-        fileName
-      );
-    }
-    if (tmp) {
+    let data = event.nativeEvent.data;
+    try {
+      if (route.params?.path) {
+        tmp = await saveImageFromBase64(data, route.params.path);
+      } else {
+        let folderName = 'clothes';
+        let fileName =
+          new Date()
+            .toISOString()
+            .split('.')[0]
+            .replaceAll(':', '-')
+            .replace('T', '_') + '.png';
+        tmp = await saveImageFromBase64(data, null, folderName, fileName);
+      }
+
+      setSnackbarVisible('block');
       setSnackbarText('Изменения сохранены');
-      setSnackbarStatus('seccess');
+      setSnackbarStatus('success');
+
       fadeIn();
       setPathFile(tmp);
-      setBase64(event.nativeEvent.data);
-    } else {
+      setBase64(data);
+    } catch (error) {
+      console.error('Error saving image: ', error.message);
+
+      setSnackbarVisible('block');
       setSnackbarText('Ошибка сохранения');
       setSnackbarStatus('error');
       fadeIn();
@@ -103,7 +102,7 @@ function EditPhoto({ navigation, route }) {
 
   let fadeOut = () => {
     Animated.timing(fadeAnim, {
-      toValue: 0.5,
+      toValue: 0.85,
       duration: 3000,
       useNativeDriver: true,
     }).start(() => {
@@ -130,7 +129,7 @@ function EditPhoto({ navigation, route }) {
   navigation.addListener('blur', () => {
     navigation.navigate({
       name: 'ThingScreen',
-      params: { uri: base64, path: pathFile._v },
+      params: { uri: base64, path: pathFile },
       merge: true,
     });
   });
@@ -153,6 +152,7 @@ function EditPhoto({ navigation, route }) {
             ? styles.snackbarError
             : styles.snackbarSuccess,
           { opacity: fadeAnim },
+          { display: snackbarVisible },
         ]}>
         <Text style={styles.snackbarText}>{snackbarText}</Text>
       </Animated.View>

@@ -16,10 +16,6 @@ function ClothesScreen({ navigation }) {
   const [list, setList] = useState();
 
   useEffect(() => {
-    readClothes();
-  }, []);
-
-  useEffect(() => {
     createListClothes();
   }, [clothes]);
 
@@ -36,6 +32,7 @@ function ClothesScreen({ navigation }) {
   };
 
   let createListClothes = async () => {
+    console.log(clothes);
     if (clothes.length > 0) {
       let array = [];
       for (let i = 0; i < clothes.length; i++) {

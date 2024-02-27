@@ -12,7 +12,8 @@ import {
 import { DatabaseContext } from '../../DatabaseContext';
 
 function EditClothes({ navigation, route }) {
-  const { createClothes, updateClothes } = useContext(DatabaseContext);
+  const { createClothes, updateClothes, readClothes } =
+    useContext(DatabaseContext);
 
   let [title, setTitle] = useState(
     route.params?.title ? route.params.title : ''
@@ -36,15 +37,21 @@ function EditClothes({ navigation, route }) {
   let saveClothes = async () => {
     try {
       if (title == '' || category == '' || season == '' || color == '')
-        throw new Error('Not all fields are filled in');
+        throw new Error('Not all text fields are filled in');
 
       if (route.params?.id) {
-        updateClothes(route.params.pathToFile, title, category, season, color);
+        updateClothes(
+          route.params.id,
+          title,
+          route.params.path,
+          category,
+          season,
+          color
+        );
       } else {
-        if (route.params?.path)
+        if (route.params?.path) {
           createClothes(route.params.path, title, category, season, color);
-        else
-          throw new Error('Not all fields are filled in');
+        } else throw new Error('Not all fields are filled in');
       }
       setSnackbarVisible('block');
       setSnackbarText('Изменения сохранены');
@@ -78,7 +85,7 @@ function EditClothes({ navigation, route }) {
 
   let fadeOut = () => {
     Animated.timing(fadeAnim, {
-      toValue: 0.5,
+      toValue: 0.85,
       duration: 3000,
       useNativeDriver: true,
     }).start(() => {
