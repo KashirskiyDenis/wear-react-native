@@ -36,7 +36,6 @@ function DatabaseProvider({ children }) {
         [],
         (_, result) => {
           setClothes(result.rows._array);
-          console.log(result.rows._array.length);
         },
         (_, error) => {
           console.error('Error loading clothes', error);
@@ -61,11 +60,11 @@ function DatabaseProvider({ children }) {
   };
 
   const updateClothes = (id, title, pathToFile, category, season, color) => {
-    console.log(id, title, pathToFile, category, season, color);
+    // console.log(id, title, pathToFile, category, season, color);
     db.transaction(
       (tx) => {
         tx.executeSql(
-          'UPDATE clothes SET title=? AND pathToFile=? AND category=? AND season=? AND color=? WHERE id=?',
+          'UPDATE clothes SET title=?, pathToFile=?, category=?, season=?, color=? WHERE id=?',
           [title, pathToFile, category, season, color, id],
           () => {
             readClothes();

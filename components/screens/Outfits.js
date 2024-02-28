@@ -3,7 +3,6 @@ import {
   Animated,
   Button,
   Dimensions,
-  PanResponder,
   StyleSheet,
   Text,
   View,
@@ -27,7 +26,7 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
-function EditOutfit({ navigation, route }) {
+function Outfits({ navigation, route }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
   let [cornerRadius] = useState(8);
@@ -597,4 +596,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditOutfit;
+export default Outfits;

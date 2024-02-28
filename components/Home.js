@@ -1,8 +1,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import Wardrobe from './screens/Wardrobe';
-import Clothes from './screens/Clothes';
-import Outfits from './screens/Outfits';
+import ListClothes from './screens/ListClothes';
+import ListOutfits from './screens/ListOutfits';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -10,8 +10,8 @@ function Home() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Гардероб" component={Wardrobe} />
-      <Tab.Screen name="Одежда" component={Clothes} />
-      <Tab.Screen name="Образы" component={Outfits} />      
+      <Tab.Screen name="Одежда" component={ListClothes} />
+      <Tab.Screen name="Образы" component={ListOutfits} />      
     </Tab.Navigator>
   );
 }

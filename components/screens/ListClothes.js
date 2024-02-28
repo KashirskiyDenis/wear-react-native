@@ -12,7 +12,7 @@ import { DatabaseContext } from '../../DatabaseContext';
 import AddButton from '../AddButton';
 
 function ClothesScreen({ navigation }) {
-  const { clothes, readClothes } = useContext(DatabaseContext);
+  const { clothes, } = useContext(DatabaseContext);
   const [list, setList] = useState();
 
   useEffect(() => {
@@ -32,7 +32,6 @@ function ClothesScreen({ navigation }) {
   };
 
   let createListClothes = async () => {
-    console.log(clothes);
     if (clothes.length > 0) {
       let array = [];
       for (let i = 0; i < clothes.length; i++) {
@@ -62,7 +61,7 @@ function ClothesScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              navigation.navigate('ThingScreen', { ...item })
+              navigation.navigate('EditClothesScreen', { ...item })
             }>
             <View style={styles.item}>
               <View>
@@ -83,7 +82,7 @@ function ClothesScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('ThingScreen')}>
+        onPress={() => navigation.navigate('EditClothesScreen')}>
         <AddButton />
       </TouchableOpacity>
     </View>

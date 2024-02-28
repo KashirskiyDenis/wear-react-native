@@ -128,7 +128,7 @@ function EditPhoto({ navigation, route }) {
 
   navigation.addListener('blur', () => {
     navigation.navigate({
-      name: 'ThingScreen',
+      name: 'EditClothesScreen',
       params: { uri: base64, path: pathFile },
       merge: true,
     });

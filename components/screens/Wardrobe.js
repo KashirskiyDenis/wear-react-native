@@ -94,7 +94,7 @@ function WardrobeScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('ThingScreen')}>
+        onPress={() => navigation.navigate('EditClothesScreen')}>
         <AddButton />
       </TouchableOpacity>
     </View>

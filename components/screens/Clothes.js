@@ -8,12 +8,26 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import PopupSelect from '../PopupSelect';
 
 import { DatabaseContext } from '../../DatabaseContext';
 
 function EditClothes({ navigation, route }) {
-  const { createClothes, updateClothes, readClothes } =
-    useContext(DatabaseContext);
+  const { createClothes, updateClothes } = useContext(DatabaseContext);
+
+  const [selected, setSelected] = useState(undefined);
+  const data = [
+    { label: 'One', value: '1' },
+    { label: 'Two', value: '2' },
+    { label: 'Three', value: '3' },
+    { label: 'Four', value: '4' },
+    { label: 'Five', value: '5' },
+    { label: 'Six', value: '6' },
+    { label: 'Seven', value: '7' },
+    { label: 'Eight', value: '8' },
+    { label: 'Nine', value: '9' },
+    { label: 'Zero', value: '0' },
+  ];
 
   let [title, setTitle] = useState(
     route.params?.title ? route.params.title : ''
@@ -51,7 +65,7 @@ function EditClothes({ navigation, route }) {
       } else {
         if (route.params?.path) {
           createClothes(route.params.path, title, category, season, color);
-        } else throw new Error('Not all fields are filled in');
+        } else throw new Error('Not all image fields are filled in');
       }
       setSnackbarVisible('block');
       setSnackbarText('Изменения сохранены');
@@ -135,9 +149,12 @@ function EditClothes({ navigation, route }) {
           onChangeText={(text) => setSeason(text)}
           defaultValue={season}
         />
+
+        <PopupSelect label="Select Item" data={data} onSelect={setSelected} />
+
         <TextInput
           style={styles.thingText}
-          placeholder="Категория вещи"
+          placeholder="Цвет вещи"
           onChangeText={(text) => setColor(text)}
           defaultValue={color}
         />

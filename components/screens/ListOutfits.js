@@ -19,7 +19,7 @@ function OutfitsScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('EditOutfitScreen')}>
+        onPress={() => navigation.navigate('EditOutfitsScreen')}>
         <AddButton />
       </TouchableOpacity>
     </View>
