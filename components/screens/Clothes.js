@@ -15,18 +15,12 @@ import { DatabaseContext } from '../../DatabaseContext';
 function EditClothes({ navigation, route }) {
   const { createClothes, updateClothes } = useContext(DatabaseContext);
 
-  const [selected, setSelected] = useState(undefined);
   const data = [
-    { label: 'One', value: '1' },
-    { label: 'Two', value: '2' },
-    { label: 'Three', value: '3' },
-    { label: 'Four', value: '4' },
-    { label: 'Five', value: '5' },
-    { label: 'Six', value: '6' },
-    { label: 'Seven', value: '7' },
-    { label: 'Eight', value: '8' },
-    { label: 'Nine', value: '9' },
-    { label: 'Zero', value: '0' },
+    { label: 'Зимняя', value: 'Зима' },
+    { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
+    { label: 'Летняя', value: 'Летняя' },
+    { label: 'Демисезонная', value: 'Демисезонная' },
+    { label: 'Внесезонная', value: 'Внесезонная' },
   ];
 
   let [title, setTitle] = useState(
@@ -143,15 +137,13 @@ function EditClothes({ navigation, route }) {
           onChangeText={(text) => setCategory(text)}
           defaultValue={category}
         />
-        <TextInput
-          style={styles.thingText}
-          placeholder="Сезон вещи"
-          onChangeText={(text) => setSeason(text)}
-          defaultValue={season}
+        <PopupSelect
+          label="Сезон вещи"
+          data={data}
+          select={{ label: season, value: season }}
+          onSelect={setSeason}
+          style={{ fontSize: 20 }}
         />
-
-        <PopupSelect label="Select Item" data={data} onSelect={setSelected} />
-
         <TextInput
           style={styles.thingText}
           placeholder="Цвет вещи"
@@ -205,7 +197,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
   },
   thingText: {
-    fontSize: 16,
+    fontSize: 20,
     padding: 5,
     marginVertical: 5,
     borderLeftWidth: 1,

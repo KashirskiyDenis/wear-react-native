@@ -1,57 +1,60 @@
-import { useRef, useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
+  Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  Modal,
   View,
-  FlatList,
 } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
 
-function PopupSelect({ label, data, onSelect }) {
-  let DropdownButton = useRef();
-
+function PopupSelect({ label = 'Select item', data, select, onSelect, style }) {
+  let [bigList, setBigList] = useState(false);
   let [visible, setVisible] = useState(false);
-  let [selected, setSelected] = useState(undefined);
-  let [dropdownTop, setDropdownTop] = useState(0);
+  let [selected, setSelected] = useState(
+    select?.label ? select.label : undefined
+  );
 
-  let toggleDropdown = () => {
-    visible ? setVisible(false) : openDropdown();
+  useEffect(() => {
+    if (data.length > 4) setBigList(true);
+    if (select) onSelect(select.value);
+  }, []);
+
+  let toggleModal = () => {
+    visible ? setVisible(false) : openModal();
   };
 
-  let openDropdown = () => {
+  let openModal = () => {
     setVisible(true);
   };
 
   let onItemPress = (item) => {
-    setSelected(item);
-    onSelect(item);
+    setSelected(item.label);
+    onSelect(item.value);
     setVisible(false);
   };
 
-  let renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-      <Text>{item.label}</Text>
-    </TouchableOpacity>
-  );
+  let renderItem = () =>
+    data.map((item) => {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            onItemPress(item);
+          }}>
+          <Text style={[styles.item, style]}>{item.label}</Text>
+        </TouchableOpacity>
+      );
+    });
 
-  let renderDropdown = () => {
+  let renderModal = () => {
     if (visible) {
       return (
         <Modal visible={visible} transparent={true} animationType="fade">
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity
-                style={styles.overlay}
-                onPress={() => setVisible(false)}>
-                <View style={[styles.dropdown, { top: dropdownTop }]}>
-                  <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                  />
-                </View>
-              </TouchableOpacity>
+            <View
+              style={[styles.modalView, bigList ? styles.modalViewBig : {}]}>
+              <ScrollView>{renderItem()}</ScrollView>
             </View>
           </View>
         </Modal>
@@ -60,14 +63,12 @@ function PopupSelect({ label, data, onSelect }) {
   };
 
   return (
-    <TouchableOpacity
-      ref={DropdownButton}
-      style={styles.button}
-      onPress={toggleDropdown}>
-      {renderDropdown()}
-      <Text style={styles.buttonText}>
-        {(selected && selected.label) || label}
-      </Text>
+    <TouchableOpacity onPress={toggleModal}>
+      {renderModal()}
+      <View style={[styles.button, style]}>
+        <Text style={[styles.buttonText, style]}>{selected || label}</Text>
+        <Entypo name="chevron-small-down" style={[styles.buttonText, style]} />
+      </View>
     </TouchableOpacity>
   );
 }
@@ -77,47 +78,28 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    backgroundColor: '#0000001a',
   },
   modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    backgroundColor: '#ffffffde',
+    padding: 10,
+    borderRadius: 7,
+    width: '50%',
+  },
+  modalViewBig: {
+    height: 220,
   },
   button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    backgroundColor: '#efefef',
-    height: 50,
-    zIndex: 1,
-  },
-  buttonText: {
-    flex: 1,
-    textAlign: 'left',
-  },
-  dropdown: {
-    backgroundColor: '#fff',
-    width: '100%',
-    shadowColor: '#000000',
-    shadowRadius: 4,
-    shadowOffset: { height: 4, width: 0 },
-    shadowOpacity: 0.5,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    padding: 5,
+    marginVertical: 5,
+    borderLeftWidth: 1,
   },
   item: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
+    paddingVertical: 7,
   },
 });
 
