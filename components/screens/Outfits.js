@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import {
   Animated,
   Button,
@@ -8,7 +8,9 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
-import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import PopupImageSelect from '../PopupImageSelect';
+import { DatabaseContext } from '../../DatabaseContext';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = WIDTH;
@@ -26,7 +28,24 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
+const data = [
+  { label: 'Зимняя', value: 'Зима' },
+  { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
+  { label: 'Летняя', value: 'Летняя' },
+  { label: 'Демисезонная', value: 'Демисезонная' },
+  { label: 'Внесезонная', value: 'Внесезонная' },
+];
+
 function Outfits({ navigation, route }) {
+  const { clothes } = useContext(DatabaseContext);
+  let [clothesImageList, setClothesImageList] = useState([]);
+
+  useEffect(() => {
+    createURIList();
+  }, [clothes]);
+
+  let [image, setImage] = useState();
+
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
   let [cornerRadius] = useState(8);
@@ -68,20 +87,6 @@ function Outfits({ navigation, route }) {
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
-
-  let pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-    });
-
-    if (!result.canceled) {
-      // setImage(result.assets[0]);
-      alert('Like');
-    }
-  };
 
   let cornersDisplayNone = () => {
     for (let i = 0; i < 4; i++) {
@@ -475,10 +480,37 @@ function Outfits({ navigation, route }) {
 
   let saveOutfit = () => {};
 
+  let getImage = async (pathToFile) => {
+    let data = null;
+    try {
+      data = await FileSystem.readAsStringAsync(pathToFile, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+    } catch (error) {
+      console.log('Error to load file: ' + error.message);
+    }
+    return data;
+  };
+
+  let createURIList = async () => {
+    if (clothes.length > 0) {
+      let array = [];
+      for (let i = 0; i < clothes.length; i++) {
+        array[i] = await getImage(clothes[i].pathToFile);
+      }
+      setClothesImageList(array);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Button title="Выберите изображение" onPress={pickImage} />
       <Button title="Добавить фигуру" onPress={addFigure} />
+      <PopupImageSelect
+        label="Выберите изображение"
+        uriList={clothesImageList}
+        onSelect={setImage}
+        style={{ fontSize: 20 }}
+      />
       <View style={styles.svgContainer}>
         <Svg width={WIDTH} height={HEIGHT} fill="none" ref={svgRef}>
           <Rect
@@ -565,9 +597,9 @@ const styles = StyleSheet.create({
   },
   svgContainer: {
     borderTopWidth: 1,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderStyle: 'solid',
-    borderColor: 'powderblue',
+    borderColor: '#e5e5ea',
   },
   svgRotate: {
     cursor: 'crosshair',

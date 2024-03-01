@@ -12,7 +12,7 @@ import PopupSelect from '../PopupSelect';
 
 import { DatabaseContext } from '../../DatabaseContext';
 
-function EditClothes({ navigation, route }) {
+function Clothes({ navigation, route }) {
   const { createClothes, updateClothes } = useContext(DatabaseContext);
 
   const data = [
@@ -58,7 +58,9 @@ function EditClothes({ navigation, route }) {
         );
       } else {
         if (route.params?.path) {
-          createClothes(route.params.path, title, category, season, color);
+          createClothes(route.params.path, title, category, season, color).then(value => {
+            route.params.id = value;
+          });
         } else throw new Error('Not all image fields are filled in');
       }
       setSnackbarVisible('block');
@@ -228,4 +230,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditClothes;
+export default Clothes;

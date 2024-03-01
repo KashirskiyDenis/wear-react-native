@@ -10,23 +10,30 @@ function DatabaseProvider({ children }) {
   let [clothes, setClothes] = useState([]);
 
   const createClothes = (pathToFile, title, category, season, color) => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          'INSERT INTO clothes (title, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
-          [title, pathToFile, category, season, color],
-          () => {
-            readClothes();
-          },
-          (_, error) => {
-            console.error('Error save clothes', error);
-          }
-        );
-      },
-      (transactionError) => {
-        console.log(transactionError.message);
-      }
-    );
+    let id;
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'INSERT INTO clothes (title, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
+            [title, pathToFile, category, season, color],
+            (_, result) => {
+              id = result.insertId;
+              readClothes();
+            },
+            (_, error) => {
+              console.error('Error save clothes', error);
+            }
+          );
+        },
+        (transactionError) => {
+          console.log(transactionError.message);
+        },
+        () => {
+          resolve(id);
+        }
+      );
+    });
   };
 
   const readClothes = () => {
