@@ -9,6 +9,7 @@ let clothes = `CREATE TABLE IF NOT EXISTS clothes(
 
 let outfit = `CREATE TABLE outfit(
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
+  pathToFile TEXT NOT NULL,
 	season TEXT NOT NULL,
 	event TEXT NOT NULL
 );`;

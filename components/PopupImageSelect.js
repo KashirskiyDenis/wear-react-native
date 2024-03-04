@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Button,
+  Dimensions,
   Image,
   Modal,
   ScrollView,
@@ -8,6 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
+const { width } = Dimensions.get('window');
+const widthItem = (width * 0.9 - 20) / 3 - 2;
 
 function PopupImageSelect({
   label = 'Select image',
@@ -36,13 +40,12 @@ function PopupImageSelect({
         <TouchableOpacity
           onPress={() => {
             onItemPress(item);
-          }}>
-          <View>
-            <Image
-              style={styles.item}
-              source={{ uri: 'data:image/png;base64,' + item }}
-            />
-          </View>
+          }}
+          style={styles.item}>
+          <Image
+            style={styles.itemImage}
+            source={{ uri: 'data:image/png;base64,' + item }}
+          />
         </TouchableOpacity>
       );
     });
@@ -53,7 +56,9 @@ function PopupImageSelect({
         <Modal visible={visible} transparent={true} animationType="fade">
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <ScrollView>{renderItem()}</ScrollView>
+              <ScrollView>
+                <View style={styles.scrollView}>{renderItem()}</View>
+              </ScrollView>
             </View>
           </View>
         </Modal>
@@ -84,10 +89,17 @@ let styles = StyleSheet.create({
     borderRadius: 7,
     width: '90%',
   },
-  button: {},
+  scrollView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   item: {
-    width: '33%',
-    height: 150,
+    margin: 1,
+    width: widthItem,
+  },
+  itemImage: {
+    width: widthItem,
+    height: widthItem,
     resizeMode: 'cover',
   },
 });
