@@ -8,6 +8,7 @@ const DatabaseContext = createContext(db);
 
 function DatabaseProvider({ children }) {
   let [clothes, setClothes] = useState([]);
+  let [outfits, setOutfits] = useState([]);
 
   const createClothes = (pathToFile, title, category, season, color) => {
     let id;
@@ -36,10 +37,37 @@ function DatabaseProvider({ children }) {
     });
   };
 
+  const createOutifts = (pathToFile, season, event) => {
+    let id;
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'INSERT INTO outfits (pathToFile, season, event) VALUES (?, ?, ?)',
+            [pathToFile, season, event],
+            (_, result) => {
+              id = result.insertId;
+              readOutfits();
+            },
+            (_, error) => {
+              console.error('Error save outfits', error);
+            }
+          );
+        },
+        (transactionError) => {
+          console.log(transactionError.message);
+        },
+        () => {
+          resolve(id);
+        }
+      );
+    });
+  };
+
   const readClothes = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM clothes;',
+        'SELECT * FROM clothes',
         [],
         (_, result) => {
           setClothes(result.rows._array);
@@ -51,23 +79,22 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const readClothesById = (id) => {
+  const readOutfits = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT * FROM clothes WHERE id=?;',
-        [id],
+        'SELECT * FROM outfits',
+        [],
         (_, result) => {
-          setClothes(result.rows._array);
+          setOutfits(result.rows._array);
         },
         (_, error) => {
-          console.error('Error loading clothes', error);
+          console.error('Error loading outfits', error);
         }
       );
     });
   };
 
   const updateClothes = (id, title, pathToFile, category, season, color) => {
-    // console.log(id, title, pathToFile, category, season, color);
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -77,7 +104,27 @@ function DatabaseProvider({ children }) {
             readClothes();
           },
           (_, error) => {
-            console.error('Error change clothes', error);
+            console.error('Error update clothes', error);
+          }
+        );
+      },
+      (transactionError) => {
+        console.log(transactionError.message);
+      }
+    );
+  };
+
+  const updateOutfits = (id, pathToFile, season, event) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          'UPDATE outfits SET pathToFile=?, season=?, event=? WHERE id=?',
+          [pathToFile, season, event, id],
+          () => {
+            readOutfits();
+          },
+          (_, error) => {
+            console.error('Error update outfits', error);
           }
         );
       },
@@ -91,13 +138,13 @@ function DatabaseProvider({ children }) {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          'DELETE FROM;',
-          [],
+          'DELETE FROM clothes WHERE id = ?',
+          [id],
           () => {
             readClothes();
           },
           (_, error) => {
-            console.error('Error change clothes', error);
+            console.error('Error delete clothes', error);
           }
         );
       },
@@ -107,17 +154,17 @@ function DatabaseProvider({ children }) {
     );
   };
 
-  const deleteClothesById = (id) => {
+  const deleteOutfits = () => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          'DELETE FROM WHERE id=?',
+          'DELETE FROM outfits WHERE id = ?',
           [id],
           () => {
-            readClothes();
+            readOutfits();
           },
           (_, error) => {
-            console.error('Error change clothes', error);
+            console.error('Error delete outfits', error);
           }
         );
       },
@@ -130,25 +177,31 @@ function DatabaseProvider({ children }) {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql('DROP TABLE IF EXISTS clothes;');
-      tx.executeSql('DROP TABLE IF EXISTS outfit;');
-      tx.executeSql('DROP TABLE IF EXISTS outfit_clothes;');
+      tx.executeSql('DROP TABLE IF EXISTS outfits;');
+      tx.executeSql('DROP TABLE IF EXISTS outfitClothes;');
 
       tx.executeSql(createTable.clothes);
-      tx.executeSql(createTable.outfit);
-      tx.executeSql(createTable.outfit_clothes);
+      tx.executeSql(createTable.outfits);
+      tx.executeSql(createTable.outfitClothes);
     });
 
     readClothes();
+    readOutfits();
   }, []);
 
   return (
     <DatabaseContext.Provider
       value={{
         clothes,
+        outfits,
         createClothes,
+        createOutifts,
         readClothes,
+        readOutfits,
         updateClothes,
+        updateOutfits,
         deleteClothes,
+        deleteOutfits,
       }}>
       {children}
     </DatabaseContext.Provider>

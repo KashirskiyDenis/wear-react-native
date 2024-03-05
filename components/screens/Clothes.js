@@ -14,8 +14,7 @@ import { DatabaseContext } from '../../DatabaseContext';
 
 function Clothes({ navigation, route }) {
   const { createClothes, updateClothes } = useContext(DatabaseContext);
-
-  const data = [
+  const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
     { label: 'Летняя', value: 'Летняя' },
@@ -58,9 +57,11 @@ function Clothes({ navigation, route }) {
         );
       } else {
         if (route.params?.path) {
-          createClothes(route.params.path, title, category, season, color).then(value => {
-            route.params.id = value;
-          });
+          createClothes(route.params.path, title, category, season, color).then(
+            (value) => {
+              route.params.id = value;
+            }
+          );
         } else throw new Error('Not all image fields are filled in');
       }
       setSnackbarVisible('block');
@@ -141,7 +142,7 @@ function Clothes({ navigation, route }) {
         />
         <PopupSelect
           label="Сезон вещи"
-          data={data}
+          data={seasonList}
           select={{ label: season, value: season }}
           onSelect={setSeason}
           style={{ fontSize: 20 }}
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
     padding: 5,
     marginVertical: 5,
     borderLeftWidth: 1,
-    borderLeftColor: '#',
   },
   saveView: {
     flex: 1,

@@ -235,7 +235,7 @@ function CustomSVG({ data }) {
     );
 
     borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
-    borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
+    setBorderRotate({...borderRotate});
   };
 
   let rotateArrowMouseUp = () => {
@@ -437,11 +437,11 @@ function CustomSVG({ data }) {
           y={borderRotate.y}
           width={borderRotate.width}
           height={borderRotate.height}
+          transform={borderRotate.transform}
           fill="transparent"
           stroke="#29b6f2"
           display={borderRotate.display}
           strokeDasharray={3}
-          transform={borderRotate.transform}
         />
         {data.map((figure) => {
           return (

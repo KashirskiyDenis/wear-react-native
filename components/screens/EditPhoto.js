@@ -32,6 +32,7 @@ function EditPhoto({ navigation, route }) {
       }
 
       path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
+      console.log(path);
     }
 
     await FileSystem.writeAsStringAsync(path, base64Data, {
