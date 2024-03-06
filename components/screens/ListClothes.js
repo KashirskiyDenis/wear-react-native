@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, } from 'react';
 import {
   FlatList,
   Image,
@@ -13,7 +13,7 @@ import AddButton from '../AddButton';
 
 function ClothesScreen({ navigation }) {
   const { clothes, } = useContext(DatabaseContext);
-  const [list, setList] = useState();
+  let [list, setList] = useState();
 
   useEffect(() => {
     createListClothes();

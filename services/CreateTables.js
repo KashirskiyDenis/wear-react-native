@@ -14,7 +14,7 @@ let outfits = `CREATE TABLE outfits (
 	event TEXT NOT NULL
 );`;
 
-let outfitClothes = `CREATE TABLE IF NOT EXISTS figures (
+let outfitClothes = `CREATE TABLE IF NOT EXISTS outfitClothes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
 	idOutfit INTEGER NOT NULL,
 	idClothes INTEGER NOT NULL,

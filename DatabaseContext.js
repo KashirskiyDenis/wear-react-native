@@ -64,6 +64,41 @@ function DatabaseProvider({ children }) {
     });
   };
 
+  const createOutiftsClothes = (
+    idClothes,
+    idOutfits,
+    x,
+    y,
+    width,
+    height,
+    transform
+  ) => {
+    let id;
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'INSERT INTO outfitClothes (idClothes, idOutfits, x, y, width, height, transform) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [idClothes, idOutfits, x, y, width, height, transform],
+            (_, result) => {
+              id = result.insertId;
+              readOutfits();
+            },
+            (_, error) => {
+              console.error('Error save outfitClothes', error);
+            }
+          );
+        },
+        (transactionError) => {
+          console.log(transactionError.message);
+        },
+        () => {
+          resolve(id);
+        }
+      );
+    });
+  };
+
   const readClothes = () => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -89,6 +124,24 @@ function DatabaseProvider({ children }) {
         },
         (_, error) => {
           console.error('Error loading outfits', error);
+        }
+      );
+    });
+  };
+
+  const readOutiftsClothes = (idOutfits) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT outfitClothes.id, outfitClothes.x, outfitClothes.y, outfitClothes.width, outfitClothes.height, outfitClothes.transform, clothes.pathToFile
+          FROM clothes, outfitClothes
+          WHERE clothes.id = outfitClothes.idClothes AND
+            outfitClothes.idOutfit = ?`,
+        [idOutfits],
+        (_, result) => {
+          setClothes(result.rows._array);
+        },
+        (_, error) => {
+          console.error('Error loading clothes', error);
         }
       );
     });
@@ -196,10 +249,13 @@ function DatabaseProvider({ children }) {
         outfits,
         createClothes,
         createOutifts,
+        createOutiftsClothes,
         readClothes,
         readOutfits,
+        readOutiftsClothes,
         updateClothes,
         updateOutfits,
+        // updateOutiftsClothes,
         deleteClothes,
         deleteOutfits,
       }}>

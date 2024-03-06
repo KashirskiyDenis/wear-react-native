@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Animated, Button, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
@@ -21,18 +21,8 @@ function EditPhoto({ navigation, route }) {
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     if (!path) {
-      let folderInfo = await FileSystem.getInfoAsync(
-        `${FileSystem.documentDirectory}${folderName}`
-      );
-      if (!folderInfo.exists) {
-        await FileSystem.makeDirectoryAsync(
-          `${FileSystem.documentDirectory}${folderName}`,
-          { intermediates: true }
-        );
-      }
-
       path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
-      console.log(path);
+      // console.log(path);
     }
 
     await FileSystem.writeAsStringAsync(path, base64Data, {

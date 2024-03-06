@@ -184,7 +184,6 @@ function CustomSVG({ data }) {
   let figureMouseDownAndMove = (event) => {
     draggbleFigure.x = event.nativeEvent.locationX - shiftX;
     draggbleFigure.y = event.nativeEvent.locationY - shiftY;
-
     changeRotateCoordinates();
 
     rotateArrowDisplayNone();
@@ -235,7 +234,7 @@ function CustomSVG({ data }) {
     );
 
     borderRotate.transform = `rotate(${angle}, ${rotateX}, ${rotateY})`;
-    setBorderRotate({...borderRotate});
+    setBorderRotate({ ...borderRotate });
   };
 
   let rotateArrowMouseUp = () => {
@@ -430,7 +429,8 @@ function CustomSVG({ data }) {
   };
 
   return (
-    <View style={styles.svgContainer}>
+    <View>
+      {/*<View style={styles.svgContainer}>*/}
       <Svg width={WIDTH} height={HEIGHT} fill="none">
         <Rect
           x={borderRotate.x}
@@ -452,6 +452,7 @@ function CustomSVG({ data }) {
               width={figure.width}
               height={figure.height}
               transform={figure.transform}
+              filter={figure.filter}
               onPressIn={(event) => figureMouseDown(figure.id, event)}
               onResponderMove={(event) => figureMouseDownAndMove(event)}
               onResponderEnd={figureMouseUp}

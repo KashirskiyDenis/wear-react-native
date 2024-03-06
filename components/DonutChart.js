@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import Svg, { Circle, G, Defs, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, G, RadialGradient, Stop } from 'react-native-svg';
 
 let roundTo = (num, to = 0) => {
   to = Math.pow(10, to);
@@ -42,7 +42,7 @@ function DonutChart({ widthAndHeight, data, colors }) {
     <View
       style={{
         width: widthAndHeight,
-        height:  widthAndHeight,
+        height: widthAndHeight,
         justifyContent: 'center',
         padding: 10,
       }}>

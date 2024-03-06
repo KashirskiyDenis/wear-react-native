@@ -1,4 +1,4 @@
-import { useContext, useRef, useState, useEffect } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Button,
@@ -16,7 +16,7 @@ import { DatabaseContext } from '../../DatabaseContext';
 import { data } from '../../services/imageBase64';
 
 function Outfits({ navigation, route }) {
-  const { clothes } = useContext(DatabaseContext);
+  const { clothes, createOutifts } = useContext(DatabaseContext);
   const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
@@ -101,75 +101,81 @@ function Outfits({ navigation, route }) {
     });
   };
 
-  let saveOutfit = async () => {
+  let saveOutfitImage = async () => {
     try {
-      const localUri = await captureRef(imageRef, {
+      let localUri = await captureRef(imageRef, {
         height: 390,
         quality: 0.5,
       });
 
       if (localUri) {
         let base64 = await getImage(localUri);
-        console.log(localUri);
-
-        let folderInfo = await FileSystem.getInfoAsync(
-          `${FileSystem.documentDirectory}outfits`
-        );
-        if (!folderInfo.exists) {
-          await FileSystem.makeDirectoryAsync(
-            `${FileSystem.documentDirectory}outfits`,
-            { intermediates: true }
-          );
-        }
-
         let fileName = `${+new Date()}.png`;
         let path = `${FileSystem.documentDirectory}outfits/${fileName}`;
-        console.log(path);
 
-        FileSystem.copyAsync('file://' + localUri, path)
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((error) => {
-            console.log(error.message);
-          });
-        /*
-        try {
-          if (season == '' || event == '')
-            throw new Error('Not all text fields are filled in');
+        await FileSystem.writeAsStringAsync(path, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
 
-          if (route.params?.id) {
-            // updateClothes(
-            //   route.params.id,
-            //   title,
-            //   route.params.path,
-            //   category,
-            //   season,
-            //   color
-            // );
-          } else {
-            if (route.params?.path) {
-              // createClothes(route.params.path, season, event).then((value) => {
-              //   route.params.id = value;
-              // });
-            } else throw new Error('Not all image fields are filled in');
-          }
-          setSnackbarVisible('block');
-          setSnackbarText('Изменения сохранены');
-          setSnackbarStatus('seccess');
-          fadeIn();
-        } catch (error) {
-          console.error('Error saving outftis:', error.message);
-
-          setSnackbarVisible('block');
-          setSnackbarText('Не сохранено. Заполните все поля.');
-          setSnackbarStatus('error');
-          fadeIn();
-        }
-        */
+        return path;
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log('Error save outfirs image: ' + error.message);
+    }
+  };
+
+  let saveOutfit = async () => {
+    let path;
+    try {
+      if (season == '' || event == '')
+        throw new Error('Not all text fields are filled in');
+      if (figures.length == 0)
+        throw new Error('Not a single thing has been added to the outfit');
+
+      if (route.params?.id) {
+        // updateClothes(
+        //   route.params.id,
+        //   title,
+        //   route.params.path,
+        //   category,
+        //   season,
+        //   color
+        // );
+      } else {
+        path = await saveOutfitImage();
+        createOutifts(path, season, event)
+          .then((idOutfits) => {
+            let requests = figures.map((figure) =>
+              createOutiftsCLothes(
+                figure.idClothes,
+                idOutfits,
+                figure.x,
+                figure.y,
+                figure.width,
+                figure.height,
+                figure.transform
+              )
+            );
+
+            Promise.all(requests).then((responses) =>
+              responses.forEach((response) =>
+                console.log('All the clothes from the image were saved')
+              )
+            );
+          })
+          .catch((error) => {});
+      }
+      setSnackbarVisible('block');
+      setSnackbarText('Изменения сохранены');
+      setSnackbarStatus('seccess');
+      fadeIn();
+    } catch (error) {
+      console.error('Error saving outftis:', error.message);
+
+      setSnackbarVisible('block');
+      setSnackbarText('Не сохранено. Заполните все поля.');
+      setSnackbarStatus('error');
+      fadeIn();
     }
   };
 
@@ -205,7 +211,7 @@ function Outfits({ navigation, route }) {
         style={{ fontSize: 20 }}
       />
       {/* CustomSVG data={clothesImageList} /> */}
-      <View ref={imageRef} collapsable={false}>
+      <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
         <CustomSVG data={figures} />
       </View>
       <View style={{ padding: 5 }}>
@@ -248,6 +254,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: 5,
     borderLeftWidth: 1,
+  },
+  svgContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
+    borderColor: '#e5e5ea',
   },
   snackbar: {
     position: 'absolute',
