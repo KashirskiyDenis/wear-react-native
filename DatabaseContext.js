@@ -9,6 +9,7 @@ const DatabaseContext = createContext(db);
 function DatabaseProvider({ children }) {
   let [clothes, setClothes] = useState([]);
   let [outfits, setOutfits] = useState([]);
+  let [clothesInOutfit, setClothesInOutfit] = useState([]);
 
   const createClothes = (pathToFile, title, category, season, color) => {
     let id;
@@ -50,7 +51,7 @@ function DatabaseProvider({ children }) {
               readOutfits();
             },
             (_, error) => {
-              console.error('Error save outfits', error);
+              console.error('Error save outfit', error);
             }
           );
         },
@@ -64,9 +65,9 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const createOutiftsClothes = (
+  const createClothesInOutfit = (
+    idOutfit,
     idClothes,
-    idOutfits,
     x,
     y,
     width,
@@ -78,14 +79,13 @@ function DatabaseProvider({ children }) {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'INSERT INTO outfitClothes (idClothes, idOutfits, x, y, width, height, transform) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [idClothes, idOutfits, x, y, width, height, transform],
+            'INSERT INTO clothesInOutfit (idOutfit, idClothes, x, y, width, height, transform) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [idOutfit, idClothes, x, y, width, height, transform],
             (_, result) => {
               id = result.insertId;
-              readOutfits();
             },
             (_, error) => {
-              console.error('Error save outfitClothes', error);
+              console.error('Error save clothesInOutfit', error);
             }
           );
         },
@@ -123,22 +123,63 @@ function DatabaseProvider({ children }) {
           setOutfits(result.rows._array);
         },
         (_, error) => {
-          console.error('Error loading outfits', error);
+          console.error('Error loading outfit', error);
         }
       );
     });
   };
 
-  const readOutiftsClothes = (idOutfits) => {
+  const readClothesInOutfit = (idOutfit) => {
+    // let sql = `SELECT cio.id, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
+    //       FROM clothes, clothesInOutfit AS cio
+    //       WHERE clothes.id = cio.idClothes AND
+    //         cio.idOutfit = ?`;
+    let sql = `SELECT cio.id, cio.idOutfit, cio.idClothes, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
+          FROM clothes, clothesInOutfit AS cio
+          WHERE clothes.id = cio.idClothes AND cio.idOutfit = ?`;
     db.transaction((tx) => {
       tx.executeSql(
-        `SELECT outfitClothes.id, outfitClothes.x, outfitClothes.y, outfitClothes.width, outfitClothes.height, outfitClothes.transform, clothes.pathToFile
-          FROM clothes, outfitClothes
-          WHERE clothes.id = outfitClothes.idClothes AND
-            outfitClothes.idOutfit = ?`,
-        [idOutfits],
+        sql,
+        [idOutfit],
         (_, result) => {
-          setClothes(result.rows._array);
+          console.log(
+            `SELECT * FROM clothesInOutfit WHERE idOutfit = ${idOutfit}`
+          );
+          console.log(result.rows._array);
+          // setClothesInOutfit(result.rows._array);
+        },
+        (_, error) => {
+          console.error('Error loading clothes', error);
+        }
+      );
+    });
+  };
+
+
+  const readClothesInOutfitAll = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM clothesInOutfit AS cio`,
+        [],
+        (_, result) => {
+          console.log(`SELECT * FROM clothesInOutfit AS cio`);
+          console.log(result.rows._array);
+        },
+        (_, error) => {
+          console.error('Error loading clothes', error);
+        }
+      );
+    });
+  };
+
+  const readClothesInOutfitAllWhere2 = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM clothesInOutfit AS cio WHERE idOutfit = 2`,
+        [],
+        (_, result) => {
+          console.log(`SELECT * FROM clothesInOutfit AS cio WHERE idOutfit = 2`);
+          console.log(result.rows._array);
         },
         (_, error) => {
           console.error('Error loading clothes', error);
@@ -227,16 +268,20 @@ function DatabaseProvider({ children }) {
     );
   };
 
-  useEffect(() => {
+  let createNecessaryTables = () => {
     db.transaction((tx) => {
       tx.executeSql('DROP TABLE IF EXISTS clothes;');
       tx.executeSql('DROP TABLE IF EXISTS outfits;');
-      tx.executeSql('DROP TABLE IF EXISTS outfitClothes;');
+      tx.executeSql('DROP TABLE IF EXISTS clothesInOutfit;');
 
       tx.executeSql(createTable.clothes);
       tx.executeSql(createTable.outfits);
-      tx.executeSql(createTable.outfitClothes);
+      tx.executeSql(createTable.clothesInOutfit);
     });
+  };
+
+  useEffect(() => {
+    createNecessaryTables();
 
     readClothes();
     readOutfits();
@@ -247,15 +292,18 @@ function DatabaseProvider({ children }) {
       value={{
         clothes,
         outfits,
+        clothesInOutfit,
         createClothes,
         createOutifts,
-        createOutiftsClothes,
+        createClothesInOutfit,
         readClothes,
         readOutfits,
-        readOutiftsClothes,
+        readClothesInOutfit,
+        readClothesInOutfitAll,
+        readClothesInOutfitAllWhere2,
         updateClothes,
         updateOutfits,
-        // updateOutiftsClothes,
+        // updateClothesInOutfit,
         deleteClothes,
         deleteOutfits,
       }}>

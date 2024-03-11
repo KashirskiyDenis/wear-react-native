@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Home';
-import EditPhotoScreen from './screens/EditPhoto';
+import EditPhotoScreen from './screens/ClothesEditPhoto';
 import EditClothesScreen from './screens/Clothes';
 import EditOutfitsScreen from './screens/Outfits';
 

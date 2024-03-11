@@ -14,7 +14,7 @@ let outfits = `CREATE TABLE outfits (
 	event TEXT NOT NULL
 );`;
 
-let outfitClothes = `CREATE TABLE IF NOT EXISTS outfitClothes (
+let clothesInOutfit = `CREATE TABLE IF NOT EXISTS clothesInOutfit (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
 	idOutfit INTEGER NOT NULL,
 	idClothes INTEGER NOT NULL,
@@ -27,4 +27,4 @@ let outfitClothes = `CREATE TABLE IF NOT EXISTS outfitClothes (
 	FOREIGN KEY (idClothes) REFERENCES clothes(id)
 )`;
 
-export { clothes, outfits, outfitClothes, };
+export { clothes, outfits, clothesInOutfit, };

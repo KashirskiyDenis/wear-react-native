@@ -9,14 +9,26 @@ import {
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
+
 import CustomSVG from '../CustomSVG';
 import PopupSelect from '../PopupSelect';
 import PopupImageSelect from '../PopupImageSelect';
+
 import { DatabaseContext } from '../../DatabaseContext';
+import { VariableContext } from '../../VariableContext';
 import { data } from '../../services/imageBase64';
 
 function Outfits({ navigation, route }) {
-  const { clothes, createOutifts } = useContext(DatabaseContext);
+  const {
+    clothes,
+    clothesInOutfit,
+    createOutifts,
+    readClothesInOutfit,
+    readClothesInOutfitAll,
+    readClothesInOutfitAllWhere2,
+    createClothesInOutfit,
+  } = useContext(DatabaseContext);
+  const { mapImageOutfitsPost } = useContext(VariableContext);
   const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
@@ -25,7 +37,7 @@ function Outfits({ navigation, route }) {
     { label: 'Внесезонная', value: 'Внесезонная' },
   ];
 
-  const imageRef = useRef();
+  let imageRef = useRef();
 
   let [clothesImageList, setClothesImageList] = useState(data);
 
@@ -49,10 +61,24 @@ function Outfits({ navigation, route }) {
   }, [clothes]);
 
   useEffect(() => {
-    addClothes(image);
+    if (route.params?.id) {
+      readClothesInOutfitAll();
+      readClothesInOutfitAllWhere2();
+      readClothesInOutfit(route.params.id);
+    }
+  }, []);
+
+  useEffect(() => {
+    addClothesToOutfit(image);
   }, [image]);
 
-  let addClothes = () => {
+  useEffect(() => {
+    if (clothesInOutfit.length > 0) {
+      console.log(clothesInOutfit);
+    }
+  }, [clothesInOutfit]);
+
+  let addClothesToOutfit = () => {
     if (image) {
       let newFigure = { type: 'image' };
       newFigure.id = +new Date();
@@ -65,40 +91,6 @@ function Outfits({ navigation, route }) {
       // newFigure.transform = 'rotate(15, 125, 125)';
       setFigures([...figures, newFigure]);
     }
-  };
-
-  // let addFigure = () => {
-  //   let newFigure = { type: 'rect' };
-  //   newFigure.id = +new Date();
-  //   newFigure.x = 50;
-  //   newFigure.y = 50;
-  //   newFigure.width = 150;
-  //   newFigure.height = 150;
-  //   newFigure.fill = '#d5e8d4';
-  //   newFigure.opacity = 0.8;
-  //   // newFigure.filter = '';
-  //   // newFigure.transform = 'rotate(15, 125, 125)';
-  //   setFigures([...figures, newFigure]);
-  // };
-
-  let fadeIn = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 1.0,
-      duration: 0,
-      useNativeDriver: true,
-    }).start(() => {
-      fadeOut();
-    });
-  };
-
-  let fadeOut = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0.85,
-      duration: 3000,
-      useNativeDriver: true,
-    }).start(() => {
-      setSnackbarVisible('none');
-    });
   };
 
   let saveOutfitImage = async () => {
@@ -117,7 +109,7 @@ function Outfits({ navigation, route }) {
           encoding: FileSystem.EncodingType.Base64,
         });
 
-        return path;
+        return { path: path, base64: base64 };
       }
     } catch (error) {
       console.log('Error save outfirs image: ' + error.message);
@@ -125,7 +117,7 @@ function Outfits({ navigation, route }) {
   };
 
   let saveOutfit = async () => {
-    let path;
+    let image;
     try {
       if (season == '' || event == '')
         throw new Error('Not all text fields are filled in');
@@ -142,28 +134,36 @@ function Outfits({ navigation, route }) {
         //   color
         // );
       } else {
-        path = await saveOutfitImage();
-        createOutifts(path, season, event)
-          .then((idOutfits) => {
+        image = await saveOutfitImage();
+        createOutifts(image.path, season, event)
+          .then((idOutfit) => {
+            navigation.setParams({
+              id: idOutfit,
+            });
+            mapImageOutfitsPost(idOutfit, image.base64);
             let requests = figures.map((figure) =>
-              createOutiftsCLothes(
-                figure.idClothes,
-                idOutfits,
+              createClothesInOutfit(
+                idOutfit,
+                figure?.idClothes ? figure.idClothes : +new Date(),
                 figure.x,
                 figure.y,
                 figure.width,
                 figure.height,
-                figure.transform
+                figure?.transform ? figure.transform : ''
               )
             );
 
             Promise.all(requests).then((responses) =>
               responses.forEach((response) =>
-                console.log('All the clothes from the image were saved')
+                console.log(
+                  'The picture of the clothes for the outfit has been saved'
+                )
               )
             );
           })
-          .catch((error) => {});
+          .catch((error) => {
+            console.log(error.message);
+          });
       }
       setSnackbarVisible('block');
       setSnackbarText('Изменения сохранены');
@@ -199,6 +199,26 @@ function Outfits({ navigation, route }) {
       }
       setClothesImageList(array);
     }
+  };
+
+  let fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1.0,
+      duration: 0,
+      useNativeDriver: true,
+    }).start(() => {
+      fadeOut();
+    });
+  };
+
+  let fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0.85,
+      duration: 3000,
+      useNativeDriver: true,
+    }).start(() => {
+      setSnackbarVisible('none');
+    });
   };
 
   return (

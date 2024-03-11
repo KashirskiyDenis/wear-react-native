@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
 
@@ -18,7 +18,7 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
-function CustomSVG({ data }) {
+function CustomSVG({ data, }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
   let [cornerRadius] = useState(8);
@@ -428,6 +428,16 @@ function CustomSVG({ data }) {
     }
   };
 
+  let controlsDisplayNone = () => {
+    cornersDisplayNone();
+    rotateArrowDisplayNone();
+  };
+
+  let controlsDisplayBlock = () => {
+    cornersDisplayNone();
+    rotateArrowDisplayNone();
+  };
+
   return (
     <View>
       {/*<View style={styles.svgContainer}>*/}
@@ -457,18 +467,6 @@ function CustomSVG({ data }) {
               onResponderMove={(event) => figureMouseDownAndMove(event)}
               onResponderEnd={figureMouseUp}
             />
-            // <Rect
-            //   x={figure.x}
-            //   y={figure.y}
-            //   width={figure.width}
-            //   height={figure.height}
-            //   fill="#d5e8d4"
-            //   opacity={figure.opacity}
-            //   transform={figure.transform}
-            //   onPressIn={(event) => figureMouseDown(figure.id, event)}
-            //   onResponderMove={(event) => figureMouseDownAndMove(event)}
-            //   onResponderEnd={figureMouseUp}
-            // />
           );
         })}
         <SVGImage
@@ -480,7 +478,6 @@ function CustomSVG({ data }) {
           width={24}
           transform={rotateArrow.transform}
           display={rotateArrow.display}
-          style={styles.svgRotate}
           onPressIn={(event) => rotateArrowMouseDown(event)}
           onResponderMove={(event) => rotateArrowMouseDownAndMove(event)}
           onResponderEnd={rotateArrowMouseUp}
@@ -515,10 +512,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderColor: '#e5e5ea',
-  },
-  svgRotate: {
-    cursor: 'crosshair',
-  },
+  }
 });
 
 export default CustomSVG;

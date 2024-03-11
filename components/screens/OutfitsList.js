@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -7,29 +7,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 import { DatabaseContext } from '../../DatabaseContext';
+import { VariableContext } from '../../VariableContext';
 import AddButton from '../AddButton';
 
 function OutfitsScreen({ navigation }) {
   const { outfits } = useContext(DatabaseContext);
+  const { mapImageOutfits } = useContext(VariableContext);
+
   let [list, setList] = useState();
 
   useEffect(() => {
     createListOutfits();
   }, [outfits]);
-
-  let getImage = async (pathToFile) => {
-    let data = null;
-    try {
-      data = await FileSystem.readAsStringAsync(pathToFile, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-    } catch (error) {
-      console.log('Error to load file: ' + error.message);
-    }
-    return data;
-  };
 
   let createListOutfits = async () => {
     if (outfits.length > 0) {
@@ -38,7 +28,7 @@ function OutfitsScreen({ navigation }) {
         array[i] = {
           id: outfits[i].id,
           path: outfits[i].pathToFile,
-          uri: await getImage(outfits[i].pathToFile),
+          uri: mapImageOutfits.get(outfits[i].id),
           season: outfits[i].season,
           event: outfits[i].event,
         };
@@ -46,6 +36,7 @@ function OutfitsScreen({ navigation }) {
       setList(array);
     }
   };
+
   return (
     <View
       style={{
@@ -58,7 +49,7 @@ function OutfitsScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              navigation.navigate('EditClothesScreen', { ...item })
+              navigation.navigate('EditOutfitsScreen', { ...item })
             }>
             <View style={styles.item}>
               <View>

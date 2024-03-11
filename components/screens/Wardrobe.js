@@ -13,11 +13,11 @@ import AddButton from '../AddButton';
 
 const WIDTH = Dimensions.get('window').width;
 
-const getRandom = () => {
+let getRandom = () => {
   return Math.floor(Math.random() * 256);
 };
 
-const getRandomColor = () => {
+let getRandomColor = () => {
   let red = getRandom();
   let green = getRandom();
   let blue = getRandom();
@@ -25,7 +25,7 @@ const getRandomColor = () => {
   return `rgb(${red}, ${green}, ${blue})`;
 };
 
-const colors = [
+let colors = [
   getRandomColor(),
   getRandomColor(),
   getRandomColor(),
@@ -34,12 +34,13 @@ const colors = [
 ];
 
 function WardrobeScreen({ navigation }) {
-  const [countWear, setCountWear] = React.useState(0);
-  const [isPressCategory, setIsPressCategory] = React.useState(true);
-  const [isPressSeason, setIsPressSeason] = React.useState(false);
-  const [isPressColor, setIsPressColor] = React.useState(false);
+  let [countWear, setCountWear] = React.useState(0);
 
-  const onPressSort = (props) => {
+  let [isPressCategory, setIsPressCategory] = React.useState(true);
+  let [isPressSeason, setIsPressSeason] = React.useState(false);
+  let [isPressColor, setIsPressColor] = React.useState(false);
+
+  let onPressSort = (props) => {
     if (props == 'category') {
       setIsPressCategory(true);
       setIsPressSeason(false);

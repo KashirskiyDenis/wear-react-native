@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 
 import TabsNavigator from './components/TabsNavigator';
 import { DatabaseProvider } from './DatabaseContext';
+import { VariableProvider } from './VariableContext';
 
 function App() {
   const folders = ['clothes', 'outfits'];
@@ -29,11 +30,13 @@ function App() {
 
   return (
     <DatabaseProvider>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <TabsNavigator />
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <VariableProvider>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <TabsNavigator />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </VariableProvider>
     </DatabaseProvider>
   );
 }

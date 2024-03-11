@@ -12,17 +12,18 @@ let HTML;
 
 function EditPhoto({ navigation, route }) {
   let webViewRef = useRef(null);
+  
+  let [pathFile, setPathFile] = useState('');
+  let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
+
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
-  let [pathFile, setPathFile] = useState('');
-  let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
-
+  
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     if (!path) {
       path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
-      // console.log(path);
     }
 
     await FileSystem.writeAsStringAsync(path, base64Data, {

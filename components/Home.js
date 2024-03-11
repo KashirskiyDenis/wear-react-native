@@ -1,8 +1,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import Wardrobe from './screens/Wardrobe';
-import ListClothes from './screens/ListClothes';
-import ListOutfits from './screens/ListOutfits';
+import ListClothes from './screens/ClothesList';
+import ListOutfits from './screens/OutfitsList';
 
 const Tab = createMaterialTopTabNavigator();
 

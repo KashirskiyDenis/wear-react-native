@@ -7,29 +7,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import { DatabaseContext } from '../../DatabaseContext';
 import AddButton from '../AddButton';
+import { DatabaseContext } from '../../DatabaseContext';
+import { VariableContext } from '../../VariableContext';
 
 function ClothesScreen({ navigation }) {
   const { clothes, } = useContext(DatabaseContext);
+  const { mapImageClothes, } = useContext(VariableContext);
+
   let [list, setList] = useState();
 
   useEffect(() => {
     createListClothes();
   }, [clothes]);
-
-  let getImage = async (pathToFile) => {
-    let data = null;
-    try {
-      data = await FileSystem.readAsStringAsync(pathToFile, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-    } catch (error) {
-      console.log('Error to load file: ' + error.message);
-    }
-    return data;
-  };
 
   let createListClothes = async () => {
     if (clothes.length > 0) {
@@ -38,7 +28,7 @@ function ClothesScreen({ navigation }) {
         array[i] = {
           id: clothes[i].id,
           path: clothes[i].pathToFile,
-          uri: await getImage(clothes[i].pathToFile),
+          uri: mapImageClothes.get(clothes[i].id),
           title: clothes[i].title,
           category: clothes[i].category,
           season: clothes[i].season,

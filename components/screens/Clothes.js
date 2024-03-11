@@ -11,9 +11,12 @@ import {
 import PopupSelect from '../PopupSelect';
 
 import { DatabaseContext } from '../../DatabaseContext';
+import { VariableContext } from '../../VariableContext';
 
 function Clothes({ navigation, route }) {
   const { createClothes, updateClothes } = useContext(DatabaseContext);
+  const { mapImageClothesPost } = useContext(VariableContext);
+
   const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
@@ -36,7 +39,8 @@ function Clothes({ navigation, route }) {
   );
 
   let [image, setImage] = useState(require('../../assets/thing_grey.png'));
-  let fadeAnim = useRef(new Animated.Value(0)).current;
+
+  let fadeAnimate = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
@@ -55,11 +59,13 @@ function Clothes({ navigation, route }) {
           season,
           color
         );
+        mapImageClothesPost(route.params.id, route.params.uri);
       } else {
         if (route.params?.path) {
           createClothes(route.params.path, title, category, season, color).then(
             (value) => {
               route.params.id = value;
+              mapImageClothesPost(value, route.params.uri);
             }
           );
         } else throw new Error('Not all image fields are filled in');
@@ -85,7 +91,7 @@ function Clothes({ navigation, route }) {
   }, [route]);
 
   let fadeIn = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 1.0,
       duration: 0,
       useNativeDriver: true,
@@ -95,7 +101,7 @@ function Clothes({ navigation, route }) {
   };
 
   let fadeOut = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 0.85,
       duration: 3000,
       useNativeDriver: true,
@@ -168,7 +174,7 @@ function Clothes({ navigation, route }) {
           snackbarStatus == 'error'
             ? styles.snackbarError
             : styles.snackbarSuccess,
-          { opacity: fadeAnim },
+          { opacity: fadeAnimate },
           { display: snackbarVisible },
         ]}>
         <Text style={styles.snackbarText}>{snackbarText}</Text>
