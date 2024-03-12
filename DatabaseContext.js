@@ -24,7 +24,7 @@ function DatabaseProvider({ children }) {
               readClothes();
             },
             (_, error) => {
-              console.error('Error save clothes', error);
+              console.error('DBContext. Error save clothes. ', error.message);
             }
           );
         },
@@ -51,7 +51,7 @@ function DatabaseProvider({ children }) {
               readOutfits();
             },
             (_, error) => {
-              console.error('Error save outfit', error);
+              console.error('DBContext. Error save outfit. ', error.message);
             }
           );
         },
@@ -85,7 +85,10 @@ function DatabaseProvider({ children }) {
               id = result.insertId;
             },
             (_, error) => {
-              console.error('Error save clothesInOutfit', error);
+              console.error(
+                'DBContext. Error save clothesInOutfit. ',
+                error.message
+              );
             }
           );
         },
@@ -108,7 +111,7 @@ function DatabaseProvider({ children }) {
           setClothes(result.rows._array);
         },
         (_, error) => {
-          console.error('Error loading clothes', error);
+          console.error('DBContext. Error loading clothes. ', error.message);
         }
       );
     });
@@ -123,66 +126,26 @@ function DatabaseProvider({ children }) {
           setOutfits(result.rows._array);
         },
         (_, error) => {
-          console.error('Error loading outfit', error);
+          console.error('DBContext. Error loading outfit. ', error.message);
         }
       );
     });
   };
 
   const readClothesInOutfit = (idOutfit) => {
-    // let sql = `SELECT cio.id, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
-    //       FROM clothes, clothesInOutfit AS cio
-    //       WHERE clothes.id = cio.idClothes AND
-    //         cio.idOutfit = ?`;
-    let sql = `SELECT cio.id, cio.idOutfit, cio.idClothes, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
+    let sql = `SELECT cio.id, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
           FROM clothes, clothesInOutfit AS cio
-          WHERE clothes.id = cio.idClothes AND cio.idOutfit = ?`;
+          WHERE clothes.id = cio.idClothes AND
+            cio.idOutfit = ?`;
     db.transaction((tx) => {
       tx.executeSql(
         sql,
         [idOutfit],
         (_, result) => {
-          console.log(
-            `SELECT * FROM clothesInOutfit WHERE idOutfit = ${idOutfit}`
-          );
-          console.log(result.rows._array);
-          // setClothesInOutfit(result.rows._array);
-        },
-        (_, error) => {
-          console.error('Error loading clothes', error);
-        }
-      );
-    });
-  };
-
-
-  const readClothesInOutfitAll = () => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `SELECT * FROM clothesInOutfit AS cio`,
-        [],
-        (_, result) => {
-          console.log(`SELECT * FROM clothesInOutfit AS cio`);
           console.log(result.rows._array);
         },
         (_, error) => {
-          console.error('Error loading clothes', error);
-        }
-      );
-    });
-  };
-
-  const readClothesInOutfitAllWhere2 = () => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `SELECT * FROM clothesInOutfit AS cio WHERE idOutfit = 2`,
-        [],
-        (_, result) => {
-          console.log(`SELECT * FROM clothesInOutfit AS cio WHERE idOutfit = 2`);
-          console.log(result.rows._array);
-        },
-        (_, error) => {
-          console.error('Error loading clothes', error);
+          console.error('DBContext. Error loading clothes. ', error.message);
         }
       );
     });
@@ -198,7 +161,7 @@ function DatabaseProvider({ children }) {
             readClothes();
           },
           (_, error) => {
-            console.error('Error update clothes', error);
+            console.error('DBContext. Error update clothes. ', error.message);
           }
         );
       },
@@ -218,7 +181,7 @@ function DatabaseProvider({ children }) {
             readOutfits();
           },
           (_, error) => {
-            console.error('Error update outfits', error);
+            console.error('DBContext. Error update outfits. ', error.message);
           }
         );
       },
@@ -228,24 +191,37 @@ function DatabaseProvider({ children }) {
     );
   };
 
-  const deleteClothes = () => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          'DELETE FROM clothes WHERE id = ?',
-          [id],
-          () => {
-            readClothes();
-          },
-          (_, error) => {
-            console.error('Error delete clothes', error);
-          }
-        );
-      },
-      (transactionError) => {
-        console.log(transactionError.message);
-      }
-    );
+  const deleteClothes = (id) => {
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'DELETE FROM clothes WHERE id = ?',
+            [id],
+            (_, result) => {
+              if (result.rowsAffected > 0) {
+                readClothes();
+              }
+            },
+            (_, error) => {
+              console.error(
+                'DBContext. Error delete clothes SQL. ',
+                error.message
+              );
+            }
+          );
+        },
+        (transactionError) => {
+          console.log(
+            'DBContext. Error delete clothes Translation. ',
+            transactionError.message
+          );
+        },
+        () => {
+          resolve();
+        }
+      );
+    });
   };
 
   const deleteOutfits = () => {
@@ -258,7 +234,7 @@ function DatabaseProvider({ children }) {
             readOutfits();
           },
           (_, error) => {
-            console.error('Error delete outfits', error);
+            console.error('DBContext. Error delete outfits. ', error.message);
           }
         );
       },
@@ -269,6 +245,9 @@ function DatabaseProvider({ children }) {
   };
 
   let createNecessaryTables = () => {
+    db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
+      console.log('Foreign keys turned on')
+    );
     db.transaction((tx) => {
       tx.executeSql('DROP TABLE IF EXISTS clothes;');
       tx.executeSql('DROP TABLE IF EXISTS outfits;');
@@ -299,8 +278,6 @@ function DatabaseProvider({ children }) {
         readClothes,
         readOutfits,
         readClothesInOutfit,
-        readClothesInOutfitAll,
-        readClothesInOutfitAllWhere2,
         updateClothes,
         updateOutfits,
         // updateClothesInOutfit,

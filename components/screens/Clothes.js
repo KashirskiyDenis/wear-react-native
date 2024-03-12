@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Button,
   Image,
@@ -14,8 +15,9 @@ import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
 
 function Clothes({ navigation, route }) {
-  const { createClothes, updateClothes } = useContext(DatabaseContext);
-  const { mapImageClothesPost } = useContext(VariableContext);
+  const { createClothes, updateClothes, deleteClothes } =
+    useContext(DatabaseContext);
+  const { mapImageClothesPOST } = useContext(VariableContext);
 
   const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
@@ -59,13 +61,13 @@ function Clothes({ navigation, route }) {
           season,
           color
         );
-        mapImageClothesPost(route.params.id, route.params.uri);
+        mapImageClothesPOST(route.params.id, route.params.uri);
       } else {
         if (route.params?.path) {
           createClothes(route.params.path, title, category, season, color).then(
             (value) => {
               route.params.id = value;
-              mapImageClothesPost(value, route.params.uri);
+              mapImageClothesPOST(value, route.params.uri);
             }
           );
         } else throw new Error('Not all image fields are filled in');
@@ -82,6 +84,39 @@ function Clothes({ navigation, route }) {
       setSnackbarStatus('error');
       fadeIn();
     }
+  };
+
+  let removeClothesFromDB = () => {
+    try {
+      deleteClothes(route.params.id);
+      navigation.navigate('Home');
+    } catch (error) {
+      console.log('Component "Clothes". Error when deleting. ' + error.message);
+
+      setSnackbarVisible('block');
+      setSnackbarText('Карточка вещи не удалена.');
+      setSnackbarStatus('error');
+      fadeIn();
+    }
+  };
+
+  let removeClothes = () => {
+    Alert.alert(
+      'Удалить вещь',
+      'Вы действительно хотите удалить данную вешь?',
+      [
+        {
+          text: 'Нет',
+          style: 'cancel',
+          isPreferred: true,
+        },
+        {
+          text: 'Да',
+          onPress: removeClothesFromDB,
+          style: 'destructive',
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -161,6 +196,14 @@ function Clothes({ navigation, route }) {
         />
       </View>
       <View style={styles.saveView}>
+        <Button
+          title="Удалить"
+          onPress={() => {
+            removeClothes();
+          }}
+          color="#FF3B30"
+          disabled={route.params?.id ? false : true}
+        />
         <Button
           title="Сохранить"
           onPress={() => {

@@ -44,15 +44,15 @@ function VariableProvider({ children }) {
     }
   };
 
-  let mapImageClothesPost = (id, base64) => {
+  let mapImageClothesPOST = (id, base64) => {
     let array = Array.from(mapImageClothes);
     let newMap = new Map(array);
     newMap.set(id, base64);
     setMapImageClothes(newMap);
   };
 
-  let mapImageOutfitsPost = (id, base64) => {
-    let array = Array.from(mapImageClothes);
+  let mapImageOutfitsPOST = (id, base64) => {
+    let array = Array.from(mapImageOutfits);
     let newMap = new Map(array);
     newMap.set(id, base64);
     setMapImageOutfits(newMap);
@@ -67,9 +67,9 @@ function VariableProvider({ children }) {
     <VariableContext.Provider
       value={{
         mapImageClothes,
-        mapImageClothesPost,
+        mapImageClothesPOST,
         mapImageOutfits,
-        mapImageOutfitsPost,
+        mapImageOutfitsPOST,
       }}>
       {children}
     </VariableContext.Provider>

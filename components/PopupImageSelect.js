@@ -44,7 +44,7 @@ function PopupImageSelect({
           style={styles.item}>
           <Image
             style={styles.itemImage}
-            source={{ uri: 'data:image/png;base64,' + item }}
+            source={{ uri: 'data:image/png;base64,' + item.value }}
           />
         </TouchableOpacity>
       );

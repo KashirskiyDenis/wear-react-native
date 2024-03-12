@@ -23,7 +23,7 @@ let clothesInOutfit = `CREATE TABLE IF NOT EXISTS clothesInOutfit (
 	width INTEGER NOT NULL,
   height INTEGER NOT NULL,
 	transform TEXT NOT NULL,
-	FOREIGN KEY (idOutfit) REFERENCES outfit(id),
+	FOREIGN KEY (idOutfit) REFERENCES outfits(id),
 	FOREIGN KEY (idClothes) REFERENCES clothes(id)
 )`;
 

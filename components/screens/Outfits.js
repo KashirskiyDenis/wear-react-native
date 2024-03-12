@@ -24,11 +24,9 @@ function Outfits({ navigation, route }) {
     clothesInOutfit,
     createOutifts,
     readClothesInOutfit,
-    readClothesInOutfitAll,
-    readClothesInOutfitAllWhere2,
     createClothesInOutfit,
   } = useContext(DatabaseContext);
-  const { mapImageOutfitsPost } = useContext(VariableContext);
+  const { mapImageClothes, mapImageOutfitsPOST } = useContext(VariableContext);
   const seasonList = [
     { label: 'Зимняя', value: 'Зима' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
@@ -57,13 +55,11 @@ function Outfits({ navigation, route }) {
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   useEffect(() => {
-    createURIList();
+    createClothesImageList();
   }, [clothes]);
 
   useEffect(() => {
     if (route.params?.id) {
-      readClothesInOutfitAll();
-      readClothesInOutfitAllWhere2();
       readClothesInOutfit(route.params.id);
     }
   }, []);
@@ -81,12 +77,12 @@ function Outfits({ navigation, route }) {
   let addClothesToOutfit = () => {
     if (image) {
       let newFigure = { type: 'image' };
-      newFigure.id = +new Date();
+      newFigure.idClothes = image.key;
       newFigure.x = 50;
       newFigure.y = 50;
       newFigure.width = 150;
       newFigure.height = 150;
-      newFigure.base64 = image;
+      newFigure.base64 = image.value;
       // newFigure.filter = '';
       // newFigure.transform = 'rotate(15, 125, 125)';
       setFigures([...figures, newFigure]);
@@ -140,7 +136,7 @@ function Outfits({ navigation, route }) {
             navigation.setParams({
               id: idOutfit,
             });
-            mapImageOutfitsPost(idOutfit, image.base64);
+            mapImageOutfitsPOST(idOutfit, image.base64);
             let requests = figures.map((figure) =>
               createClothesInOutfit(
                 idOutfit,
@@ -191,11 +187,15 @@ function Outfits({ navigation, route }) {
     return data;
   };
 
-  let createURIList = async () => {
+  let createClothesImageList = async () => {
     if (clothes.length > 0) {
       let array = [];
       for (let i = 0; i < clothes.length; i++) {
-        array[i] = await getImage(clothes[i].pathToFile);
+        let item = {
+          key: clothes[i].id,
+          value: mapImageClothes.get(clothes[i].id),
+        };
+        array[i] = item;
       }
       setClothesImageList(array);
     }

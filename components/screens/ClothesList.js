@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -12,8 +12,8 @@ import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
 
 function ClothesScreen({ navigation }) {
-  const { clothes, } = useContext(DatabaseContext);
-  const { mapImageClothes, } = useContext(VariableContext);
+  const { clothes } = useContext(DatabaseContext);
+  const { mapImageClothes } = useContext(VariableContext);
 
   let [list, setList] = useState();
 
@@ -22,21 +22,19 @@ function ClothesScreen({ navigation }) {
   }, [clothes]);
 
   let createListClothes = async () => {
-    if (clothes.length > 0) {
-      let array = [];
-      for (let i = 0; i < clothes.length; i++) {
-        array[i] = {
-          id: clothes[i].id,
-          path: clothes[i].pathToFile,
-          uri: mapImageClothes.get(clothes[i].id),
-          title: clothes[i].title,
-          category: clothes[i].category,
-          season: clothes[i].season,
-          color: clothes[i].color,
-        };
-      }
-      setList(array);
+    let array = [];
+    for (let i = 0; i < clothes.length; i++) {
+      array[i] = {
+        id: clothes[i].id,
+        path: clothes[i].pathToFile,
+        uri: mapImageClothes.get(clothes[i].id),
+        title: clothes[i].title,
+        category: clothes[i].category,
+        season: clothes[i].season,
+        color: clothes[i].color,
+      };
     }
+    setList(array);
   };
 
   return (
@@ -55,7 +53,10 @@ function ClothesScreen({ navigation }) {
             }>
             <View style={styles.item}>
               <View>
-                <Image style={styles.thingImage} source={{ uri: 'data:image/png;base64,' + item.uri }} />
+                <Image
+                  style={styles.thingImage}
+                  source={{ uri: 'data:image/png;base64,' + item.uri }}
+                />
               </View>
               <View>
                 <Text style={styles.thingTitle}>{item.title}</Text>

@@ -22,19 +22,17 @@ function OutfitsScreen({ navigation }) {
   }, [outfits]);
 
   let createListOutfits = async () => {
-    if (outfits.length > 0) {
-      let array = [];
-      for (let i = 0; i < outfits.length; i++) {
-        array[i] = {
-          id: outfits[i].id,
-          path: outfits[i].pathToFile,
-          uri: mapImageOutfits.get(outfits[i].id),
-          season: outfits[i].season,
-          event: outfits[i].event,
-        };
-      }
-      setList(array);
+    let array = [];
+    for (let i = 0; i < outfits.length; i++) {
+      array[i] = {
+        id: outfits[i].id,
+        path: outfits[i].pathToFile,
+        uri: mapImageOutfits.get(outfits[i].id),
+        season: outfits[i].season,
+        event: outfits[i].event,
+      };
     }
+    setList(array);
   };
 
   return (
