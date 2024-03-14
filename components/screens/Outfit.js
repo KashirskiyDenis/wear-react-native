@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Button,
   StyleSheet,
@@ -18,11 +19,11 @@ import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
 import { data } from '../../services/imageBase64';
 
-function Outfits({ navigation, route }) {
+function Outfit({ navigation, route }) {
   const {
     clothes,
     clothesInOutfit,
-    createOutifts,
+    createOutift,
     readClothesInOutfit,
     createClothesInOutfit,
   } = useContext(DatabaseContext);
@@ -108,7 +109,10 @@ function Outfits({ navigation, route }) {
         return { path: path, base64: base64 };
       }
     } catch (error) {
-      console.log('Error save outfirs image: ' + error.message);
+      console.error(
+        'Component "Outfit". Error when saving outfit image.',
+        error.message
+      );
     }
   };
 
@@ -131,7 +135,7 @@ function Outfits({ navigation, route }) {
         // );
       } else {
         image = await saveOutfitImage();
-        createOutifts(image.path, season, event)
+        createOutift(image.path, season, event)
           .then((idOutfit) => {
             navigation.setParams({
               id: idOutfit,
@@ -166,7 +170,10 @@ function Outfits({ navigation, route }) {
       setSnackbarStatus('seccess');
       fadeIn();
     } catch (error) {
-      console.error('Error saving outftis:', error.message);
+      console.error(
+        'Component "Outfit". Error when saving outfit.',
+        error.message
+      );
 
       setSnackbarVisible('block');
       setSnackbarText('Не сохранено. Заполните все поля.');
@@ -182,7 +189,10 @@ function Outfits({ navigation, route }) {
         encoding: FileSystem.EncodingType.Base64,
       });
     } catch (error) {
-      console.log('Error to load file: ' + error.message);
+      console.error(
+        'Component "Outfit". Error when loading file image.',
+        error.message
+      );
     }
     return data;
   };
@@ -199,6 +209,42 @@ function Outfits({ navigation, route }) {
       }
       setClothesImageList(array);
     }
+  };
+
+  let removeOutfitFromDB = () => {
+    deleteOutfit(route.params.id)
+      .then(() => {
+        navigation.navigate('Home');
+      })
+      .catch((error) => {
+        console.error(
+          'Component "Outfit". Error when deleting.',
+          error.message
+        );
+        setSnackbarVisible('block');
+        setSnackbarText('Карточка образа не была удалена.');
+        setSnackbarStatus('error');
+        fadeIn();
+      });
+  };
+
+  let removeOutfit = () => {
+    Alert.alert(
+      'Удалить образ',
+      'Вы действительно хотите удалить данный образ?',
+      [
+        {
+          text: 'Нет',
+          style: 'cancel',
+          isPreferred: true,
+        },
+        {
+          text: 'Да',
+          onPress: removeOutfitFromDB,
+          style: 'destructive',
+        },
+      ]
+    );
   };
 
   let fadeIn = () => {
@@ -223,14 +269,12 @@ function Outfits({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      {/* <Button title="Добавить фигуру" onPress={addFigure} /> */}
       <PopupImageSelect
         label="Выберите изображение"
         uriList={clothesImageList}
         onSelect={setImage}
         style={{ fontSize: 20 }}
       />
-      {/* CustomSVG data={clothesImageList} /> */}
       <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
         <CustomSVG data={figures} />
       </View>
@@ -247,6 +291,16 @@ function Outfits({ navigation, route }) {
           placeholder="Событие"
           onChangeText={(text) => setEvent(text)}
           defaultValue={event}
+        />
+      </View>
+      <View style={styles.saveView}>
+        <Button
+          title="Удалить"
+          onPress={() => {
+            removeOutfit();
+          }}
+          color="#FF3B30"
+          disabled={route.params?.id ? false : true}
         />
         <Button title="Сохранить" onPress={saveOutfit} />
       </View>
@@ -281,6 +335,12 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: '#e5e5ea',
   },
+  saveView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
+  },
   snackbar: {
     position: 'absolute',
     opacity: 0.7,
@@ -305,4 +365,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Outfits;
+export default Outfit;

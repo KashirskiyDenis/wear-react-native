@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './Home';
 import EditPhotoScreen from './screens/ClothesEditPhoto';
 import EditClothesScreen from './screens/Clothes';
-import EditOutfitsScreen from './screens/Outfits';
+import EditOutfitScreen from './screens/Outfit';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +19,7 @@ function TabsNavigator() {
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{ title: 'WARDROBE' }}
+        options={{ title: 'Гардероб' }}
       />
       <Stack.Screen
         name="EditPhotoScreen"
@@ -32,8 +32,8 @@ function TabsNavigator() {
         options={{ title: 'Вещь' }}
       />      
       <Stack.Screen
-        name="EditOutfitsScreen"
-        component={EditOutfitsScreen}
+        name="EditOutfitScreen"
+        component={EditOutfitScreen}
         options={{ title: 'Добавить Образ' }}
       />
     </Stack.Navigator>

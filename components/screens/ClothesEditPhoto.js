@@ -12,7 +12,7 @@ let HTML;
 
 function EditPhoto({ navigation, route }) {
   let webViewRef = useRef(null);
-  
+
   let [pathFile, setPathFile] = useState('');
   let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
 
@@ -20,7 +20,7 @@ function EditPhoto({ navigation, route }) {
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
-  
+
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     if (!path) {
       path = `${FileSystem.documentDirectory}${folderName}/${fileName}`;
@@ -56,12 +56,7 @@ function EditPhoto({ navigation, route }) {
         tmp = await saveImageFromBase64(data, route.params.path);
       } else {
         let folderName = 'clothes';
-        let fileName =
-          new Date()
-            .toISOString()
-            .split('.')[0]
-            .replaceAll(':', '-')
-            .replace('T', '_') + '.png';
+        let fileName = +new Date() + '.png';
         tmp = await saveImageFromBase64(data, null, folderName, fileName);
       }
 
@@ -73,8 +68,10 @@ function EditPhoto({ navigation, route }) {
       setPathFile(tmp);
       setBase64(data);
     } catch (error) {
-      console.error('Error saving image: ', error.message);
-
+      console.error(
+        'Component "ClothesEditPhoto". Error when saving image.',
+        error.message
+      );
       setSnackbarVisible('block');
       setSnackbarText('Ошибка сохранения');
       setSnackbarStatus('error');

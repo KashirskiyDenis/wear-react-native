@@ -11,7 +11,7 @@ function DatabaseProvider({ children }) {
   let [outfits, setOutfits] = useState([]);
   let [clothesInOutfit, setClothesInOutfit] = useState([]);
 
-  const createClothes = (pathToFile, title, category, season, color) => {
+  let createClothes = (pathToFile, title, category, season, color) => {
     let id;
     return new Promise((resolve, reject) => {
       db.transaction(
@@ -29,7 +29,10 @@ function DatabaseProvider({ children }) {
           );
         },
         (transactionError) => {
-          console.log(transactionError.message);
+          console.error(
+            'DBContext. Translation Error create clothes.',
+            transactionError.message
+          );
         },
         () => {
           resolve(id);
@@ -38,7 +41,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const createOutifts = (pathToFile, season, event) => {
+  let createOutift = (pathToFile, season, event) => {
     let id;
     return new Promise((resolve, reject) => {
       db.transaction(
@@ -56,7 +59,10 @@ function DatabaseProvider({ children }) {
           );
         },
         (transactionError) => {
-          console.log(transactionError.message);
+          console.error(
+            'DBContext. Translation Error create outfit.',
+            transactionError.message
+          );
         },
         () => {
           resolve(id);
@@ -65,7 +71,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const createClothesInOutfit = (
+  let createClothesInOutfit = (
     idOutfit,
     idClothes,
     x,
@@ -93,7 +99,10 @@ function DatabaseProvider({ children }) {
           );
         },
         (transactionError) => {
-          console.log(transactionError.message);
+          console.error(
+            'DBContext. Translation Error create clothesInOutfit.',
+            transactionError.message
+          );
         },
         () => {
           resolve(id);
@@ -102,7 +111,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const readClothes = () => {
+  let readClothes = () => {
     db.transaction((tx) => {
       tx.executeSql(
         'SELECT * FROM clothes',
@@ -117,7 +126,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const readOutfits = () => {
+  let readOutfits = () => {
     db.transaction((tx) => {
       tx.executeSql(
         'SELECT * FROM outfits',
@@ -132,7 +141,22 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const readClothesInOutfit = (idOutfit) => {
+  let readClothesInOutfitAll = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM clothesInOutfit',
+        [],
+        (_, result) => {
+          console.log(result.rows._array);
+        },
+        (_, error) => {
+          console.error('DBContext. Error loading outfit. ', error.message);
+        }
+      );
+    });
+  };
+
+  let readClothesInOutfit = (idOutfit) => {
     let sql = `SELECT cio.id, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
           FROM clothes, clothesInOutfit AS cio
           WHERE clothes.id = cio.idClothes AND
@@ -151,7 +175,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const updateClothes = (id, title, pathToFile, category, season, color) => {
+  let updateClothes = (id, title, pathToFile, category, season, color) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -166,12 +190,15 @@ function DatabaseProvider({ children }) {
         );
       },
       (transactionError) => {
-        console.log(transactionError.message);
+        console.error(
+          'DBContext. Translation Error update clothes.',
+          transactionError.message
+        );
       }
     );
   };
 
-  const updateOutfits = (id, pathToFile, season, event) => {
+  let updateOutfit = (id, pathToFile, season, event) => {
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -186,12 +213,15 @@ function DatabaseProvider({ children }) {
         );
       },
       (transactionError) => {
-        console.log(transactionError.message);
+        console.error(
+          'DBContext. Translation Error update outfit.',
+          transactionError.message
+        );
       }
     );
   };
 
-  const deleteClothes = (id) => {
+  let deleteClothes = (id) => {
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
@@ -205,16 +235,21 @@ function DatabaseProvider({ children }) {
             },
             (_, error) => {
               console.error(
-                'DBContext. Error delete clothes SQL. ',
+                'DBContext. Error delete clothes SQL.',
                 error.message
               );
+              reject('DBContext. Error delete clothes SQL. ' + error.message);
             }
           );
         },
         (transactionError) => {
-          console.log(
-            'DBContext. Error delete clothes Translation. ',
+          console.error(
+            'DBContext. Translation Error delete clothes.',
             transactionError.message
+          );
+          reject(
+            'DBContext. Translation Error delete clothes.' +
+              transactionError.message
           );
         },
         () => {
@@ -224,30 +259,81 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  const deleteOutfits = () => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          'DELETE FROM outfits WHERE id = ?',
-          [id],
-          () => {
-            readOutfits();
-          },
-          (_, error) => {
-            console.error('DBContext. Error delete outfits. ', error.message);
-          }
-        );
-      },
-      (transactionError) => {
-        console.log(transactionError.message);
-      }
-    );
+  let deleteOutfit = (id) => {
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'DELETE FROM outfits WHERE id = ?',
+            [id],
+            () => {
+              if (result.rowsAffected > 0) {
+                readOutfits();
+                deleteClothesInOutfit(id).catch((error) => reject(error));
+              }
+            },
+            (_, error) => {
+              console.error('DBContext. Error delete outfit. ', error.message);
+              reject('DBContext. Error delete outfit SQL. ' + error.message);
+            }
+          );
+        },
+        (transactionError) => {
+          console.error(
+            'DBContext. Translation Error delete outfit.',
+            transactionError.message
+          );
+          reject(
+            'DBContext. Translation Error delete outfit.' +
+              transactionError.message
+          );
+        },
+        () => {
+          readClothesInOutfitAll();
+          resolve();
+        }
+      );
+    });
+  };
+
+  let deleteClothesInOutfit = (id) => {
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'DELETE FROM clothesInOutfit WHERE idOutfit = ?',
+            [id],
+            () => {},
+            (_, error) => {
+              console.error(
+                'DBContext. Error delete clothesInOutfit. ',
+                error.message
+              );
+              reject(
+                'DBContext. Error delete clothesInOutfit SQL. ' + error.message
+              );
+            }
+          );
+        },
+        (transactionError) => {
+          console.error(
+            'DBContext. Translation Error delete clothesInOutfit.',
+            transactionError.message
+          );
+          reject(
+            'DBContext. Translation Error delete clothesInOutfit.' +
+              transactionError.message
+          );
+        },
+        () => {
+          resolve();
+        }
+      );
+    });
   };
 
   let createNecessaryTables = () => {
-    db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
-      console.log('Foreign keys turned on')
-    );
+    db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {});
     db.transaction((tx) => {
       tx.executeSql('DROP TABLE IF EXISTS clothes;');
       tx.executeSql('DROP TABLE IF EXISTS outfits;');
@@ -273,16 +359,16 @@ function DatabaseProvider({ children }) {
         outfits,
         clothesInOutfit,
         createClothes,
-        createOutifts,
+        createOutift,
         createClothesInOutfit,
         readClothes,
         readOutfits,
         readClothesInOutfit,
         updateClothes,
-        updateOutfits,
-        // updateClothesInOutfit,
+        updateOutfit,
         deleteClothes,
-        deleteOutfits,
+        deleteOutfit,
+        deleteClothesInOutfit,
       }}>
       {children}
     </DatabaseContext.Provider>

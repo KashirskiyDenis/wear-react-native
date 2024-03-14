@@ -87,17 +87,20 @@ function Clothes({ navigation, route }) {
   };
 
   let removeClothesFromDB = () => {
-    try {
-      deleteClothes(route.params.id);
-      navigation.navigate('Home');
-    } catch (error) {
-      console.log('Component "Clothes". Error when deleting. ' + error.message);
-
-      setSnackbarVisible('block');
-      setSnackbarText('Карточка вещи не удалена.');
-      setSnackbarStatus('error');
-      fadeIn();
-    }
+    deleteClothes(route.params.id)
+      .then(() => {
+        navigation.navigate('Home');
+      })
+      .catch((error) => {
+        console.error(
+          'Component "Clothes". Error when deleting.',
+          error.message
+        );
+        setSnackbarVisible('block');
+        setSnackbarText('Карточка вещи не удалена.');
+        setSnackbarStatus('error');
+        fadeIn();
+      });
   };
 
   let removeClothes = () => {

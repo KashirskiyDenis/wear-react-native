@@ -47,7 +47,7 @@ function OutfitsScreen({ navigation }) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              navigation.navigate('EditOutfitsScreen', { ...item })
+              navigation.navigate('EditOutfitScreen', { ...item })
             }>
             <View style={styles.item}>
               <View>
@@ -70,7 +70,7 @@ function OutfitsScreen({ navigation }) {
           right: 15,
           bottom: 15,
         }}
-        onPress={() => navigation.navigate('EditOutfitsScreen')}>
+        onPress={() => navigation.navigate('EditOutfitScreen')}>
         <AddButton />
       </TouchableOpacity>
     </View>
