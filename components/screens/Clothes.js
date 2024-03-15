@@ -48,42 +48,45 @@ function Clothes({ navigation, route }) {
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   let saveClothes = async () => {
-    try {
-      if (title == '' || category == '' || season == '' || color == '')
-        throw new Error('Not all text fields are filled in');
-
-      if (route.params?.id) {
-        updateClothes(
-          route.params.id,
-          title,
-          route.params.path,
-          category,
-          season,
-          color
-        );
-        mapImageClothesPOST(route.params.id, route.params.uri);
-      } else {
-        if (route.params?.path) {
-          createClothes(route.params.path, title, category, season, color).then(
-            (value) => {
-              route.params.id = value;
-              mapImageClothesPOST(value, route.params.uri);
-            }
-          );
-        } else throw new Error('Not all image fields are filled in');
-      }
-      setSnackbarVisible('block');
-      setSnackbarText('Изменения сохранены');
-      setSnackbarStatus('seccess');
-      fadeIn();
-    } catch (error) {
-      console.error('Error saving image:', error.message);
-
-      setSnackbarVisible('block');
-      setSnackbarText('Не сохранено. Заполните все поля.');
-      setSnackbarStatus('error');
-      fadeIn();
+    if (title == '' || category == '' || season == '' || color == '') {
+      showSnackbar('Не сохранено. Заполните все поля.', 'error');
+      return;
     }
+
+    if (route.params?.id) {
+      updateClothes(
+        route.params.id,
+        title,
+        route.params.path,
+        category,
+        season,
+        color
+      )
+        .then(() => {
+          mapImageClothesPOST(route.params.id, route.params.uri);
+        })
+        .catch(() => {
+          showSnackbar('Ошибка обновления.', 'error');
+          return;
+        });
+    } else {
+      if (route.params?.path) {
+        createClothes(route.params.path, title, category, season, color)
+          .then((value) => {
+            route.params.id = value;
+            mapImageClothesPOST(value, route.params.uri);
+          })
+          .catch(() => {
+            showSnackbar('Ошибка сохранения.', 'error');
+            return;
+          });
+      } else {
+        showSnackbar('Не сохранено. Выберите картинку вещи.', 'error');
+        return;
+      }
+    }
+
+    showSnackbar('Изменения сохранены.', 'success');
   };
 
   let removeClothesFromDB = () => {
@@ -91,15 +94,8 @@ function Clothes({ navigation, route }) {
       .then(() => {
         navigation.navigate('Home');
       })
-      .catch((error) => {
-        console.error(
-          'Component "Clothes". Error when deleting.',
-          error.message
-        );
-        setSnackbarVisible('block');
-        setSnackbarText('Карточка вещи не удалена.');
-        setSnackbarStatus('error');
-        fadeIn();
+      .catch(() => {
+        showSnackbar('Карточка вещи не удалена.', 'error');
       });
   };
 
@@ -127,6 +123,13 @@ function Clothes({ navigation, route }) {
       setImage('data:image/png;base64,' + route.params.uri);
     }
   }, [route]);
+
+  let showSnackbar = (text, status) => {
+    setSnackbarVisible('block');
+    setSnackbarText(text);
+    setSnackbarStatus(status);
+    fadeIn();
+  };
 
   let fadeIn = () => {
     Animated.timing(fadeAnimate, {

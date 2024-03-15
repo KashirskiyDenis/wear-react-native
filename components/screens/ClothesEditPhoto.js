@@ -11,7 +11,7 @@ import jsContent from '../../assets/webview/js/script';
 let HTML;
 
 function EditPhoto({ navigation, route }) {
-  let webViewRef = useRef(null);
+  let webViewRef = useRef();
 
   let [pathFile, setPathFile] = useState('');
   let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
@@ -55,28 +55,26 @@ function EditPhoto({ navigation, route }) {
       if (route.params?.path) {
         tmp = await saveImageFromBase64(data, route.params.path);
       } else {
-        let folderName = 'clothes';
-        let fileName = +new Date() + '.png';
-        tmp = await saveImageFromBase64(data, null, folderName, fileName);
+        tmp = await saveImageFromBase64(data, null, 'clothes', +new Date() + '.png');
       }
 
-      setSnackbarVisible('block');
-      setSnackbarText('Изменения сохранены');
-      setSnackbarStatus('success');
-
-      fadeIn();
       setPathFile(tmp);
       setBase64(data);
+      showSnackbar('Изменения сохранены.', 'success');      
     } catch (error) {
       console.error(
-        'Component "ClothesEditPhoto". Error when saving image.',
+        'Component "ClothesEditPhoto". Error when saving image in file system.',
         error.message
       );
-      setSnackbarVisible('block');
-      setSnackbarText('Ошибка сохранения');
-      setSnackbarStatus('error');
-      fadeIn();
+      showSnackbar('Ошибка сохранения.', 'error');
     }
+  };
+
+  let showSnackbar = (text, status) => {
+      setSnackbarVisible('block');
+      setSnackbarText(text);
+      setSnackbarStatus(status);
+      fadeIn();
   };
 
   let fadeIn = () => {
@@ -104,7 +102,7 @@ function EditPhoto({ navigation, route }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5,
+      quality: 0.75,
       base64: true,
     });
 

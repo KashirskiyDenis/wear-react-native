@@ -38,11 +38,7 @@ function ClothesScreen({ navigation }) {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#ffffff',
-      }}>
+    <View style={styles.container}>
       <FlatList
         data={list}
         renderItem={({ item }) => (
@@ -81,6 +77,10 @@ function ClothesScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
   item: {
     backgroundColor: '#f9c2ff',
     paddingHorizontal: 15,

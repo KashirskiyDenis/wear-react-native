@@ -26,6 +26,8 @@ function Outfit({ navigation, route }) {
     createOutift,
     readClothesInOutfit,
     createClothesInOutfit,
+    deleteClothesInOutfit,
+    deleteOutfit,
   } = useContext(DatabaseContext);
   const { mapImageClothes, mapImageOutfitsPOST } = useContext(VariableContext);
   const seasonList = [
@@ -72,6 +74,19 @@ function Outfit({ navigation, route }) {
   useEffect(() => {
     if (clothesInOutfit.length > 0) {
       console.log(clothesInOutfit);
+      let array = [];
+      for (let i = 0; i < clothesInOutfit.length; i++) {
+        array[i] = {
+          idClothes: clothesInOutfit[i].idClothes,
+          x: clothesInOutfit[i].x,
+          y: clothesInOutfit[i].y,
+          width: clothesInOutfit[i].width,
+          height: clothesInOutfit[i].height,
+          base64: mapImageClothes.get(clothesInOutfit[i].idClothes),
+          transform: clothesInOutfit[i].transform,
+        };
+      }
+      setFigures(array);
     }
   }, [clothesInOutfit]);
 
@@ -94,7 +109,7 @@ function Outfit({ navigation, route }) {
     try {
       let localUri = await captureRef(imageRef, {
         height: 390,
-        quality: 0.5,
+        quality: 0.75,
       });
 
       if (localUri) {
@@ -118,68 +133,61 @@ function Outfit({ navigation, route }) {
 
   let saveOutfit = async () => {
     let image;
-    try {
-      if (season == '' || event == '')
-        throw new Error('Not all text fields are filled in');
-      if (figures.length == 0)
-        throw new Error('Not a single thing has been added to the outfit');
-
-      if (route.params?.id) {
-        // updateClothes(
-        //   route.params.id,
-        //   title,
-        //   route.params.path,
-        //   category,
-        //   season,
-        //   color
-        // );
-      } else {
-        image = await saveOutfitImage();
-        createOutift(image.path, season, event)
-          .then((idOutfit) => {
-            navigation.setParams({
-              id: idOutfit,
-            });
-            mapImageOutfitsPOST(idOutfit, image.base64);
-            let requests = figures.map((figure) =>
-              createClothesInOutfit(
-                idOutfit,
-                figure?.idClothes ? figure.idClothes : +new Date(),
-                figure.x,
-                figure.y,
-                figure.width,
-                figure.height,
-                figure?.transform ? figure.transform : ''
-              )
-            );
-
-            Promise.all(requests).then((responses) =>
-              responses.forEach((response) =>
-                console.log(
-                  'The picture of the clothes for the outfit has been saved'
-                )
-              )
-            );
-          })
-          .catch((error) => {
-            console.log(error.message);
-          });
-      }
-      setSnackbarVisible('block');
-      setSnackbarText('Изменения сохранены');
-      setSnackbarStatus('seccess');
-      fadeIn();
-    } catch (error) {
-      console.error(
-        'Component "Outfit". Error when saving outfit.',
-        error.message
-      );
-
-      setSnackbarVisible('block');
-      setSnackbarText('Не сохранено. Заполните все поля.');
-      setSnackbarStatus('error');
-      fadeIn();
+    if (season == '' || event == '') {
+      showSnackbar('Не сохранено. Заполните все поля.', 'error');
+      return;
     }
+    if (figures.length == 0) {
+      showSnackbar('Не сохранено. В образе нет одежды.', 'error');
+      return;
+    }
+
+    if (route.params?.id) {
+      deleteClothesInOutfit(route.params.id)
+        .then(() => {})
+        .catch(() => {
+          showSnackbar('Ошибка удаления.', 'error');
+          return;
+        });
+    } else {
+      image = await saveOutfitImage();
+      if (!image) {
+        showSnackbar('Ошибка сохранения.', 'error');
+        return;
+      }
+      createOutift(image.path, season, event)
+        .then((idOutfit) => {
+          navigation.setParams({
+            id: idOutfit,
+          });
+          mapImageOutfitsPOST(idOutfit, image.base64);
+          let requests = figures.map((figure) =>
+            createClothesInOutfit(
+              idOutfit,
+              figure?.idClothes ? figure.idClothes : +new Date(),
+              figure.x,
+              figure.y,
+              figure.width,
+              figure.height,
+              figure?.transform ? figure.transform : ''
+            )
+          );
+
+          Promise.all(requests).then((responses) =>
+            responses.forEach((response) =>
+              console.log(
+                'The picture of the clothes for the outfit has been saved'
+              )
+            )
+          );
+        })
+        .catch(() => {
+          showSnackbar('Ошибка сохранения.', 'error');
+          return;
+        });
+    }
+
+    showSnackbar('Изменения сохранены', 'success');
   };
 
   let getImage = async (pathToFile) => {
@@ -221,10 +229,8 @@ function Outfit({ navigation, route }) {
           'Component "Outfit". Error when deleting.',
           error.message
         );
-        setSnackbarVisible('block');
-        setSnackbarText('Карточка образа не была удалена.');
-        setSnackbarStatus('error');
-        fadeIn();
+
+        showSnackbar('Карточка образа не была удалена.', 'error');
       });
   };
 
@@ -245,6 +251,13 @@ function Outfit({ navigation, route }) {
         },
       ]
     );
+  };
+
+  let showSnackbar = (text, status) => {
+    setSnackbarVisible('block');
+    setSnackbarText(text);
+    setSnackbarStatus(status);
+    fadeIn();
   };
 
   let fadeIn = () => {
