@@ -59,40 +59,38 @@ function Outfit({ navigation, route }) {
 
   useEffect(() => {
     createClothesImageList();
-  }, [clothes]);
+  }, []);
 
   useEffect(() => {
     if (route.params?.id) {
       readClothesInOutfit(route.params.id);
     }
-  }, []);
+  }, [route]);
 
   useEffect(() => {
     addClothesToOutfit(image);
   }, [image]);
 
   useEffect(() => {
-    if (clothesInOutfit.length > 0) {
-      console.log(clothesInOutfit);
-      let array = [];
-      for (let i = 0; i < clothesInOutfit.length; i++) {
-        array[i] = {
-          idClothes: clothesInOutfit[i].idClothes,
-          x: clothesInOutfit[i].x,
-          y: clothesInOutfit[i].y,
-          width: clothesInOutfit[i].width,
-          height: clothesInOutfit[i].height,
-          base64: mapImageClothes.get(clothesInOutfit[i].idClothes),
-          transform: clothesInOutfit[i].transform,
-        };
-      }
-      setFigures(array);
+    let array = [];
+    for (let i = 0; i < clothesInOutfit.length; i++) {
+      array[i] = {
+        idClothes: clothesInOutfit[i].idClothes,
+        x: clothesInOutfit[i].x,
+        y: clothesInOutfit[i].y,
+        width: clothesInOutfit[i].width,
+        height: clothesInOutfit[i].height,
+        base64: mapImageClothes.get(clothesInOutfit[i].idClothes),
+        transform: clothesInOutfit[i].transform,
+      };
     }
-  }, [clothesInOutfit]);
+    setFigures(array);
+  }, []);
 
   let addClothesToOutfit = () => {
     if (image) {
       let newFigure = { type: 'image' };
+      newFigure.id = +new Date();
       newFigure.idClothes = image.key;
       newFigure.x = 50;
       newFigure.y = 50;
@@ -289,7 +287,7 @@ function Outfit({ navigation, route }) {
         style={{ fontSize: 20 }}
       />
       <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
-        <CustomSVG data={figures} />
+        <CustomSVG data={figures} updatedData={setFigures} />
       </View>
       <View style={{ padding: 5 }}>
         <PopupSelect

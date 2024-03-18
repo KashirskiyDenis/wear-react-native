@@ -78,10 +78,11 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0000001a',
+    backgroundColor: '#0000002a',
   },
   modalView: {
-    backgroundColor: '#ffffffde',
+    // backgroundColor: '#ffffffde',
+    backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 7,
     width: '50%',

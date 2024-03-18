@@ -18,8 +18,9 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
-function CustomSVG({ data, }) {
+function CustomSVG({ data, updatedData }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
+  let [trash, setTrash] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
   let [cornerRadius] = useState(8);
   let [corners, setCorners] = useState({
@@ -121,6 +122,24 @@ function CustomSVG({ data, }) {
     setRotateArrow(rotateArrow);
   };
 
+  let trashMove = () => {
+    let width = draggbleFigure.width;
+    let x = draggbleFigure.x + width + 16;
+    let y = draggbleFigure.y;
+    let rotate = draggbleFigure.transform;
+
+    trash.x = x;
+    trash.y = y;
+    if (rotate) {
+      trash.transform = rotate;
+    } else {
+      if (trash.transform) {
+        trash.transform = '';
+      }
+    }
+    setTrash(trash);
+  };
+
   let rotateArrowDisplayBlock = () => {
     rotateArrow.display = 'block';
     setRotateArrow(rotateArrow);
@@ -129,6 +148,16 @@ function CustomSVG({ data, }) {
   let rotateArrowDisplayNone = () => {
     rotateArrow.display = 'none';
     setRotateArrow(rotateArrow);
+  };
+
+  let trashDisplayBlock = () => {
+    trash.display = 'block';
+    setTrash(trash);
+  };
+
+  let trashDisplayNone = () => {
+    trash.display = 'none';
+    setTrash(trash);
   };
 
   let calculateCenterCoordinates = () => {
@@ -166,6 +195,7 @@ function CustomSVG({ data, }) {
     for (let i = 0; i < data.length; i++) {
       if (data[i].id == id) {
         data.push(...data.splice(i, 1));
+        // console.log(data);
         return data[data.length - 1];
       }
     }
@@ -179,6 +209,7 @@ function CustomSVG({ data, }) {
 
     cornersMove();
     rotateArrowMove();
+    trashMove();
   };
 
   let figureMouseDownAndMove = (event) => {
@@ -187,6 +218,7 @@ function CustomSVG({ data, }) {
     changeRotateCoordinates();
 
     rotateArrowDisplayNone();
+    trashDisplayNone();
     cornersDisplayNone();
   };
 
@@ -195,6 +227,8 @@ function CustomSVG({ data, }) {
     cornersDisplayBlock();
     rotateArrowMove();
     rotateArrowDisplayBlock();
+    trashMove();
+    trashDisplayBlock();
   };
 
   let addBorderRotate = () => {
@@ -243,6 +277,21 @@ function CustomSVG({ data, }) {
     cornersMove();
     cornersDisplayBlock();
     rotateArrowMove();
+    trashMove();
+  };
+
+  let removeFigure = () => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].id == draggbleFigure.id) {
+        data.splice(i, 1);
+        // updatedData(data);
+        // console.log(data);
+        break;
+      }
+    }
+    cornersDisplayNone();
+    rotateArrow.display = 'none';
+    trash.display = 'none';
   };
 
   let angleBetweenVectors = (
@@ -326,6 +375,7 @@ function CustomSVG({ data, }) {
 
     cornersDisplayNoneBesides(currentCorner);
     rotateArrow.display = 'none';
+    trash.display = 'none';
   };
 
   let pointRelativeToLine = (a, b, c) => {
@@ -384,8 +434,10 @@ function CustomSVG({ data, }) {
   let cornerMouseUp = () => {
     repositionfigureAfterScale();
     rotateArrowMove();
+    trashMove();
     cornersDisplayBlock();
     rotateArrow.display = 'block';
+    trash.display = 'block';
   };
 
   let repositionfigureAfterScale = () => {
@@ -426,16 +478,6 @@ function CustomSVG({ data, }) {
       draggbleFigure.y = y;
       draggbleFigure.transform = `rotate(${angle}, ${newRotateX}, ${newRotateY})`;
     }
-  };
-
-  let controlsDisplayNone = () => {
-    cornersDisplayNone();
-    rotateArrowDisplayNone();
-  };
-
-  let controlsDisplayBlock = () => {
-    cornersDisplayNone();
-    rotateArrowDisplayNone();
   };
 
   return (
@@ -482,6 +524,17 @@ function CustomSVG({ data, }) {
           onResponderMove={(event) => rotateArrowMouseDownAndMove(event)}
           onResponderEnd={rotateArrowMouseUp}
         />
+        <SVGImage
+          id="trash"
+          href={require('../assets/delete.png')}
+          x={trash.x}
+          y={trash.y}
+          height={24}
+          width={24}
+          transform={trash.transform}
+          display={trash.display}
+          onPressIn={() => removeFigure()}
+        />
         {resizes.map((resize) => {
           return (
             <Circle
@@ -512,7 +565,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderStyle: 'solid',
     borderColor: '#e5e5ea',
-  }
+  },
 });
 
 export default CustomSVG;
