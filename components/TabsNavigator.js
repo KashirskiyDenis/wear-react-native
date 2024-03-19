@@ -14,7 +14,7 @@ function TabsNavigator() {
         tabBarScrollEnabled: true,
         tabBarLabelStyle: { fontSize: 16, fontWeight: 600 },
         tabBarItemStyle: { width: 120 },
-        tabBarStyle: { backgroundColor: 'powderblue' },
+        tabBarStyle: { backgroundColor: '#007aff' },
       }}>
       <Stack.Screen
         name="Home"

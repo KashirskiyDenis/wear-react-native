@@ -13,12 +13,7 @@ import {
 const { width } = Dimensions.get('window');
 const widthItem = (width * 0.9 - 20) / 3 - 2;
 
-function PopupImageSelect({
-  label = 'Select image',
-  uriList = [],
-  onSelect,
-  style,
-}) {
+function PopupColorSelect({ label = 'Select color', onSelect, style }) {
   let [visible, setVisible] = useState(false);
 
   let toggleModal = () => {
@@ -34,31 +29,13 @@ function PopupImageSelect({
     setVisible(false);
   };
 
-  let renderItem = () =>
-    uriList.map((item) => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            onItemPress(item);
-          }}
-          style={styles.item}>
-          <Image
-            style={styles.itemImage}
-            source={{ uri: 'data:image/png;base64,' + item.value }}
-          />
-        </TouchableOpacity>
-      );
-    });
-
   let renderModal = () => {
     if (visible) {
       return (
         <Modal visible={visible} transparent={true} animationType="fade">
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <ScrollView>
-                <View style={styles.scrollView}>{renderItem()}</View>
-              </ScrollView>
+              <View style={styles.gradient}></View>
             </View>
           </View>
         </Modal>
@@ -89,19 +66,9 @@ let styles = StyleSheet.create({
     borderRadius: 7,
     width: '90%',
   },
-  scrollView: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  item: {
-    margin: 1,
-    width: widthItem,
-  },
-  itemImage: {
-    width: widthItem,
-    height: widthItem,
-    resizeMode: 'cover',
-  },
+  gradient: {
+    
+  }
 });
 
-export default PopupImageSelect;
+export default PopupColorSelect;

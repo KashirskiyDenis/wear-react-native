@@ -67,7 +67,7 @@ function PopupSelect({ label = 'Select item', data, select, onSelect, style }) {
       {renderModal()}
       <View style={[styles.button, style]}>
         <Text style={[styles.buttonText, style]}>{selected || label}</Text>
-        <Entypo name="chevron-small-down" style={[styles.buttonText, style]} />
+        <Entypo name="chevron-small-down" style={[styles.buttonText, style, {color: '#007aff'}]} />
       </View>
     </TouchableOpacity>
   );
@@ -81,7 +81,6 @@ let styles = StyleSheet.create({
     backgroundColor: '#0000002a',
   },
   modalView: {
-    // backgroundColor: '#ffffffde',
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 7,

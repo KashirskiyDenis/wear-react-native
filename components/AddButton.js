@@ -15,15 +15,15 @@ function AddButton() {
           <Stop offset="100%" stopColor="#ffffff" />
         </RadialGradient>
       </Defs>
-      <Circle cx={57.5} cy={57.5} r={40} fill="url(#shadow)" />
-      <Circle cx={50} cy={50} r={40} fill="#6fabb3" />
+      <Circle cx={57.5} cy={57.5} r={41} fill="url(#shadow)" />
+      <Circle cx={50} cy={50} r={40} fill="#ffffff" stroke="#007aff"/>
       <Line
         x1={50}
         y1={35}
         x2={50}
         y2={65}
         className="line"
-        stroke="#ffffff"
+        stroke="#007aff"
         strokeWidth={7}
         strokeLinecap="round"
       />
@@ -33,7 +33,7 @@ function AddButton() {
         x2={65}
         y2={50}
         className="line"
-        stroke="#ffffff"
+        stroke="#007aff"
         strokeWidth={7}
         strokeLinecap="round"
       />

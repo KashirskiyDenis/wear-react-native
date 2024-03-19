@@ -77,7 +77,6 @@ function DonutChart({ widthAndHeight, data, colors }) {
                 r={radius}
                 fill="transparent"
                 stroke={chank.color}
-                strokeOpacity="0.5"
                 strokeWidth={strokeWidth}
                 strokeDasharray={chank.strokeDasharray}
               />

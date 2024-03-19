@@ -244,10 +244,11 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 250,
     borderWidth: 1,
-    borderColor: '#8f8e8f',
+    borderColor: '#000000',
     marginVertical: 15,
   },
   thingTitle: {
+    backgroundColor: '#ffffff',
     fontSize: 24,
     fontWeight: '600',
     padding: 5,
@@ -255,9 +256,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
   },
   thingText: {
+    backgroundColor: '#ffffff',
     fontSize: 20,
     padding: 5,
-    marginVertical: 5,
     borderLeftWidth: 1,
   },
   saveView: {

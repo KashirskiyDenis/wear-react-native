@@ -1,4 +1,4 @@
-import React from 'react';
+import { useContext, useState } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -7,9 +7,12 @@ import {
   View,
 } from 'react-native';
 
+import { DatabaseContext } from '../../DatabaseContext';
+
 import DonutChart from '../DonutChart';
-import SortList from '../SortList';
+import GroupList from '../GroupList';
 import AddButton from '../AddButton';
+import MultiSwitch from '../MultiSwitch';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -22,7 +25,7 @@ let getRandomColor = () => {
   let green = getRandom();
   let blue = getRandom();
 
-  return `rgb(${red}, ${green}, ${blue})`;
+  return `rgba(${red}, ${green}, ${blue}, 0.60)`;
 };
 
 let colors = [
@@ -33,61 +36,25 @@ let colors = [
   getRandomColor(),
 ];
 
+let data = [30, 60, 90, 120, 60];
+let groupData = colors.map((item, index) => {
+  return { data: data[index], color: item };
+});
+let dataList = [
+  { key: 'category', value: 'Категории' },
+  { key: 'season', value: 'Сезоны' },
+  { key: 'color', value: 'Цвета' },
+];
+
 function WardrobeScreen({ navigation }) {
-  let [countWear, setCountWear] = React.useState(0);
-
-  let [isPressCategory, setIsPressCategory] = React.useState(true);
-  let [isPressSeason, setIsPressSeason] = React.useState(false);
-  let [isPressColor, setIsPressColor] = React.useState(false);
-
-  let onPressSort = (props) => {
-    if (props == 'category') {
-      setIsPressCategory(true);
-      setIsPressSeason(false);
-      setIsPressColor(false);
-    } else if (props == 'season') {
-      setIsPressCategory(false);
-      setIsPressSeason(true);
-      setIsPressColor(false);
-    } else if (props == 'color') {
-      setIsPressCategory(false);
-      setIsPressSeason(false);
-      setIsPressColor(true);
-    }
-  };
+  let { clothes } = useContext(DatabaseContext);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', padding: 10 }}>
-      <View style={styles.sortMenu}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => onPressSort('category')}>
-          <View style={isPressCategory ? styles.sortActive : styles.sort}>
-            <Text style={styles.sizeTextSort}>Категории</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => onPressSort('season')}>
-          <View style={isPressSeason ? styles.sortActive : styles.sort}>
-            <Text style={styles.sizeTextSort}>Сезоны</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => onPressSort('color')}>
-          <View style={isPressColor ? styles.sortActive : styles.sort}>
-            <Text style={styles.sizeTextSort}>Цвета</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-      <DonutChart
-        widthAndHeight={WIDTH - 10}
-        data={[30, 60, 90, 120, 60]}
-        colors={colors}
-      />
-      <Text style={styles.allWear}>Всего вещей: {countWear}</Text>
-      <SortList data={[30, 60, 90, 120, 60]} colors={colors} />
+    <View style={styles.container}>
+      <MultiSwitch data={dataList} groupKey='season' />
+      <DonutChart widthAndHeight={WIDTH - 10} data={data} colors={colors} />
+      <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
+      <GroupList data={groupData} />
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
@@ -103,35 +70,10 @@ function WardrobeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  sortMenu: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 4,
-    zIndex: 2,
-  },
-  sort: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    color: '#000000',
-    backgroundColor: '#b1e0e6',
-    shadowColor: '#a8a8a8',
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-  },
-  sortActive: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    color: '#000000',
-    backgroundColor: '#6fabb3',
-    shadowColor: '#a8a8a8',
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-  },
-  sizeTextSort: {
-    fontSize: 20,
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    padding: 10,
   },
   allWear: {
     fontSize: 24,

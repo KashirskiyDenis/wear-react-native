@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-function SortList({ data, colors }) {
+function SortList({ data }) {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-      {colors.map((color, index) => {
+      {data.map((item, index) => {
         return (
           <View
             style={{
@@ -16,13 +16,12 @@ function SortList({ data, colors }) {
               style={{
                 height: 16,
                 width: 16,
-                backgroundColor: color,
+                backgroundColor: item.color,
                 borderRadius: 16,
                 marginRight: 5,
-                opacity: 0.5,
               }}></View>
             <View>
-              <Text style={{fontSize: 16,}}>Категория {index}</Text>
+              <Text style={{ fontSize: 16 }}>Категория {index}</Text>
             </View>
           </View>
         );

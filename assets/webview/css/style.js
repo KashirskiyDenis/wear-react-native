@@ -12,7 +12,7 @@ body {
 	background-color: #ffffff;
 	text-align: center;
 	padding: 10px;
-	color: #367dff;
+	color: #007aff;
 }
 input[type=button] {
 	display: none;

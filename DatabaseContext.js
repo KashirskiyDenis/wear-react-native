@@ -25,7 +25,7 @@ function DatabaseProvider({ children }) {
               resolve(id);
             },
             (_, error) => {
-              console.error('DBContext. Error save clothes. ', error.message);
+              console.error('DBContext. Error save clothes.', error.message);
               reject(error);
             }
           );
@@ -55,7 +55,7 @@ function DatabaseProvider({ children }) {
               resolve(id);
             },
             (_, error) => {
-              console.error('DBContext. Error save outfit. ', error.message);
+              console.error('DBContext. Error save outfit.', error.message);
               reject(error);
             }
           );
@@ -93,7 +93,7 @@ function DatabaseProvider({ children }) {
             },
             (_, error) => {
               console.error(
-                'DBContext. Error save clothesInOutfit. ',
+                'DBContext. Error save clothesInOutfit.',
                 error.message
               );
               reject(error);
@@ -120,7 +120,7 @@ function DatabaseProvider({ children }) {
           setClothes(result.rows._array);
         },
         (_, error) => {
-          console.error('DBContext. Error loading clothes. ', error.message);
+          console.error('DBContext. Error loading clothes.', error.message);
         }
       );
     });
@@ -135,7 +135,7 @@ function DatabaseProvider({ children }) {
           setOutfits(result.rows._array);
         },
         (_, error) => {
-          console.error('DBContext. Error loading outfit. ', error.message);
+          console.error('DBContext. Error loading outfit.', error.message);
         }
       );
     });
@@ -146,15 +146,31 @@ function DatabaseProvider({ children }) {
           FROM clothes, clothesInOutfit AS cio
           WHERE clothes.id = cio.idClothes AND
             cio.idOutfit = ?`;
-    db.transaction((tx) => {
-      tx.executeSql(
-        sql,
-        [idOutfit],
-        (_, result) => {
-          setClothesInOutfit(result.rows._array);
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            sql,
+            [idOutfit],
+            (_, result) => {
+              setClothesInOutfit(result.rows._array);
+              resolve(result.rows._array);
+            },
+            (_, error) => {
+              console.error(
+                'DBContext. Error reading clothes in outfit.',
+                error.message
+              );
+              reject(error);
+            }
+          );
         },
-        (_, error) => {
-          console.error('DBContext. Error loading clothes. ', error.message);
+        (transactionError) => {
+          console.error(
+            'DBContext. Translation Error reading clothes in outfit.',
+            transactionError.message
+          );
+          reject(transactionError);
         }
       );
     });
@@ -172,7 +188,7 @@ function DatabaseProvider({ children }) {
               resolve();
             },
             (_, error) => {
-              console.error('DBContext. Error update clothes. ', error.message);
+              console.error('DBContext. Error update clothes.', error.message);
               reject(error);
             }
           );
@@ -200,7 +216,7 @@ function DatabaseProvider({ children }) {
               resolve();
             },
             (_, error) => {
-              console.error('DBContext. Error update outfits. ', error.message);
+              console.error('DBContext. Error update outfits.', error.message);
               reject(error);
             }
           );
@@ -259,7 +275,7 @@ function DatabaseProvider({ children }) {
               resolve();
             },
             (_, error) => {
-              console.error('DBContext. Error delete outfit. ', error.message);
+              console.error('DBContext. Error delete outfit.', error.message);
               reject(error);
             }
           );
@@ -287,7 +303,7 @@ function DatabaseProvider({ children }) {
             },
             (_, error) => {
               console.error(
-                'DBContext. Error delete clothesInOutfit. ',
+                'DBContext. Error delete clothesInOutfit.',
                 error.message
               );
               reject(error);

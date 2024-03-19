@@ -18,7 +18,7 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
-function CustomSVG({ data, updatedData }) {
+function CustomSVG({ data }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [trash, setTrash] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
