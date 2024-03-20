@@ -9,6 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { ColorPicker } from 'react-native-color-picker'
+
 import PopupSelect from '../PopupSelect';
 
 import { DatabaseContext } from '../../DatabaseContext';

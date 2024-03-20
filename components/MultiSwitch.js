@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-function MultiSwitch({ data, activeKey }) {
-  let { currentKey, setCurrentKey } = useState(activeKey);
+function MultiSwitch({ data, activeKey, onChange }) {
+  let [currentKey, setCurrentKey] = useState(activeKey);
 
   let onPressGroup = (key) => {
     setCurrentKey(key);
+    onChange(key);
   };
 
   return (
     <View style={styles.sortMenu}>
-      {data.map((item) => {
+      {data.map((item, index) => {
         return (
           <TouchableOpacity
             activeOpacity={0.8}
@@ -18,7 +19,10 @@ function MultiSwitch({ data, activeKey }) {
               onPressGroup(item.key);
             }}>
             <View
-              style={item.key == currentKey ? styles.pointActive : styles.point}>
+              style={[
+                item.key == currentKey ? styles.pointActive : styles.point,
+                index == data.length - 1 ? styles.pointLast : {},
+              ]}>
               <Text
                 style={[
                   styles.pointText,
@@ -39,20 +43,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // zIndex: 2,
   },
   point: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#ffffff',
-    borderWidth: 1,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderColor: '#007aff',
+  },
+  pointLast: {
+    borderRightWidth: 1,
   },
   pointActive: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#007aff',
-    borderWidth: 1,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderColor: '#007aff',
   },
   pointText: {

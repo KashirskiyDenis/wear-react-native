@@ -48,10 +48,11 @@ let dataList = [
 
 function WardrobeScreen({ navigation }) {
   let { clothes } = useContext(DatabaseContext);
+  let [groupBy, setGroupBy] = useState('category');
 
   return (
     <View style={styles.container}>
-      <MultiSwitch data={dataList} groupKey='season' />
+      <MultiSwitch data={dataList} activeKey={groupBy} onChange={setGroupBy} />
       <DonutChart widthAndHeight={WIDTH - 10} data={data} colors={colors} />
       <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
       <GroupList data={groupData} />
