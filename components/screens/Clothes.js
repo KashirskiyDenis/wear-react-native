@@ -9,9 +9,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { ColorPicker } from 'react-native-color-picker'
 
 import PopupSelect from '../PopupSelect';
+import PopupColorPicker from '../PopupColorPicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
@@ -196,11 +196,12 @@ function Clothes({ navigation, route }) {
           onSelect={setSeason}
           style={{ fontSize: 20 }}
         />
-        <TextInput
-          style={styles.thingText}
-          placeholder="Цвет вещи"
-          onChangeText={(text) => setColor(text)}
-          defaultValue={color}
+        <PopupColorPicker
+          label="Цвет вещи"
+          onSelect={setColor}
+          style={styles.dropdown}
+          fontSize={20}
+          selectedColor={color}
         />
       </View>
       <View style={styles.saveView}>

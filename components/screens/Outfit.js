@@ -13,7 +13,7 @@ import * as FileSystem from 'expo-file-system';
 
 import CustomSVG from '../CustomSVG';
 import PopupSelect from '../PopupSelect';
-import PopupImageSelect from '../PopupImageSelect';
+import PopupImagePicker from '../PopupImagePicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
@@ -273,7 +273,7 @@ function Outfit({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <PopupImageSelect
+      <PopupImagePicker
         label="Выберите изображение"
         uriList={clothesImageList}
         onSelect={setImage}

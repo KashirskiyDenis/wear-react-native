@@ -4,9 +4,9 @@ import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
-import htmlContent from '../../assets/webview/html/index';
-import cssContent from '../../assets/webview/css/style';
-import jsContent from '../../assets/webview/js/script';
+import htmlContent from '../../assets/webview/html/editPhoto';
+import cssContent from '../../assets/webview/css/editPhoto';
+import jsContent from '../../assets/webview/js/editPhoto';
 
 let HTML;
 

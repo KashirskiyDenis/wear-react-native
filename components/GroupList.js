@@ -1,27 +1,17 @@
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-function SortList({ data }) {
+function GroupList({ data }) {
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-      {data.map((item, index) => {
+    <View style={styles.container}>
+      {data.map((item) => {
         return (
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 5,
-              marginRight: 5,
-              alignItems: 'center',
-            }}>
+          <View style={styles.item}>
             <View
-              style={{
-                height: 16,
-                width: 16,
-                backgroundColor: item.color,
-                borderRadius: 16,
-                marginRight: 5,
-              }}></View>
+              style={[styles.circle, { backgroundColor: item.color }]}></View>
             <View>
-              <Text style={{ fontSize: 16 }}>Категория {index}</Text>
+              <Text style={styles.text}>
+                {item.title} - {item.count}
+              </Text>
             </View>
           </View>
         );
@@ -30,4 +20,23 @@ function SortList({ data }) {
   );
 }
 
-export default SortList;
+const styles = StyleSheet.create({
+  container: { flexDirection: 'row', flexWrap: 'wrap' },
+  item: {
+    flexDirection: 'row',
+    marginTop: 5,
+    marginRight: 5,
+    alignItems: 'center',
+  },
+  circle: {
+    height: 16,
+    width: 16,
+    borderRadius: 16,
+    marginRight: 5,
+  },
+  text: {
+    fontSize: 16,
+  },
+});
+
+export default GroupList;

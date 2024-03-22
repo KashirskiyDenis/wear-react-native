@@ -37,10 +37,17 @@ let colors = [
 ];
 
 let data = [30, 60, 90, 120, 60];
+let seasonList = [
+  'Зимняя',
+  'Весенне-осенняя',
+  'Летняя',
+  'Демисезонная',
+  'Внесезонная',
+];
 let groupData = colors.map((item, index) => {
-  return { data: data[index], color: item };
+  return { title: seasonList[index], color: item, count: data[index] };
 });
-let dataList = [
+let groupByList = [
   { key: 'category', value: 'Категории' },
   { key: 'season', value: 'Сезоны' },
   { key: 'color', value: 'Цвета' },
@@ -52,17 +59,17 @@ function WardrobeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <MultiSwitch data={dataList} activeKey={groupBy} onChange={setGroupBy} />
+      <MultiSwitch
+        data={groupByList}
+        activeKey={groupBy}
+        onChange={setGroupBy}
+      />
       <DonutChart widthAndHeight={WIDTH - 10} data={data} colors={colors} />
       <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
       <GroupList data={groupData} />
       <TouchableOpacity
         activeOpacity={0.8}
-        style={{
-          position: 'absolute',
-          right: 15,
-          bottom: 15,
-        }}
+        style={styles.addButton}
         onPress={() => navigation.navigate('EditClothesScreen')}>
         <AddButton />
       </TouchableOpacity>
@@ -79,6 +86,11 @@ const styles = StyleSheet.create({
   allWear: {
     fontSize: 24,
     marginBottom: 5,
+  },
+  addButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
   },
 });
 

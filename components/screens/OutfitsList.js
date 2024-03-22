@@ -65,11 +65,7 @@ function OutfitsScreen({ navigation }) {
       />
       <TouchableOpacity
         activeOpacity={0.8}
-        style={{
-          position: 'absolute',
-          right: 15,
-          bottom: 15,
-        }}
+        style={styles.addButton}
         onPress={() => navigation.navigate('EditOutfitScreen')}>
         <AddButton />
       </TouchableOpacity>
@@ -94,6 +90,11 @@ const styles = StyleSheet.create({
   thingTitle: {
     fontSize: 24,
     fontWeight: '600',
+  },
+  addButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
   },
 });
 

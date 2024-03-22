@@ -1,21 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import {
   Button,
   Dimensions,
-  Image,
   Modal,
-  ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import { WebView } from 'react-native-webview';
+
+import htmlContent from '../assets/webview/html/colorPicker';
+import cssContent from '../assets/webview/css/colorPicker';
+import jsContent from '../assets/webview/js/colorPicker';
+
 const { width } = Dimensions.get('window');
-const widthItem = (width * 0.9 - 20) / 3 - 2;
+let canvasWidth = width * 0.8 - 20 - 2;
+let canvasHeight = canvasWidth - 30 - 2 - 5;
+let modalViewHeight = width * 0.8 + 41;
 
-function PopupColorSelect({ label = 'Select color', onSelect, style }) {
+let newCSS = `${cssContent}`.replace('canvasSize', `${canvasWidth}px;`);
+let newJS = `${jsContent}`
+  .replace('let canvasHeight;', `let canvasHeight = ${canvasHeight};`)
+  .replace('let canvasWidth;', `let canvasWidth = ${canvasWidth};`);
+
+let HTML = htmlContent
+  .replace('<style></style>', newCSS)
+  .replace('<script></script>', newJS);
+
+function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
   let [visible, setVisible] = useState(false);
+  let [color, setColor] = useState();
 
+  let webViewRef = useRef();
+  if (selectedColor) {
+    HTML = HTML.replace('let color;', `let color = '${selectedColor}';`);
+    HTML = HTML.replace(
+      /let color = 'rgb\(\d{0,3},\s\d{0,3},\s\d{0,3}\)';/,
+      `let color = '${selectedColor}';`
+    );
+  }
   let toggleModal = () => {
     visible ? setVisible(false) : openModal();
   };
@@ -24,8 +49,14 @@ function PopupColorSelect({ label = 'Select color', onSelect, style }) {
     setVisible(true);
   };
 
-  let onItemPress = (item) => {
-    onSelect(item);
+  let onMessage = (event) => {
+    let data = event.nativeEvent.data;
+    color = data;
+  };
+
+  let pickColor = () => {
+    setColor(color);
+    onSelect(color);
     setVisible(false);
   };
 
@@ -34,8 +65,21 @@ function PopupColorSelect({ label = 'Select color', onSelect, style }) {
       return (
         <Modal visible={visible} transparent={true} animationType="fade">
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={styles.gradient}></View>
+            <View style={[styles.modalView, {}]}>
+              <WebView
+                ref={webViewRef}
+                originWhitelist={['*']}
+                source={{ html: HTML }}
+                scrollEnabled={false}
+                javaScriptEnabled={true}
+                onMessage={(event) => onMessage(event)}
+              />
+              <Button
+                title="Применить"
+                onPress={() => {
+                  pickColor();
+                }}
+              />
             </View>
           </View>
         </Modal>
@@ -44,12 +88,19 @@ function PopupColorSelect({ label = 'Select color', onSelect, style }) {
   };
 
   return (
-    <View>
+    <TouchableOpacity onPress={toggleModal}>
       {renderModal()}
-      <View>
-        <Button title={label} onPress={toggleModal} />
+      <View style={styles.button}>
+        <View>
+          <Text style={{ fontSize: fontSize }}>{label}</Text>
+        </View>
+        <View
+          style={[
+            styles.smallColor,
+            { backgroundColor: color, width: fontSize, height: fontSize },
+          ]}></View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -64,11 +115,25 @@ let styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 7,
-    width: '90%',
+    width: '80%',
+    height: modalViewHeight,
   },
-  gradient: {
-    
-  }
+  button: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    padding: 5,
+    marginVertical: 5,
+    borderLeftWidth: 1,
+  },
+  smallColor: {
+    width: 14,
+    height: 14,
+    backgroundColor: 'red',
+    borderRadius: 14,
+  },
 });
 
-export default PopupColorSelect;
+export default PopupColorPicker;

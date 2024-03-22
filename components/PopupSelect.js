@@ -84,7 +84,7 @@ let styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 7,
-    width: '50%',
+    width: '80%',
   },
   modalViewBig: {
     height: 220,

@@ -482,7 +482,6 @@ function CustomSVG({ data }) {
 
   return (
     <View>
-      {/*<View style={styles.svgContainer}>*/}
       <Svg width={WIDTH} height={HEIGHT} fill="none">
         <Rect
           x={borderRotate.x}
@@ -558,14 +557,5 @@ function CustomSVG({ data }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  svgContainer: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#e5e5ea',
-  },
-});
 
 export default CustomSVG;
