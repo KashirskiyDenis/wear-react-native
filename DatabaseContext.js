@@ -126,6 +126,33 @@ function DatabaseProvider({ children }) {
     });
   };
 
+  let readClothesGroupBy = (groupBy) => {
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            'SELECT *, count(*) as count FROM clothes GROUP BY ' + groupBy,
+            [],
+            (_, result) => {
+              resolve(result.rows._array);
+            },
+            (_, error) => {
+              console.error('DBContext. Error loading clothes.', error.message);
+              reject(error);
+            }
+          );
+        },
+        (transactionError) => {
+          console.error(
+            'DBContext. Translation Error create clothesInOutfit.',
+            transactionError.message
+          );
+          reject(transactionError);
+        }
+      );
+    });
+  };
+
   let readOutfits = () => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -355,6 +382,7 @@ function DatabaseProvider({ children }) {
         readClothes,
         readOutfits,
         readClothesInOutfit,
+        readClothesGroupBy,
 
         updateClothes,
         updateOutfit,

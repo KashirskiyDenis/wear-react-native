@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -37,16 +37,14 @@ let colors = [
 ];
 
 let data = [30, 60, 90, 120, 60];
-let seasonList = [
-  'Зимняя',
-  'Весенне-осенняя',
-  'Летняя',
-  'Демисезонная',
-  'Внесезонная',
-];
-let groupData = colors.map((item, index) => {
-  return { title: seasonList[index], color: item, count: data[index] };
-});
+let seasonList = ['Зимняя', 'Весенне-осенняя', 'Летняя', 'Всесезонная'];
+let seasonColor = new Map([
+  ['Зимняя', '#6e9abc'],
+  ['Весенне-осенняя', '#bfff00'],
+  ['Летняя', '#d20117'],
+  ['Всесезонная', '#c0c0c0'],
+]);
+
 let groupByList = [
   { key: 'category', value: 'Категории' },
   { key: 'season', value: 'Сезоны' },
@@ -54,8 +52,36 @@ let groupByList = [
 ];
 
 function WardrobeScreen({ navigation }) {
-  let { clothes } = useContext(DatabaseContext);
-  let [groupBy, setGroupBy] = useState('category');
+  let { clothes, readClothesGroupBy } = useContext(DatabaseContext);
+  let [groupBy, setGroupBy] = useState('season');
+  let [groupData, setGroupData] = useState([]);
+
+  useEffect(() => {
+    if (groupBy == 'category') {
+      readClothesGroupBy(groupBy).then((result) => {
+        let arr = result.map((item) => {
+          return {
+            title: item.category,
+            count: item.count,
+            color: getRandomColor(),
+          };
+        });
+        setGroupData(arr);
+      });
+    } else if (groupBy == 'season') {
+      readClothesGroupBy(groupBy).then((result) => {
+        let arr = result.map((item) => {
+          return {
+            title: item.season,
+            count: item.count,
+            color: seasonColor.get(item.season),
+          };
+        });
+        setGroupData(arr);
+      });
+    } else if (groupBy == 'color') {
+    }
+  }, [clothes, groupBy]);
 
   return (
     <View style={styles.container}>
@@ -64,7 +90,7 @@ function WardrobeScreen({ navigation }) {
         activeKey={groupBy}
         onChange={setGroupBy}
       />
-      <DonutChart widthAndHeight={WIDTH - 10} data={data} colors={colors} />
+      <DonutChart size={WIDTH - 10} data={data} colors={colors} />
       <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
       <GroupList data={groupData} />
       <TouchableOpacity

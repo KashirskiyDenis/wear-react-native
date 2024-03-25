@@ -6,7 +6,7 @@ let roundTo = (num, to = 0) => {
   return Math.round(num * to) / to;
 };
 
-function DonutChart({ widthAndHeight, data, colors }) {
+function DonutChart({ size, data, colors }) {
   const radius = 35;
   const strokeWidth = 25;
   const cxy = 47.5;
@@ -17,7 +17,7 @@ function DonutChart({ widthAndHeight, data, colors }) {
   let corner = [];
   let newData = [];
 
-  widthAndHeight = roundTo(widthAndHeight);
+  size = roundTo(size);
 
   for (let i = 0; i < data.length; i++) {
     dataSum += data[i];
@@ -41,14 +41,14 @@ function DonutChart({ widthAndHeight, data, colors }) {
   return (
     <View
       style={{
-        width: widthAndHeight,
-        height: widthAndHeight,
+        width: size,
+        height: size,
         justifyContent: 'center',
         padding: 10,
       }}>
       <Svg
-        width={widthAndHeight - 20}
-        height={widthAndHeight - 20}
+        width={size - 20}
+        height={size - 20}
         viewBox="0 0 100 100"
         fill="none">
         <Defs>

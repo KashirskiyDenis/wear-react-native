@@ -1,13 +1,20 @@
 {
   "expo": {
-    "name": "wear",
-    "slug": "snack-ee18cfe5-9a36-4bb5-84b9-30886cd715ba",
+    "name": "Wardrobe",
+    "slug": "wear",
+    "owner": "dkashirskiy",
+    "sdkVersion": "~48.0.21",
     "version": "0.2.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "githuburl": "https://github.com/KashirskiyDenis/wear-react-native",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/snack-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/snack-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,16 +22,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": false
+      "icon": "./assets/snack-icon.png",
+      "supportsTablet": false,
+      "splash": {
+        "image": "./assets/snack-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [

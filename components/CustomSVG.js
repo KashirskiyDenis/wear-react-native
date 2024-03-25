@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Dimensions, View } from 'react-native';
 import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
 
 const WIDTH = Dimensions.get('window').width;
@@ -195,7 +195,6 @@ function CustomSVG({ data }) {
     for (let i = 0; i < data.length; i++) {
       if (data[i].id == id) {
         data.push(...data.splice(i, 1));
-        // console.log(data);
         return data[data.length - 1];
       }
     }
@@ -284,8 +283,6 @@ function CustomSVG({ data }) {
     for (let i = 0; i < data.length; i++) {
       if (data[i].id == draggbleFigure.id) {
         data.splice(i, 1);
-        // updatedData(data);
-        // console.log(data);
         break;
       }
     }

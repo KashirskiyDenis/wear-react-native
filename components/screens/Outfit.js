@@ -30,11 +30,10 @@ function Outfit({ navigation, route }) {
   } = useContext(DatabaseContext);
   const { mapImageClothes, mapImageOutfitsPOST } = useContext(VariableContext);
   const seasonList = [
-    { label: 'Зимняя', value: 'Зима' },
+    { label: 'Зимняя', value: 'Зимняя' },
     { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
     { label: 'Летняя', value: 'Летняя' },
-    { label: 'Демисезонная', value: 'Демисезонная' },
-    { label: 'Внесезонная', value: 'Внесезонная' },
+    { label: 'Всесезонная', value: 'Всесезонная' },
   ];
 
   let imageRef = useRef();
