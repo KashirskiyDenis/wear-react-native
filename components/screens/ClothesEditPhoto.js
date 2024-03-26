@@ -8,7 +8,7 @@ import htmlContent from '../../assets/webview/html/editPhoto';
 import cssContent from '../../assets/webview/css/editPhoto';
 import jsContent from '../../assets/webview/js/editPhoto';
 
-let HTML;
+let HTML = htmlContent.replace('<style></style>', cssContent);
 
 function EditPhoto({ navigation, route }) {
   let webViewRef = useRef();
@@ -33,7 +33,7 @@ function EditPhoto({ navigation, route }) {
     return path;
   };
 
-  let init = () => {
+  let handleLoadEnd = () => {
     let newJS = `${jsContent}`;
     if (route.params) {
       newJS = newJS.replace(
@@ -41,12 +41,8 @@ function EditPhoto({ navigation, route }) {
         `let base64 = 'data:image/png;base64,${route.params.uri}';`
       );
     }
-    HTML = htmlContent
-      .replace('<style></style>', cssContent)
-      .replace('<script></script>', newJS);
+    webViewRef.current.injectJavaScript(newJS);
   };
-
-  init();
 
   let onMessage = async (event) => {
     let tmp;
@@ -55,12 +51,17 @@ function EditPhoto({ navigation, route }) {
       if (route.params?.path) {
         tmp = await saveImageFromBase64(data, route.params.path);
       } else {
-        tmp = await saveImageFromBase64(data, null, 'clothes', +new Date() + '.png');
+        tmp = await saveImageFromBase64(
+          data,
+          null,
+          'clothes',
+          +new Date() + '.png'
+        );
       }
 
       setPathFile(tmp);
       setBase64(data);
-      showSnackbar('Изменения сохранены.', 'success');      
+      showSnackbar('Изменения сохранены.', 'success');
     } catch (error) {
       console.error(
         'Component "ClothesEditPhoto". Error when saving image in file system.',
@@ -71,10 +72,10 @@ function EditPhoto({ navigation, route }) {
   };
 
   let showSnackbar = (text, status) => {
-      setSnackbarVisible('block');
-      setSnackbarText(text);
-      setSnackbarStatus(status);
-      fadeIn();
+    setSnackbarVisible('block');
+    setSnackbarText(text);
+    setSnackbarStatus(status);
+    fadeIn();
   };
 
   let fadeIn = () => {
@@ -131,7 +132,37 @@ function EditPhoto({ navigation, route }) {
         scrollEnabled={false}
         javaScriptEnabled={true}
         onMessage={(event) => onMessage(event)}
+        onLoadEnd={handleLoadEnd}
       />
+      <View style={styles.saveView}>
+        <Button
+          title="Ластик"
+          onPress={() => {
+            let js = `canvas.removeEventListener('pointerdown', tools[tool]);
+              canvas.addEventListener('pointerdown', eraser);
+              tool = 'bgEraser';`;
+            webViewRef.current.injectJavaScript(js);
+          }}
+        />
+        <Button
+          title="Волшебный Ластик"
+          onPress={() => {
+            let js = `canvas.removeEventListener('pointerdown', tools[tool]);
+              canvas.addEventListener('pointerdown', filling);
+              tool = 'filling';`;
+            webViewRef.current.injectJavaScript(js);
+          }}
+        />
+      </View>
+      <View style={styles.saveView}>
+        <Button
+          title="Сохранить"
+          onPress={() => {
+            let js = `window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);`;
+            webViewRef.current.injectJavaScript(js);
+          }}
+        />
+      </View>
       <Animated.View
         style={[
           styles.snackbar,
@@ -151,6 +182,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  saveView: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
   },
   snackbar: {
     position: 'absolute',

@@ -37,7 +37,6 @@ let colors = [
 ];
 
 let data = [30, 60, 90, 120, 60];
-let seasonList = ['Зимняя', 'Весенне-осенняя', 'Летняя', 'Всесезонная'];
 let seasonColor = new Map([
   ['Зимняя', '#6e9abc'],
   ['Весенне-осенняя', '#bfff00'],
@@ -52,7 +51,7 @@ let groupByList = [
 ];
 
 function WardrobeScreen({ navigation }) {
-  let { clothes, readClothesGroupBy } = useContext(DatabaseContext);
+  let { clothes, outfits, readClothesGroupBy } = useContext(DatabaseContext);
   let [groupBy, setGroupBy] = useState('season');
   let [groupData, setGroupData] = useState([]);
 
@@ -90,9 +89,10 @@ function WardrobeScreen({ navigation }) {
         activeKey={groupBy}
         onChange={setGroupBy}
       />
-      <DonutChart size={WIDTH - 10} data={data} colors={colors} />
+      <DonutChart size={WIDTH - 20} data={data} colors={colors}/>
       <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
-      <GroupList data={groupData} />
+      <GroupList data={groupData}/>
+      <Text style={styles.allWear}>Всего образов: {outfits.length}</Text>
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.addButton}
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   allWear: {
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 5,
   },
   addButton: {

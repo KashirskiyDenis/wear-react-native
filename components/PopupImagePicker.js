@@ -13,12 +13,7 @@ import {
 const { width } = Dimensions.get('window');
 const widthItem = (width * 0.9 - 20) / 3 - 2;
 
-function PopupImageSelect({
-  label = 'Select image',
-  uriList = [],
-  onSelect,
-  style,
-}) {
+function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
   let [visible, setVisible] = useState(false);
 
   let toggleModal = () => {

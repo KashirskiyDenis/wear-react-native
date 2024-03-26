@@ -12,12 +12,12 @@ import { captureRef } from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 
 import CustomSVG from '../CustomSVG';
-import PopupSelect from '../PopupSelect';
+import PopupPicker from '../PopupPicker';
 import PopupImagePicker from '../PopupImagePicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
-import { data } from '../../services/imageBase64';
+import { data } from '../../resources/imageBase64';
 
 function Outfit({ navigation, route }) {
   const {
@@ -37,7 +37,6 @@ function Outfit({ navigation, route }) {
   ];
 
   let imageRef = useRef();
-
   let [clothesImageList, setClothesImageList] = useState(data);
 
   let [season, setSeason] = useState(
@@ -276,18 +275,17 @@ function Outfit({ navigation, route }) {
         label="Выберите изображение"
         uriList={clothesImageList}
         onSelect={setImage}
-        style={{ fontSize: 20 }}
       />
       <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
         <CustomSVG data={figures} updatedData={setFigures} />
       </View>
       <View style={{ padding: 5 }}>
-        <PopupSelect
+        <PopupPicker
           label="Сезон вещи"
           data={seasonList}
           select={{ label: season, value: season }}
           onSelect={setSeason}
-          style={{ fontSize: 20 }}
+          fontSize={20}
         />
         <TextInput
           style={styles.thingText}
@@ -331,6 +329,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: 5,
     borderLeftWidth: 1,
+    borderLeftColor: '#007aff',
   },
   svgContainer: {
     borderTopWidth: 1,

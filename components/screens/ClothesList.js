@@ -28,7 +28,7 @@ function ClothesScreen({ navigation }) {
         id: clothes[i].id,
         path: clothes[i].pathToFile,
         uri: mapImageClothes.get(clothes[i].id),
-        title: clothes[i].title,
+        type: clothes[i].type,
         category: clothes[i].category,
         season: clothes[i].season,
         color: clothes[i].color,
@@ -55,7 +55,7 @@ function ClothesScreen({ navigation }) {
                 />
               </View>
               <View>
-                <Text style={styles.thingTitle}>{item.title}</Text>
+                <Text style={styles.thingTitle}>{item.type}</Text>
                 <Text style={styles.thingText}>{item.category}</Text>
               </View>
             </View>

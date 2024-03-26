@@ -34,13 +34,18 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
   let [color, setColor] = useState();
 
   let webViewRef = useRef();
-  if (selectedColor) {
-    HTML = HTML.replace('let color;', `let color = '${selectedColor}';`);
-    HTML = HTML.replace(
-      /let color = 'rgb\(\d{0,3},\s\d{0,3},\s\d{0,3}\)';/,
-      `let color = '${selectedColor}';`
-    );
-  }
+
+  let handleLoadEnd = () => {
+    if (selectedColor) {
+      newJS = newJS.replace('let color;', `let color = '${selectedColor}';`);
+      newJS = newJS.replace(
+        /let color = 'rgb\(\d{0,3},\s\d{0,3},\s\d{0,3}\)';/,
+        `let color = '${selectedColor}';`
+      );
+    }
+    webViewRef.current.injectJavaScript(newJS);
+  };
+
   let toggleModal = () => {
     visible ? setVisible(false) : openModal();
   };
@@ -73,6 +78,7 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
                 scrollEnabled={false}
                 javaScriptEnabled={true}
                 onMessage={(event) => onMessage(event)}
+                onLoadEnd={handleLoadEnd}
               />
               <Button
                 title="Применить"
@@ -98,6 +104,7 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
           style={[
             styles.smallColor,
             { backgroundColor: color, width: fontSize, height: fontSize },
+            color ? {} : { borderWidth: 1, borderColor: '#007aff' },
           ]}></View>
       </View>
     </TouchableOpacity>
@@ -127,6 +134,7 @@ let styles = StyleSheet.create({
     padding: 5,
     marginVertical: 5,
     borderLeftWidth: 1,
+    borderLeftColor: '#007aff',
   },
   smallColor: {
     width: 14,

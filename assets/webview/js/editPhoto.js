@@ -1,26 +1,10 @@
 export default `
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
     let base64 = null;
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d', {
       willReadFrequently: true,
     });
-    document.getElementById('backgroundEraser').addEventListener('click', () => {
-      canvas.removeEventListener('pointerdown', tools[tool]);
-      canvas.addEventListener('pointerdown', eraser);
-      tool = 'bgEraser';
-    });
-    document.getElementById('magicEraser').addEventListener('click', () => {
-      canvas.removeEventListener('pointerdown', tools[tool]);
-      canvas.addEventListener('pointerdown', filling);
-      tool = 'filling';
-    });
-    
-    document.getElementById('saveImage').addEventListener('click', () => {
-     window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);
-    });
-
+ 
     if (navigator.platform == 'iPhone' || navigator.platform == 'iPad' || navigator.platform == 'iPhone Simulator') {
       window.addEventListener('message', function(event) {
         let image = new Image();
@@ -197,5 +181,4 @@ export default `
 	}
 	
 	canvas.addEventListener('pointerdown', eraser);
-});	
-</script>`;
+`;

@@ -1,6 +1,4 @@
 export default `
-<script>
-document.addEventListener('DOMContentLoaded', function () {
   let color;
 	let canvasWidth;
 	let canvasHeight;
@@ -67,5 +65,4 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	canvas.addEventListener('pointerdown', canvasCusorDown);
-});
-</script>`;
+`;

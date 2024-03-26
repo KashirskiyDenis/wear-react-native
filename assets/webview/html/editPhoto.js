@@ -12,16 +12,5 @@ export default `
 	</head>
 	<body>
 		<canvas id="canvas" width="0" height="0"></canvas>
-		<div class="container">
-			<label for="magicEraser">Ластик</label>
-			<input type="button" id="magicEraser"/>
-      <br>
-			<label for="backgroundEraser">Волшебный ластик</label>
-			<input type="button" id="backgroundEraser"/>			
-		</div>
-		<div class="container">
-			<label for="saveImage">Применить</label>
-			<input type="button" id="saveImage"/>
-		</div>
 	</body>
 </html>`;

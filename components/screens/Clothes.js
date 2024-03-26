@@ -6,12 +6,12 @@ import {
   Image,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
-import PopupSelect from '../PopupSelect';
+import PopupPicker from '../PopupPicker';
 import PopupColorPicker from '../PopupColorPicker';
+import PopupInputPicker from '../PopupInputPicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
@@ -19,7 +19,7 @@ import { VariableContext } from '../../VariableContext';
 function Clothes({ navigation, route }) {
   const { createClothes, updateClothes, deleteClothes } =
     useContext(DatabaseContext);
-  const { mapImageClothesPOST } = useContext(VariableContext);
+  const { mapImageClothesPOST, clothesTypeList } = useContext(VariableContext);
 
   const seasonList = [
     { label: 'Зимняя', value: 'Зимняя' },
@@ -27,10 +27,16 @@ function Clothes({ navigation, route }) {
     { label: 'Летняя', value: 'Летняя' },
     { label: 'Всесезонная', value: 'Всесезонная' },
   ];
+  const typeList = [
+    { label: 'Одежда', value: 'Одежда' },
+    { label: 'Обувь', value: 'Обувь' },
+  ];
 
-  let [title, setTitle] = useState(
-    route.params?.title ? route.params.title : ''
-  );
+  const categoryList = clothesTypeList.map((item) => {
+    return { label: item, value: item };
+  });
+
+  let [type, setType] = useState(route.params?.type ? route.params.type : '');
   let [category, setCategory] = useState(
     route.params?.category ? route.params.category : ''
   );
@@ -49,7 +55,7 @@ function Clothes({ navigation, route }) {
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   let saveClothes = async () => {
-    if (title == '' || category == '' || season == '' || color == '') {
+    if (type == '' || category == '' || season == '' || color == '') {
       showSnackbar('Не сохранено. Заполните все поля.', 'error');
       return;
     }
@@ -57,7 +63,7 @@ function Clothes({ navigation, route }) {
     if (route.params?.id) {
       updateClothes(
         route.params.id,
-        title,
+        type,
         route.params.path,
         category,
         season,
@@ -72,7 +78,7 @@ function Clothes({ navigation, route }) {
         });
     } else {
       if (route.params?.path) {
-        createClothes(route.params.path, title, category, season, color)
+        createClothes(route.params.path, type, category, season, color)
           .then((value) => {
             route.params.id = value;
             mapImageClothesPOST(value, route.params.uri);
@@ -176,31 +182,32 @@ function Clothes({ navigation, route }) {
         />
       </View>
       <View>
-        <TextInput
-          style={styles.thingTitle}
-          placeholder="Название вещи"
-          onChangeText={(text) => setTitle(text)}
-          defaultValue={title}
+        <PopupPicker
+          label="Тип вещи"
+          data={typeList}
+          select={{ label: type, value: type }}
+          onSelect={setType}
+          fontSize={20}
         />
-        <TextInput
-          style={styles.thingText}
-          placeholder="Категория вещи"
-          onChangeText={(text) => setCategory(text)}
-          defaultValue={category}
+        <PopupInputPicker
+          label="Категория вещи"
+          data={categoryList}
+          select={{ label: category, value: category }}
+          onSelect={setCategory}
+          fontSize={20}
         />
-        <PopupSelect
+        <PopupPicker
           label="Сезон вещи"
           data={seasonList}
           select={{ label: season, value: season }}
           onSelect={setSeason}
-          style={{ fontSize: 20 }}
+          fontSize={20}
         />
         <PopupColorPicker
           label="Цвет вещи"
-          onSelect={setColor}
-          style={styles.dropdown}
-          fontSize={20}
           selectedColor={color}
+          onSelect={setColor}
+          fontSize={20}
         />
       </View>
       <View style={styles.saveView}>
@@ -248,20 +255,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#000000',
     marginVertical: 15,
-  },
-  thingTitle: {
-    backgroundColor: '#ffffff',
-    fontSize: 24,
-    fontWeight: '600',
-    padding: 5,
-    marginVertical: 5,
-    borderLeftWidth: 1,
-  },
-  thingText: {
-    backgroundColor: '#ffffff',
-    fontSize: 20,
-    padding: 5,
-    borderLeftWidth: 1,
   },
   saveView: {
     flex: 1,

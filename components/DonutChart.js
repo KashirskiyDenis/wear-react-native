@@ -44,11 +44,13 @@ function DonutChart({ size, data, colors }) {
         width: size,
         height: size,
         justifyContent: 'center',
-        padding: 10,
+        padding: 5,
+        marginTop: 10,
+        marginBottom: 10,
       }}>
       <Svg
-        width={size - 20}
-        height={size - 20}
+        width={size - 10}
+        height={size - 10}
         viewBox="0 0 100 100"
         fill="none">
         <Defs>

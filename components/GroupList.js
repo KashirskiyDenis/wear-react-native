@@ -21,10 +21,13 @@ function GroupList({ data }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', flexWrap: 'wrap' },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   item: {
     flexDirection: 'row',
-    marginTop: 5,
+    marginBottom: 5,
     marginRight: 5,
     alignItems: 'center',
   },

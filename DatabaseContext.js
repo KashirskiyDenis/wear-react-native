@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import * as SQLite from 'expo-sqlite';
 
-import * as createTable from './services/CreateTables';
+import * as createTable from './resources/CreateTables';
 
 const db = SQLite.openDatabase('mydb.db');
 const DatabaseContext = createContext(db);
@@ -11,14 +11,14 @@ function DatabaseProvider({ children }) {
   let [outfits, setOutfits] = useState([]);
   let [clothesInOutfit, setClothesInOutfit] = useState([]);
 
-  let createClothes = (pathToFile, title, category, season, color) => {
+  let createClothes = (pathToFile, type, category, season, color) => {
     let id;
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'INSERT INTO clothes (title, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
-            [title, pathToFile, category, season, color],
+            'INSERT INTO clothes (type, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
+            [type, pathToFile, category, season, color],
             (_, result) => {
               id = result.insertId;
               readClothes();
@@ -203,13 +203,13 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  let updateClothes = (id, title, pathToFile, category, season, color) => {
+  let updateClothes = (id, type, pathToFile, category, season, color) => {
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'UPDATE clothes SET title=?, pathToFile=?, category=?, season=?, color=? WHERE id=?',
-            [title, pathToFile, category, season, color, id],
+            'UPDATE clothes SET type=?, pathToFile=?, category=?, season=?, color=? WHERE id=?',
+            [type, pathToFile, category, season, color, id],
             () => {
               readClothes();
               resolve();
