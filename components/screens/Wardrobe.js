@@ -28,15 +28,6 @@ let getRandomColor = () => {
   return `rgba(${red}, ${green}, ${blue}, 0.60)`;
 };
 
-let colors = [
-  getRandomColor(),
-  getRandomColor(),
-  getRandomColor(),
-  getRandomColor(),
-  getRandomColor(),
-];
-
-let data = [30, 60, 90, 120, 60];
 let seasonColor = new Map([
   ['Зимняя', '#6e9abc'],
   ['Весенне-осенняя', '#bfff00'],
@@ -61,7 +52,7 @@ function WardrobeScreen({ navigation }) {
         let arr = result.map((item) => {
           return {
             title: item.category,
-            count: item.count,
+            value: item.count,
             color: getRandomColor(),
           };
         });
@@ -72,7 +63,7 @@ function WardrobeScreen({ navigation }) {
         let arr = result.map((item) => {
           return {
             title: item.season,
-            count: item.count,
+            value: item.count,
             color: seasonColor.get(item.season),
           };
         });
@@ -89,9 +80,9 @@ function WardrobeScreen({ navigation }) {
         activeKey={groupBy}
         onChange={setGroupBy}
       />
-      <DonutChart size={WIDTH - 20} data={data} colors={colors}/>
+      <DonutChart size={WIDTH - 20} data={groupData} />
       <Text style={styles.allWear}>Всего вещей: {clothes.length}</Text>
-      <GroupList data={groupData}/>
+      <GroupList data={groupData} />
       <Text style={styles.allWear}>Всего образов: {outfits.length}</Text>
       <TouchableOpacity
         activeOpacity={0.8}
@@ -110,7 +101,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   allWear: {
-    fontSize: 20,
+    fontSize: 16,
     marginBottom: 5,
   },
   addButton: {

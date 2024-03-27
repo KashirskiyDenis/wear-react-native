@@ -10,7 +10,7 @@ function GroupList({ data }) {
               style={[styles.circle, { backgroundColor: item.color }]}></View>
             <View>
               <Text style={styles.text}>
-                {item.title} - {item.count}
+                {item.title} - {item.value}
               </Text>
             </View>
           </View>

@@ -98,7 +98,13 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
       {renderModal()}
       <View style={styles.button}>
         <View>
-          <Text style={{ fontSize: fontSize }}>{label}</Text>
+          <Text
+            style={[
+              { fontSize: fontSize },
+              color ? {} : styles.placeholderTextColor,
+            ]}>
+            {label}
+          </Text>
         </View>
         <View
           style={[
@@ -141,6 +147,9 @@ let styles = StyleSheet.create({
     height: 14,
     backgroundColor: 'red',
     borderRadius: 14,
+  },
+  placeholderTextColor: {
+    color: '#8e8e93',
   },
 });
 

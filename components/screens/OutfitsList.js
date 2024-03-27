@@ -52,7 +52,7 @@ function OutfitsScreen({ navigation }) {
             <View style={styles.item}>
               <View>
                 <Image
-                  style={styles.thingImage}
+                  style={styles.itemImage}
                   source={{ uri: 'data:image/png;base64,' + item.uri }}
                 />
               </View>
@@ -74,18 +74,17 @@ function OutfitsScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
   item: {
-    backgroundColor: '#f9c2ff',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    alignItems: 'center',    
+    padding: 10,
   },
-  thingImage: {
-    width: 75,
-    height: 75,
+  itemImage: {
+    width: 50,
+    height: 50,
     resizeMode: 'cover',
     marginRight: 15,
-    borderRadius: 75,
+    borderRadius: 50,
   },
   thingTitle: {
     fontSize: 24,

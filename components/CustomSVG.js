@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dimensions, View } from 'react-native';
 import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
 
@@ -18,7 +18,7 @@ let cornerShiftY;
 let startX, startY;
 let startWidth, startHeight;
 
-function CustomSVG({ data }) {
+function CustomSVG({ data, hideControls }) {
   let [rotateArrow, setRotateArrow] = useState({ x: 0, y: 0, display: 'none' });
   let [trash, setTrash] = useState({ x: 0, y: 0, display: 'none' });
   let [borderRotate, setBorderRotate] = useState({ display: 'none' });
@@ -477,6 +477,18 @@ function CustomSVG({ data }) {
     }
   };
 
+  let save = () => {
+    if (hideControls) {
+      cornersDisplayNone();
+      rotateArrowDisplayNone();
+      trashDisplayNone();
+    }
+  };
+
+  useEffect(() => {
+    save();
+  }, [hideControls]);
+  
   return (
     <View>
       <Svg width={WIDTH} height={HEIGHT} fill="none">

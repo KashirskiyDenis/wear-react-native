@@ -6,7 +6,7 @@ let roundTo = (num, to = 0) => {
   return Math.round(num * to) / to;
 };
 
-function DonutChart({ size, data, colors }) {
+function DonutChart({ size, data }) {
   const radius = 35;
   const strokeWidth = 25;
   const cxy = 47.5;
@@ -20,21 +20,21 @@ function DonutChart({ size, data, colors }) {
   size = roundTo(size);
 
   for (let i = 0; i < data.length; i++) {
-    dataSum += data[i];
+    dataSum += data[i].value;
   }
 
   for (let i = 0; i < data.length; i++) {
     newData[i] = {};
-    newData[i].dash = roundTo((data[i] / dataSum) * length, 4);
+    newData[i].dash = roundTo((data[i].value / dataSum) * length, 4);
     newData[i].hole = roundTo(length - newData[i].dash, 4);
     newData[i].strokeDasharray = `${newData[i].dash} ${newData[i].hole}`;
-    newData[i].color = colors[i];
+    newData[i].color = data[i].color;
     if (i == 0) {
       corner[i] = 30;
       newData[i].transform = 'rotate(30 47.5 47.5)';
       continue;
     }
-    corner[i] = roundTo((data[i - 1] / dataSum) * 360 + corner[i - 1], 1);
+    corner[i] = roundTo((data[i - 1].value / dataSum) * 360 + corner[i - 1], 1);
     newData[i].transform = `rotate(${corner[i]} 47.5 47.5)`;
   }
 

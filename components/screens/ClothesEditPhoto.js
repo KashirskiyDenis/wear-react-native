@@ -153,8 +153,6 @@ function EditPhoto({ navigation, route }) {
             webViewRef.current.injectJavaScript(js);
           }}
         />
-      </View>
-      <View style={styles.saveView}>
         <Button
           title="Сохранить"
           onPress={() => {

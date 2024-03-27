@@ -8,15 +8,6 @@ body {
   margin: 0px;
   padding: 0px;
 }
-.container {
-	background-color: #ffffff;
-	text-align: center;
-	padding: 10px;
-	color: #007aff;
-}
-input[type=button] {
-	display: none;
-}
 canvas {
 	background-image: 
 	linear-gradient(90deg, #bababa 30px, white 30px),

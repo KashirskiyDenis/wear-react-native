@@ -6,8 +6,7 @@
     "sdkVersion": "~48.0.21",
     "version": "0.2.0",
     "platforms": [
-      "ios",
-      "android"
+      "ios"
     ],
     "githuburl": "https://github.com/KashirskiyDenis/wear-react-native",
     "orientation": "portrait",
@@ -27,12 +26,6 @@
       "splash": {
         "image": "./assets/snack-icon.png",
         "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },

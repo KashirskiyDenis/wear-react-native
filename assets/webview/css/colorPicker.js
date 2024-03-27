@@ -3,6 +3,7 @@ body {
 	font-family: "Gill Sans", sans-serif;
 	font-size: 20px;
 	margin: 0px;
+  padding: 0px;
 	user-select: none;
 	line-height: 0;
 }

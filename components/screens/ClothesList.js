@@ -50,13 +50,13 @@ function ClothesScreen({ navigation }) {
             <View style={styles.item}>
               <View>
                 <Image
-                  style={styles.thingImage}
+                  style={styles.itemImage}
                   source={{ uri: 'data:image/png;base64,' + item.uri }}
                 />
               </View>
               <View>
-                <Text style={styles.thingTitle}>{item.type}</Text>
-                <Text style={styles.thingText}>{item.category}</Text>
+                <Text style={styles.thingTitle}>{item.category}</Text>
+                <Text style={styles.thingText}>{item.type}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -78,25 +78,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   item: {
-    backgroundColor: '#f9c2ff',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    alignItems: 'center',    
+    padding: 10,
   },
-  thingImage: {
-    width: 75,
-    height: 75,
+  itemImage: {
+    width: 50,
+    height: 50,
     resizeMode: 'cover',
     marginRight: 15,
-    borderRadius: 75,
+    borderRadius: 50,
   },
   thingTitle: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: '600',
   },
   thingText: {
-    fontSize: 16,
     color: '#8f8e8f',
   },
   addButton: {

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import {
   Alert,
   Animated,
@@ -53,6 +53,8 @@ function Outfit({ navigation, route }) {
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
+
+  let [save, setSave] = useState(false);
 
   useEffect(() => {
     createClothesImageList();
@@ -125,6 +127,8 @@ function Outfit({ navigation, route }) {
   };
 
   let saveOutfit = async () => {
+    if (!save) return;
+
     let image;
     if (season == '' || event == '') {
       showSnackbar('Не сохранено. Заполните все поля.', 'error');
@@ -134,7 +138,6 @@ function Outfit({ navigation, route }) {
       showSnackbar('Не сохранено. В образе нет одежды.', 'error');
       return;
     }
-
     if (route.params?.id) {
       deleteClothesInOutfit(route.params.id)
         .then(() => {})
@@ -173,7 +176,7 @@ function Outfit({ navigation, route }) {
           return;
         });
     }
-
+    setSave(false);
     showSnackbar('Изменения сохранены.', 'success');
   };
 
@@ -277,11 +280,11 @@ function Outfit({ navigation, route }) {
         onSelect={setImage}
       />
       <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
-        <CustomSVG data={figures} updatedData={setFigures} />
+        <CustomSVG data={figures} hideControls={save} />
       </View>
       <View style={{ padding: 5 }}>
         <PopupPicker
-          label="Сезон вещи"
+          label="Сезон образа"
           data={seasonList}
           select={{ label: season, value: season }}
           onSelect={setSeason}
@@ -290,7 +293,8 @@ function Outfit({ navigation, route }) {
         <TextInput
           style={styles.thingText}
           placeholder="Событие"
-          onChangeText={(text) => setEvent(text)}
+          placeholderTextColor="#8e8e93"
+          onChangeText={(text) => setEvent(text, saveOutfit)}
           defaultValue={event}
         />
       </View>
@@ -303,7 +307,12 @@ function Outfit({ navigation, route }) {
           color="#FF3B30"
           disabled={route.params?.id ? false : true}
         />
-        <Button title="Сохранить" onPress={saveOutfit} />
+        <Button
+          title="Сохранить"
+          onPress={() => {
+            setSave(true, () => {saveOutfit()});
+          }}
+        />
       </View>
       <Animated.View
         style={[

@@ -74,7 +74,7 @@ function PopupInputPicker({
                 <TextInput
                   style={styles.textInput}
                   placeholder="Введите название"
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor="#8e8e93"
                   onChangeText={(text) => filter(text)}
                 />
                 <Feather
@@ -94,7 +94,13 @@ function PopupInputPicker({
     <TouchableOpacity onPress={toggleModal}>
       {renderModal()}
       <View style={styles.button}>
-        <Text style={{ fontSize: fontSize }}>{selected || label}</Text>
+        <Text
+          style={[
+            { fontSize: fontSize },
+            selected ? {} : styles.placeholderTextColor,
+          ]}>
+          {selected || label}
+        </Text>
         <Entypo
           name="chevron-small-down"
           style={{ color: '#007aff', fontSize: fontSize }}
@@ -129,12 +135,16 @@ let styles = StyleSheet.create({
     padding: 5,
     marginVertical: 5,
     borderLeftWidth: 1,
+    borderLeftColor: '#007aff',
   },
   textInput: {
     fontSize: 20,
   },
   item: {
     paddingVertical: 7,
+  },
+  placeholderTextColor: {
+    color: '#8e8e93',
   },
 });
 
