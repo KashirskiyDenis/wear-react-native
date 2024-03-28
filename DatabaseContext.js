@@ -326,7 +326,7 @@ function DatabaseProvider({ children }) {
             'DELETE FROM clothesInOutfit WHERE idOutfit = ?',
             [id],
             () => {
-              resolve();
+              resolve(id);
             },
             (_, error) => {
               console.error(

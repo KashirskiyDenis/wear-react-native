@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -25,6 +25,7 @@ function Outfit({ navigation, route }) {
     createOutift,
     readClothesInOutfit,
     createClothesInOutfit,
+    updateOutfit,
     deleteClothesInOutfit,
     deleteOutfit,
   } = useContext(DatabaseContext);
@@ -48,13 +49,12 @@ function Outfit({ navigation, route }) {
 
   let [image, setImage] = useState(undefined);
   let [figures, setFigures] = useState([]);
+  let [hideTools, setHideTools] = useState(false);
 
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
-
-  let [save, setSave] = useState(false);
 
   useEffect(() => {
     createClothesImageList();
@@ -100,6 +100,22 @@ function Outfit({ navigation, route }) {
     }
   };
 
+  let getImage = async (pathToFile) => {
+    let data = null;
+    try {
+      data = await FileSystem.readAsStringAsync(pathToFile, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+    } catch (error) {
+      console.error(
+        'Component "Outfit". Error when loading file image.',
+        error.message
+      );
+      showSnackbar('Ошибка загрузки изображения', 'error');
+    }
+    return data;
+  };
+
   let saveOutfitImage = async () => {
     try {
       let localUri = await captureRef(imageRef, {
@@ -127,9 +143,6 @@ function Outfit({ navigation, route }) {
   };
 
   let saveOutfit = async () => {
-    if (!save) return;
-
-    let image;
     if (season == '' || event == '') {
       showSnackbar('Не сохранено. Заполните все поля.', 'error');
       return;
@@ -138,19 +151,45 @@ function Outfit({ navigation, route }) {
       showSnackbar('Не сохранено. В образе нет одежды.', 'error');
       return;
     }
+
+    let image = await saveOutfitImage();
+    if (!image) {
+      showSnackbar('Не удалось сохранить картинку образа.', 'error');
+      return;
+    }
+
     if (route.params?.id) {
       deleteClothesInOutfit(route.params.id)
-        .then(() => {})
+        .then((idOutfit) => {
+          let requests = figures.map((figure) =>
+            createClothesInOutfit(
+              idOutfit,
+              figure?.idClothes ? figure.idClothes : +new Date(),
+              figure.x,
+              figure.y,
+              figure.width,
+              figure.height,
+              figure?.transform ? figure.transform : ''
+            )
+          );
+
+          return Promise.all(requests);
+        })
+        .then(async () => {
+          await FileSystem.deleteAsync(route.params.path);
+
+          updateOutfit(route.params.id, image.path, season, event).then(() => {
+            mapImageOutfitsPOST(route.params.id, image.base64);
+            navigation.setParams({
+              path: image.path,
+            });
+          });
+        })
         .catch(() => {
           showSnackbar('Не удалость обновить данные.', 'error');
           return;
         });
     } else {
-      image = await saveOutfitImage();
-      if (!image) {
-        showSnackbar('Не удалось сохранить данные.', 'error');
-        return;
-      }
       createOutift(image.path, season, event)
         .then((idOutfit) => {
           navigation.setParams({
@@ -176,24 +215,7 @@ function Outfit({ navigation, route }) {
           return;
         });
     }
-    setSave(false);
     showSnackbar('Изменения сохранены.', 'success');
-  };
-
-  let getImage = async (pathToFile) => {
-    let data = null;
-    try {
-      data = await FileSystem.readAsStringAsync(pathToFile, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-    } catch (error) {
-      console.error(
-        'Component "Outfit". Error when loading file image.',
-        error.message
-      );
-      showSnackbar('Ошибка загрузки изображений', 'error');
-    }
-    return data;
   };
 
   let createClothesImageList = async () => {
@@ -280,7 +302,7 @@ function Outfit({ navigation, route }) {
         onSelect={setImage}
       />
       <View ref={imageRef} collapsable={false} style={styles.svgContainer}>
-        <CustomSVG data={figures} hideControls={save} />
+        <CustomSVG data={figures} visibleTools={hideTools} />
       </View>
       <View style={{ padding: 5 }}>
         <PopupPicker
@@ -304,13 +326,23 @@ function Outfit({ navigation, route }) {
           onPress={() => {
             removeOutfit();
           }}
-          color="#FF3B30"
+          color="#ff3b30"
           disabled={route.params?.id ? false : true}
         />
         <Button
           title="Сохранить"
           onPress={() => {
-            setSave(true, () => {saveOutfit()});
+            new Promise((resolve, reject) => {
+              setHideTools(true);
+              resolve();
+            })
+              .then(() => {
+                saveOutfit();
+                return;
+              })
+              .then(() => {
+                setHideTools(false);
+              });
           }}
         />
       </View>

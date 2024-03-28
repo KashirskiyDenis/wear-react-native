@@ -10,6 +10,7 @@ function VariableProvider({ children }) {
 
   let [mapImageClothes, setMapImageClothes] = useState(new Map());
   let [mapImageOutfits, setMapImageOutfits] = useState(new Map());
+
   let clothesTypeList = clothesType.split('\n');
 
   let getImage = async (pathToFile) => {

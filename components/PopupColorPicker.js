@@ -31,7 +31,7 @@ let HTML = htmlContent
 
 function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
   let [visible, setVisible] = useState(false);
-  let [color, setColor] = useState();
+  let [color, setColor] = useState(selectedColor ? selectedColor : null);
 
   let webViewRef = useRef();
 
