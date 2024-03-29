@@ -8,6 +8,7 @@ body {
   margin: 0px;
   padding: 0px;
 }
+/*
 canvas {
 	background-image: 
 	linear-gradient(90deg, #bababa 30px, white 30px),
@@ -29,4 +30,5 @@ canvas {
 	background-repeat: repeat-x;
 	background-size: 60px 30px;
 }
+*/
 </style>`;

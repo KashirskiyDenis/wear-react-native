@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
@@ -16,14 +17,12 @@ function PopupSelect({
   onSelect,
   fontSize,
 }) {
-  let [bigList, setBigList] = useState(false);
   let [visible, setVisible] = useState(false);
   let [selected, setSelected] = useState(
     select?.label ? select.label : undefined
   );
 
   useEffect(() => {
-    if (data.length > 4) setBigList(true);
     if (select) onSelect(select.value);
   }, []);
 
@@ -58,13 +57,24 @@ function PopupSelect({
   let renderModal = () => {
     if (visible) {
       return (
-        <Modal visible={visible} transparent={true} animationType="fade">
-          <View style={styles.centeredView}>
-            <View
-              style={[styles.modalView, bigList ? styles.modalViewBig : {}]}>
-              <ScrollView>{renderItem()}</ScrollView>
-            </View>
-          </View>
+        <Modal
+          visible={visible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => {
+            setVisible(false);
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              setVisible(false);
+            }}
+            style={styles.centeredView}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalView}>
+                <ScrollView>{renderItem()}</ScrollView>
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </Modal>
       );
     }
@@ -102,9 +112,7 @@ let styles = StyleSheet.create({
     padding: 10,
     borderRadius: 7,
     width: '80%',
-  },
-  modalViewBig: {
-    height: 255,
+    maxHeight: 255,
   },
   button: {
     flexDirection: 'row',

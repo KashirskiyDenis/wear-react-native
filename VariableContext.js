@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import { DatabaseContext } from './DatabaseContext';
-import clothesType from './resources/ClothesType';
+import thingType from './resources/ThingType';
 
 const VariableContext = createContext(null);
 
@@ -11,7 +11,7 @@ function VariableProvider({ children }) {
   let [mapImageClothes, setMapImageClothes] = useState(new Map());
   let [mapImageOutfits, setMapImageOutfits] = useState(new Map());
 
-  let clothesTypeList = clothesType.split('\n');
+  let thingTypeList = thingType.split('\n');
 
   let getImage = async (pathToFile) => {
     let data = null;
@@ -74,7 +74,7 @@ function VariableProvider({ children }) {
         mapImageOutfits,
         mapImageOutfitsPOST,
 
-        clothesTypeList,
+        thingTypeList,
       }}>
       {children}
     </VariableContext.Provider>

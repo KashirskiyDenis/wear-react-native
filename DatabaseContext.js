@@ -169,7 +169,7 @@ function DatabaseProvider({ children }) {
   };
 
   let readClothesInOutfit = (idOutfit) => {
-    let sql = `SELECT cio.idClothes, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
+    let sql = `SELECT cio.id, cio.idClothes, cio.x, cio.y, cio.width, cio.height, cio.transform, clothes.pathToFile
           FROM clothes, clothesInOutfit AS cio
           WHERE clothes.id = cio.idClothes AND
             cio.idOutfit = ?`;

@@ -19,7 +19,7 @@ import { VariableContext } from '../../VariableContext';
 function Clothes({ navigation, route }) {
   const { createClothes, updateClothes, deleteClothes } =
     useContext(DatabaseContext);
-  const { mapImageClothesPOST, clothesTypeList } = useContext(VariableContext);
+  const { mapImageClothesPOST, thingTypeList } = useContext(VariableContext);
 
   const seasonList = [
     { label: 'Зимняя', value: 'Зимняя' },
@@ -32,7 +32,7 @@ function Clothes({ navigation, route }) {
     { label: 'Обувь', value: 'Обувь' },
   ];
 
-  const categoryList = clothesTypeList.map((item) => {
+  let categoryThingList = thingTypeList.map((item) => {
     return { label: item, value: item };
   });
 
@@ -191,7 +191,7 @@ function Clothes({ navigation, route }) {
         />
         <PopupInputPicker
           label="Категория вещи"
-          data={categoryList}
+          data={categoryThingList}
           select={{ label: category, value: category }}
           onSelect={setCategory}
           fontSize={20}

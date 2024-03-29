@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -17,17 +18,22 @@ function PopupInputPicker({
   onSelect,
   fontSize,
 }) {
-  let [bigList, setBigList] = useState(false);
   let [visible, setVisible] = useState(false);
   let [selected, setSelected] = useState(
     select?.label ? select.label : undefined
   );
   let [filterData, setFilterData] = useState(data);
+  let [text, setText] = useState('');
 
   useEffect(() => {
-    if (data.length > 4) setBigList(true);
     if (select) onSelect(select.value);
   }, []);
+
+  useEffect(() => {
+    if (text)
+      setFilterData(filterData.filter((item) => item.label.includes(text)));
+    else setFilterData(data);
+  }, [text]);
 
   let toggleModal = () => {
     visible ? setVisible(false) : openModal();
@@ -41,12 +47,6 @@ function PopupInputPicker({
     setSelected(item.label);
     onSelect(item.value);
     setVisible(false);
-  };
-
-  let filter = (text) => {
-    if (text)
-      setFilterData(filterData.filter((item) => item.label.includes(text)));
-    else setFilterData(data);
   };
 
   let renderItem = () =>
@@ -66,25 +66,38 @@ function PopupInputPicker({
   let renderModal = () => {
     if (visible) {
       return (
-        <Modal visible={visible} transparent={true} animationType="fade">
-          <View style={styles.centeredView}>
-            <View
-              style={[styles.modalView, bigList ? styles.modalViewBig : {}]}>
-              <View style={styles.button}>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Введите название"
-                  placeholderTextColor="#8e8e93"
-                  onChangeText={(text) => filter(text)}
-                />
-                <Feather
-                  name="search"
-                  style={{ color: '#007aff', fontSize: fontSize }}
-                />
+        <Modal
+          visible={visible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => {
+            setVisible(false);
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              setText('');
+              setVisible(false);
+            }}
+            style={styles.centeredView}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalView}>
+                <View style={styles.button}>
+                  <TextInput
+                    style={{ fontSize: fontSize }}
+                    placeholder="Введите название"
+                    placeholderTextColor="#8E8E93"
+                    value={text}
+                    onChangeText={setText}
+                  />
+                  <Feather
+                    name="search"
+                    style={{ color: '#007aff', fontSize: fontSize }}
+                  />
+                </View>
+                <ScrollView>{renderItem()}</ScrollView>
               </View>
-              <ScrollView>{renderItem()}</ScrollView>
-            </View>
-          </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </Modal>
       );
     }
@@ -122,8 +135,6 @@ let styles = StyleSheet.create({
     padding: 10,
     borderRadius: 7,
     width: '80%',
-  },
-  modalViewBig: {
     maxHeight: 255,
   },
   button: {
@@ -136,9 +147,6 @@ let styles = StyleSheet.create({
     marginVertical: 5,
     borderLeftWidth: 1,
     borderLeftColor: '#007aff',
-  },
-  textInput: {
-    fontSize: 20,
   },
   item: {
     paddingVertical: 7,

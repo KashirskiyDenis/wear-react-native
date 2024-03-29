@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
@@ -18,16 +19,14 @@ import jsContent from '../assets/webview/js/colorPicker';
 const { width } = Dimensions.get('window');
 let canvasWidth = width * 0.8 - 20 - 2;
 let canvasHeight = canvasWidth - 30 - 2 - 5;
-let modalViewHeight = width * 0.8 + 41;
+let modalViewHeight = width * 0.9;
 
 let newCSS = `${cssContent}`.replace('canvasSize', `${canvasWidth}px;`);
 let newJS = `${jsContent}`
   .replace('let canvasHeight;', `let canvasHeight = ${canvasHeight};`)
   .replace('let canvasWidth;', `let canvasWidth = ${canvasWidth};`);
 
-let HTML = htmlContent
-  .replace('<style></style>', newCSS)
-  .replace('<script></script>', newJS);
+let HTML = htmlContent.replace('<style></style>', newCSS);
 
 function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
   let [visible, setVisible] = useState(false);
@@ -68,26 +67,38 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
   let renderModal = () => {
     if (visible) {
       return (
-        <Modal visible={visible} transparent={true} animationType="fade">
-          <View style={styles.centeredView}>
-            <View style={[styles.modalView, {}]}>
-              <WebView
-                ref={webViewRef}
-                originWhitelist={['*']}
-                source={{ html: HTML }}
-                scrollEnabled={false}
-                javaScriptEnabled={true}
-                onMessage={(event) => onMessage(event)}
-                onLoadEnd={handleLoadEnd}
-              />
-              <Button
-                title="Применить"
-                onPress={() => {
-                  pickColor();
-                }}
-              />
-            </View>
-          </View>
+        <Modal
+          visible={visible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => {
+            setVisible(false);
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              setVisible(false);
+            }}
+            style={styles.centeredView}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.modalView, {}]}>
+                <WebView
+                  ref={webViewRef}
+                  originWhitelist={['*']}
+                  source={{ html: HTML }}
+                  scrollEnabled={false}
+                  javaScriptEnabled={true}
+                  onMessage={(event) => onMessage(event)}
+                  onLoadEnd={handleLoadEnd}
+                />
+                <Button
+                  title="Применить"
+                  onPress={() => {
+                    pickColor();
+                  }}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </Modal>
       );
     }

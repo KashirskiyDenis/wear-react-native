@@ -7,15 +7,15 @@ body {
 	user-select: none;
 	line-height: 0;
 }
+canvas {
+	border: 1px solid #007aff;
+  border-radius: 7px;
+  margin-bottom: 4px;
+}
 #gradient {
 	width: canvasSize;
 	height: 30px;
-	border: 1px solid #000000;
-  border-radius: 5px;
-}
-canvas {
-	border: 1px solid #000000;
-  border-radius: 5px;
-  margin-bottom: 4px;
+	border: 1px solid #007aff;
+  border-radius: 7px;
 }
 </style>`;

@@ -64,6 +64,7 @@ function Outfit({ navigation, route }) {
         let array = [];
         for (let i = 0; i < resolve.length; i++) {
           array[i] = {
+            id: resolve[i].id,
             idClothes: resolve[i].idClothes,
             x: resolve[i].x,
             y: resolve[i].y,
@@ -142,7 +143,71 @@ function Outfit({ navigation, route }) {
     }
   };
 
-  let saveOutfit = async () => {
+  let createOutiftInDB = (image) => {
+    createOutift(image.path, season, event)
+      .then((idOutfit) => {
+        navigation.setParams({
+          id: idOutfit,
+        });
+        mapImageOutfitsPOST(idOutfit, image.base64);
+        let requests = figures.map((figure) =>
+          createClothesInOutfit(
+            idOutfit,
+            figure?.idClothes ? figure.idClothes : +new Date(),
+            figure.x,
+            figure.y,
+            figure.width,
+            figure.height,
+            figure?.transform ? figure.transform : ''
+          )
+        );
+
+        return Promise.all(requests);
+      })
+      .then(() => {
+        showSnackbar('Изменения сохранены.', 'success');
+      })
+      .catch(() => {
+        showSnackbar('Ошибка сохранения.', 'error');
+        return;
+      });
+  };
+
+  let updateOutfitInDB = (image) => {
+    deleteClothesInOutfit(route.params.id)
+      .then((idOutfit) => {
+        let requests = figures.map((figure) =>
+          createClothesInOutfit(
+            idOutfit,
+            figure?.idClothes ? figure.idClothes : +new Date(),
+            figure.x,
+            figure.y,
+            figure.width,
+            figure.height,
+            figure?.transform ? figure.transform : ''
+          )
+        );
+
+        return Promise.all(requests);
+      })
+      .then(async () => {
+        await FileSystem.deleteAsync(route.params.path);
+
+        updateOutfit(route.params.id, image.path, season, event).then(() => {
+          mapImageOutfitsPOST(route.params.id, image.base64);
+          navigation.setParams({
+            path: image.path,
+          });
+          showSnackbar('Изменения сохранены.', 'success');
+        });
+      })
+      .catch(() => {
+        showSnackbar('Не удалость обновить данные.', 'error');
+        return;
+      });
+  };
+
+  let saveOutfitButton = async () => {
     if (season == '' || event == '') {
       showSnackbar('Не сохранено. Заполните все поля.', 'error');
       return;
@@ -159,63 +224,10 @@ function Outfit({ navigation, route }) {
     }
 
     if (route.params?.id) {
-      deleteClothesInOutfit(route.params.id)
-        .then((idOutfit) => {
-          let requests = figures.map((figure) =>
-            createClothesInOutfit(
-              idOutfit,
-              figure?.idClothes ? figure.idClothes : +new Date(),
-              figure.x,
-              figure.y,
-              figure.width,
-              figure.height,
-              figure?.transform ? figure.transform : ''
-            )
-          );
-
-          return Promise.all(requests);
-        })
-        .then(async () => {
-          await FileSystem.deleteAsync(route.params.path);
-
-          updateOutfit(route.params.id, image.path, season, event).then(() => {
-            mapImageOutfitsPOST(route.params.id, image.base64);
-            navigation.setParams({
-              path: image.path,
-            });
-          });
-        })
-        .catch(() => {
-          showSnackbar('Не удалость обновить данные.', 'error');
-          return;
-        });
+      updateOutfitInDB(image);
     } else {
-      createOutift(image.path, season, event)
-        .then((idOutfit) => {
-          navigation.setParams({
-            id: idOutfit,
-          });
-          mapImageOutfitsPOST(idOutfit, image.base64);
-          let requests = figures.map((figure) =>
-            createClothesInOutfit(
-              idOutfit,
-              figure?.idClothes ? figure.idClothes : +new Date(),
-              figure.x,
-              figure.y,
-              figure.width,
-              figure.height,
-              figure?.transform ? figure.transform : ''
-            )
-          );
-
-          Promise.all(requests);
-        })
-        .catch(() => {
-          showSnackbar('Ошибка сохранения.', 'error');
-          return;
-        });
+      createOutiftInDB(image);
     }
-    showSnackbar('Изменения сохранены.', 'success');
   };
 
   let createClothesImageList = async () => {
@@ -232,7 +244,7 @@ function Outfit({ navigation, route }) {
     }
   };
 
-  let removeOutfitFromDB = () => {
+  let removeOutfit = () => {
     deleteClothesInOutfit(route.params.id)
       .then(() => {
         deleteOutfit(route.params.id).then(() => {
@@ -248,7 +260,7 @@ function Outfit({ navigation, route }) {
       });
   };
 
-  let removeOutfit = () => {
+  let removeOutfitButton = () => {
     Alert.alert(
       'Удалить образ',
       'Вы действительно хотите удалить данный образ?',
@@ -260,7 +272,7 @@ function Outfit({ navigation, route }) {
         },
         {
           text: 'Да',
-          onPress: removeOutfitFromDB,
+          onPress: removeOutfit,
           style: 'destructive',
         },
       ]
@@ -316,7 +328,7 @@ function Outfit({ navigation, route }) {
           style={styles.thingText}
           placeholder="Событие"
           placeholderTextColor="#8e8e93"
-          onChangeText={(text) => setEvent(text, saveOutfit)}
+          onChangeText={(text) => setEvent(text, saveOutfitButton)}
           defaultValue={event}
         />
       </View>
@@ -324,7 +336,7 @@ function Outfit({ navigation, route }) {
         <Button
           title="Удалить"
           onPress={() => {
-            removeOutfit();
+            removeOutfitButton();
           }}
           color="#ff3b30"
           disabled={route.params?.id ? false : true}
@@ -337,7 +349,7 @@ function Outfit({ navigation, route }) {
               resolve();
             })
               .then(() => {
-                saveOutfit();
+                saveOutfitButton();
                 return;
               })
               .then(() => {
