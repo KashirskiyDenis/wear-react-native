@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
-const widthItem = (width * 0.9 - 20) / 3 - 2;
+const widthItem = (width * 0.8 - 20) / 3 - 2;
 
 function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
   let [visible, setVisible] = useState(false);
@@ -82,7 +82,7 @@ let styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 7,
-    width: '90%',
+    width: '80%',
   },
   scrollView: {
     flexDirection: 'row',

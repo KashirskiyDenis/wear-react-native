@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, View } from 'react-native';
-import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
+import Svg, { Circle, Image as SVGImage, Rect, } from 'react-native-svg';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = WIDTH;
@@ -495,7 +495,7 @@ function CustomSVG({ data, visibleTools }) {
           height={borderRotate.height}
           transform={borderRotate.transform}
           fill="transparent"
-          stroke="#29b6f2"
+          stroke="#007aff"
           display={borderRotate.display}
           strokeDasharray={3}
         />
@@ -546,7 +546,7 @@ function CustomSVG({ data, visibleTools }) {
               cx={corners[resize].cx}
               cy={corners[resize].cy}
               r={cornerRadius}
-              fill="#29b6f2"
+              fill="#007aff"
               display={corners[resize].display}
               opacity={corners[resize].opacity}
               transform={corners[resize].transform}
