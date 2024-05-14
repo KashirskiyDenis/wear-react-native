@@ -4,7 +4,9 @@ let clothes = `CREATE TABLE IF NOT EXISTS clothes (
   type TEXT NOT NULL,
 	category TEXT NOT NULL,
 	season TEXT NOT NULL,
-	color TEXT NOT NULL
+	color TEXT NOT NULL,
+  width INTEGER NOT NULL,
+  height INTEGER NOT NULL
 );`;
 
 let outfits = `CREATE TABLE outfits (

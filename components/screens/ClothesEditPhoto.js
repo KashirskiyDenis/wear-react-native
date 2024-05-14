@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { Animated, Button, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Button,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
@@ -15,6 +22,7 @@ function EditPhoto({ navigation, route }) {
 
   let [pathFile, setPathFile] = useState('');
   let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
+  let [size, setSize] = useState();
 
   let fadeAnim = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
@@ -46,13 +54,13 @@ function EditPhoto({ navigation, route }) {
 
   let onMessage = async (event) => {
     let tmp;
-    let data = event.nativeEvent.data;
+    let data = JSON.parse(event.nativeEvent.data);
     try {
       if (route.params?.path) {
-        tmp = await saveImageFromBase64(data, route.params.path);
+        tmp = await saveImageFromBase64(data.base64, route.params.path);
       } else {
         tmp = await saveImageFromBase64(
-          data,
+          data.base64,
           null,
           'clothes',
           +new Date() + '.png'
@@ -60,7 +68,8 @@ function EditPhoto({ navigation, route }) {
       }
 
       setPathFile(tmp);
-      setBase64(data);
+      setBase64(data.base64);
+      setSize({width: data.width, height: data.height});
       showSnackbar('Изменения сохранены.', 'success');
     } catch (error) {
       console.error(
@@ -107,6 +116,14 @@ function EditPhoto({ navigation, route }) {
       base64: true,
     });
 
+    // let result = await ImagePicker.launchCameraAsync({
+    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //   allowsEditing: true,
+    //   aspect: [1, 1],
+    //   quality: 0.75,
+    //   base64: true,
+    // });
+
     if (!result.canceled) {
       webViewRef.current.postMessage(
         'data:image/png;base64,' + result.assets[0].base64
@@ -117,7 +134,7 @@ function EditPhoto({ navigation, route }) {
   navigation.addListener('blur', () => {
     navigation.navigate({
       name: 'EditClothesScreen',
-      params: { uri: base64, path: pathFile },
+      params: { uri: base64, path: pathFile, size: size },
       merge: true,
     });
   });
@@ -135,31 +152,41 @@ function EditPhoto({ navigation, route }) {
         onLoadEnd={handleLoadEnd}
       />
       <View style={styles.saveView}>
-        <Button
-          title="Ластик"
-          onPress={() => {
-            let js = `canvas.removeEventListener('pointerdown', tools[tool]);
+        <View style={styles.androidButton}>
+          <Button
+            title="Ластик"
+            onPress={() => {
+              let js = `canvas.removeEventListener('pointerdown', tools[tool]);
               canvas.addEventListener('pointerdown', eraser);
               tool = 'bgEraser';`;
-            webViewRef.current.injectJavaScript(js);
-          }}
-        />
-        <Button
-          title="Волшебный Ластик"
-          onPress={() => {
-            let js = `canvas.removeEventListener('pointerdown', tools[tool]);
+              webViewRef.current.injectJavaScript(js);
+            }}
+          />
+        </View>
+        <View style={styles.androidButton}>
+          <Button
+            title="Волшебный Ластик"
+            onPress={() => {
+              let js = `canvas.removeEventListener('pointerdown', tools[tool]);
               canvas.addEventListener('pointerdown', filling);
               tool = 'filling';`;
-            webViewRef.current.injectJavaScript(js);
-          }}
-        />
-        <Button
-          title="Сохранить"
-          onPress={() => {
-            let js = `window.ReactNativeWebView.postMessage(canvas.toDataURL().split(';base64,')[1]);`;
-            webViewRef.current.injectJavaScript(js);
-          }}
-        />
+              webViewRef.current.injectJavaScript(js);
+            }}
+          />
+        </View>
+        <View style={styles.androidButton}>
+          <Button
+            title="Сохранить"
+            onPress={() => {
+              let js = `window.ReactNativeWebView.postMessage(JSON.stringify({
+                base64: canvas.toDataURL().split(';base64,')[1],
+                width: canvas.width,
+                height: canvas.height
+                }));`;
+              webViewRef.current.injectJavaScript(js);
+            }}
+          />
+        </View>
       </View>
       <Animated.View
         style={[
@@ -186,9 +213,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 10,
   },
+  androidButton: {
+    marginTop: Platform.OS === 'android' ? 5 : 0,
+  },
   snackbar: {
     position: 'absolute',
-    width: 390,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 15,

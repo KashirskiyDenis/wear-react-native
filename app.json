@@ -33,7 +33,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you create outfit for every day."
+          "photosPermission": "The app accesses your photos to let you create outfit for every day.",
+          "cameraPermission": "Allow to access your camera."
         }
       ]
     ]

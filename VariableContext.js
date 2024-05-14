@@ -28,10 +28,11 @@ function VariableProvider({ children }) {
   let createMapImageClothes = async () => {
     if (clothes.length > 0) {
       for (let i = 0; i < clothes.length; i++) {
-        mapImageClothes.set(
-          clothes[i].id,
-          await getImage(clothes[i].pathToFile)
-        );
+        mapImageClothes.set(clothes[i].id, {
+          uri: await getImage(clothes[i].pathToFile),
+          width: clothes[i].width,
+          height: clothes[i].height,
+        });
       }
     }
   };
@@ -47,10 +48,10 @@ function VariableProvider({ children }) {
     }
   };
 
-  let mapImageClothesPOST = (id, base64) => {
+  let mapImageClothesPOST = (id, data) => {
     let array = Array.from(mapImageClothes);
     let newMap = new Map(array);
-    newMap.set(id, base64);
+    newMap.set(id, data);
     setMapImageClothes(newMap);
   };
 

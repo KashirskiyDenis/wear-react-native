@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   Button,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -36,6 +37,7 @@ function Outfit({ navigation, route }) {
     { label: 'Летняя', value: 'Летняя' },
     { label: 'Всесезонная', value: 'Всесезонная' },
   ];
+  const WIDTH = Dimensions.get('window').width;
 
   let imageRef = useRef();
   let [clothesImageList, setClothesImageList] = useState(data);
@@ -70,7 +72,7 @@ function Outfit({ navigation, route }) {
             y: resolve[i].y,
             width: resolve[i].width,
             height: resolve[i].height,
-            base64: mapImageClothes.get(resolve[i].idClothes),
+            base64: mapImageClothes.get(resolve[i].idClothes).uri,
             transform: resolve[i].transform,
           };
         }
@@ -87,17 +89,19 @@ function Outfit({ navigation, route }) {
 
   let addClothesToOutfit = () => {
     if (image) {
+      console.log(image);
       let newFigure = { type: 'image' };
       newFigure.id = +new Date();
       newFigure.idClothes = image.key;
-      newFigure.x = 50;
-      newFigure.y = 50;
-      newFigure.width = 150;
-      newFigure.height = 150;
+      newFigure.x = WIDTH * 0.8 / 2;
+      newFigure.y = WIDTH * 0.8 / 2;
+      newFigure.width = image.width * 0.8;
+      newFigure.height = image.height * 0.8;
       newFigure.base64 = image.value;
       // newFigure.filter = '';
       // newFigure.transform = 'rotate(15, 125, 125)';
       setFigures([...figures, newFigure]);
+      setImage(null);
     }
   };
 
@@ -120,7 +124,7 @@ function Outfit({ navigation, route }) {
   let saveOutfitImage = async () => {
     try {
       let localUri = await captureRef(imageRef, {
-        height: 390,
+        height: WIDTH,
         quality: 0.75,
       });
 
@@ -236,7 +240,9 @@ function Outfit({ navigation, route }) {
       for (let i = 0; i < clothes.length; i++) {
         let item = {
           key: clothes[i].id,
-          value: mapImageClothes.get(clothes[i].id),
+          value: mapImageClothes.get(clothes[i].id).uri,
+          width: mapImageClothes.get(clothes[i].id).width,
+          height: mapImageClothes.get(clothes[i].id).height,
         };
         array[i] = item;
       }
@@ -333,30 +339,34 @@ function Outfit({ navigation, route }) {
         />
       </View>
       <View style={styles.saveView}>
-        <Button
-          title="Удалить"
-          onPress={() => {
-            removeOutfitButton();
-          }}
-          color="#ff3b30"
-          disabled={route.params?.id ? false : true}
-        />
-        <Button
-          title="Сохранить"
-          onPress={() => {
-            new Promise((resolve, reject) => {
-              setHideTools(true);
-              resolve();
-            })
-              .then(() => {
-                saveOutfitButton();
-                return;
+        <View style={styles.androidButton}>
+          <Button
+            title="Удалить"
+            onPress={() => {
+              removeOutfitButton();
+            }}
+            color="#ff3b30"
+            disabled={route.params?.id ? false : true}
+          />
+        </View>
+        <View style={styles.androidButton}>
+          <Button
+            title="Сохранить"
+            onPress={() => {
+              new Promise((resolve, reject) => {
+                setHideTools(true);
+                resolve();
               })
-              .then(() => {
-                setHideTools(false);
-              });
-          }}
-        />
+                .then(() => {
+                  saveOutfitButton();
+                  return;
+                })
+                .then(() => {
+                  setHideTools(false);
+                });
+            }}
+          />
+        </View>
       </View>
       <Animated.View
         style={[
@@ -395,6 +405,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     marginBottom: 10,
+  },
+  androidButton: {
+    marginTop: Platform.OS === 'android' ? 5 : 0,
   },
   snackbar: {
     position: 'absolute',

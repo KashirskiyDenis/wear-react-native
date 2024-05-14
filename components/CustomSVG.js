@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, View } from 'react-native';
-import Svg, { Circle, Image as SVGImage, Rect, } from 'react-native-svg';
+import Svg, { Circle, Image as SVGImage, Rect } from 'react-native-svg';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = WIDTH;
@@ -400,11 +400,12 @@ function CustomSVG({ data, visibleTools }) {
       x: currentX,
       y: currentY,
     });
+    let coef = draggbleFigure.width / draggbleFigure.height;
 
     if (currentCorner.id == 'nw-resize') {
       distance = p < 0 ? -1 * distance : distance;
       newX -= distance;
-      newY -= distance;
+      newY -= distance / coef;
     } else if (currentCorner.id == 'ne-resize') {
       distance = p < 0 ? -1 * distance : distance;
       newY -= distance;
@@ -415,8 +416,14 @@ function CustomSVG({ data, visibleTools }) {
       newX -= distance;
     }
 
-    newWidth += distance;
-    newHeight += distance;
+    if (currentCorner.id == 'nw-resize' || currentCorner.id == 'sw-resize') {
+      newWidth += distance;
+      newHeight += distance / coef;
+    } else if (currentCorner.id == 'se-resize' || currentCorner.id == 'ne-resize') {
+      newWidth += distance * coef;
+      newHeight += distance;
+    }
+
     newWidth = newWidth < 0 ? 1 : newWidth;
     newHeight = newHeight < 0 ? 1 : newHeight;
 
@@ -467,9 +474,10 @@ function CustomSVG({ data, visibleTools }) {
       newRotateX = (coord[0].x + coord[1].x + coord[2].x + coord[3].x) / 4;
       newRotateY = (coord[0].y + coord[1].y + coord[2].y + coord[3].y) / 4;
 
-      let delta = draggbleFigure.width / 2;
-      let x = newRotateX - delta;
-      let y = newRotateY - delta;
+      let deltaW = draggbleFigure.width / 2;
+      let deltaH = draggbleFigure.height / 2;
+      let x = newRotateX - deltaW;
+      let y = newRotateY - deltaH;
 
       draggbleFigure.x = x;
       draggbleFigure.y = y;

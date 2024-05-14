@@ -11,14 +11,14 @@ function DatabaseProvider({ children }) {
   let [outfits, setOutfits] = useState([]);
   let [clothesInOutfit, setClothesInOutfit] = useState([]);
 
-  let createClothes = (pathToFile, type, category, season, color) => {
+  let createClothes = (pathToFile, type, category, season, color, width, height) => {
     let id;
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'INSERT INTO clothes (type, pathToFile, category, season, color) VALUES (?, ?, ?, ?, ?)',
-            [type, pathToFile, category, season, color],
+            'INSERT INTO clothes (type, pathToFile, category, season, color, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [type, pathToFile, category, season, color, width, height],
             (_, result) => {
               id = result.insertId;
               readClothes();

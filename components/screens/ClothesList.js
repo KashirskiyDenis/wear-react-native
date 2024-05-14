@@ -27,7 +27,7 @@ function ClothesScreen({ navigation }) {
       array[i] = {
         id: clothes[i].id,
         path: clothes[i].pathToFile,
-        uri: mapImageClothes.get(clothes[i].id),
+        uri: mapImageClothes.get(clothes[i].id).uri,
         type: clothes[i].type,
         category: clothes[i].category,
         season: clothes[i].season,

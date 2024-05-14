@@ -4,6 +4,7 @@ import {
   Animated,
   Button,
   Image,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -67,10 +68,16 @@ function Clothes({ navigation, route }) {
         route.params.path,
         category,
         season,
-        color
+        color,
+        route.params.size.width,
+        route.params.size.height
       )
         .then(() => {
-          mapImageClothesPOST(route.params.id, route.params.uri);
+          mapImageClothesPOST(route.params.id, {
+            uri: route.params.uri,
+            width: route.params.size.width,
+            height: route.params.size.height,
+          });
         })
         .catch(() => {
           showSnackbar('Ошибка обновления.', 'error');
@@ -78,10 +85,22 @@ function Clothes({ navigation, route }) {
         });
     } else {
       if (route.params?.path) {
-        createClothes(route.params.path, type, category, season, color)
+        createClothes(
+          route.params.path,
+          type,
+          category,
+          season,
+          color,
+          route.params.size.width,
+          route.params.size.height
+        )
           .then((value) => {
             route.params.id = value;
-            mapImageClothesPOST(value, route.params.uri);
+            mapImageClothesPOST(value, {
+              uri: route.params.uri,
+              width: route.params.size.width,
+              height: route.params.size.height,
+            });
           })
           .catch(() => {
             showSnackbar('Ошибка сохранения.', 'error');
@@ -181,7 +200,7 @@ function Clothes({ navigation, route }) {
           }
         />
       </View>
-      <View>
+      <View style={styles.padding}>
         <PopupPicker
           label="Тип вещи"
           data={typeList}
@@ -211,20 +230,24 @@ function Clothes({ navigation, route }) {
         />
       </View>
       <View style={styles.saveView}>
-        <Button
-          title="Удалить"
-          onPress={() => {
-            removeClothes();
-          }}
-          color="#FF3B30"
-          disabled={route.params?.id ? false : true}
-        />
-        <Button
-          title="Сохранить"
-          onPress={() => {
-            saveClothes();
-          }}
-        />
+        <View style={styles.androidButton}>
+          <Button
+            title="Удалить"
+            onPress={() => {
+              removeClothes();
+            }}
+            color="#FF3B30"
+            disabled={route.params?.id ? false : true}
+          />
+        </View>
+        <View style={styles.androidButton}>
+          <Button
+            title="Сохранить"
+            onPress={() => {
+              saveClothes();
+            }}
+          />
+        </View>
       </View>
       <Animated.View
         style={[
@@ -245,6 +268,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  padding: {
     padding: 5,
   },
   thingImage: {
@@ -262,9 +287,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 10,
   },
+  androidButton: {
+    marginTop: Platform.OS === 'android' ? 5 : 0,
+  },
   snackbar: {
     position: 'absolute',
-    width: 390,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 15,
