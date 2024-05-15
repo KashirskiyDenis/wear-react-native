@@ -80,7 +80,7 @@ function PopupColorPicker({ label, onSelect, fontSize, selectedColor }) {
             }}
             style={styles.centeredView}>
             <TouchableWithoutFeedback>
-              <View style={[styles.modalView, {}]}>
+              <View style={styles.modalView}>
                 <WebView
                   ref={webViewRef}
                   originWhitelist={['*']}

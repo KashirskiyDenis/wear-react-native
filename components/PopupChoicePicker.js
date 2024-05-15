@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import {
   Button,
-  Dimensions,
   Image,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,10 +10,12 @@ import {
   View,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const widthItem = (width * 0.8 - 20) / 3 - 2;
-
-function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
+function PopupChoicePicker({
+  label = 'Select image',
+  icons = [],
+  labels = [],
+  functions = [],
+}) {
   let [visible, setVisible] = useState(false);
 
   let toggleModal = () => {
@@ -26,30 +26,20 @@ function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
     setVisible(true);
   };
 
-  let onItemPress = (item) => {
-    onSelect(item);
-    setVisible(false);
-  };
-
   let renderItem = () => {
-    if (uriList.length) {
-      uriList.map((item) => {
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              onItemPress(item);
-            }}
-            style={styles.item}>
-            <Image
-              style={styles.itemImage}
-              source={{ uri: 'data:image/png;base64,' + item.value }}
-            />
-          </TouchableOpacity>
-        );
-      });
-    } else {
-      return <Text>У Вас нет картинок для выбора</Text>;
-    }
+    return icons.map((item, index) => {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            functions[index]();
+            setVisible(false);
+          }}
+          style={styles.item}>
+          <Image source={item} style={styles.itemImage} />
+          <Text>{labels[index]}</Text>
+        </TouchableOpacity>
+      );
+    });
   };
 
   let renderModal = () => {
@@ -69,9 +59,8 @@ function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
             style={styles.centeredView}>
             <TouchableWithoutFeedback>
               <View style={styles.modalView}>
-                <ScrollView>
-                  <View style={styles.scrollView}>{renderItem()}</View>
-                </ScrollView>
+                <Text style={styles.titleModal}>Фото одежды</Text>
+                <View style={styles.scrollView}>{renderItem()}</View>
               </View>
             </TouchableWithoutFeedback>
           </TouchableOpacity>
@@ -106,16 +95,22 @@ let styles = StyleSheet.create({
   scrollView: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  titleModal: {
+    fontSize: 20,
+    fontWeight: 600,
+    marginBottom: 10,
+    paddingLeft: 10,
   },
   item: {
     margin: 1,
-    width: widthItem,
   },
   itemImage: {
-    width: widthItem,
-    height: widthItem,
+    width: 50,
+    height: 50,
     resizeMode: 'cover',
   },
 });
 
-export default PopupImageSelect;
+export default PopupChoicePicker;

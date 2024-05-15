@@ -292,10 +292,15 @@ const styles = StyleSheet.create({
   },
   snackbar: {
     position: 'absolute',
+    opacity: 0.7,
+    bottom: 0,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 15,
+    paddingBottom: 25,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
   snackbarText: {
     fontSize: 18,

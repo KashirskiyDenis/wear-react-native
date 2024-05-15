@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   Button,
+  Dimensions,
   Platform,
   StyleSheet,
   Text,
@@ -18,7 +19,6 @@ import PopupImagePicker from '../PopupImagePicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
-import { data } from '../../resources/imageBase64';
 
 function Outfit({ navigation, route }) {
   const {
@@ -40,7 +40,7 @@ function Outfit({ navigation, route }) {
   const WIDTH = Dimensions.get('window').width;
 
   let imageRef = useRef();
-  let [clothesImageList, setClothesImageList] = useState(data);
+  let [clothesImageList, setClothesImageList] = useState([]);
 
   let [season, setSeason] = useState(
     route.params?.season ? route.params.season : ''
@@ -89,12 +89,11 @@ function Outfit({ navigation, route }) {
 
   let addClothesToOutfit = () => {
     if (image) {
-      console.log(image);
       let newFigure = { type: 'image' };
       newFigure.id = +new Date();
       newFigure.idClothes = image.key;
-      newFigure.x = WIDTH * 0.8 / 2;
-      newFigure.y = WIDTH * 0.8 / 2;
+      newFigure.x = WIDTH * 0.2 / 2;
+      newFigure.y = WIDTH * 0.2 / 2;
       newFigure.width = image.width * 0.8;
       newFigure.height = image.height * 0.8;
       newFigure.base64 = image.value;

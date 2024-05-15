@@ -11,11 +11,18 @@ import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
+import PopupChoicePicker from '../PopupChoicePicker';
+
 import htmlContent from '../../assets/webview/html/editPhoto';
 import cssContent from '../../assets/webview/css/editPhoto';
 import jsContent from '../../assets/webview/js/editPhoto';
 
 let HTML = htmlContent.replace('<style></style>', cssContent);
+
+const ICONS = [
+  require('../../assets/camera.png'),
+  require('../../assets/gallery.png'),
+];
 
 function EditPhoto({ navigation, route }) {
   let webViewRef = useRef();
@@ -28,6 +35,8 @@ function EditPhoto({ navigation, route }) {
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
+
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     if (!path) {
@@ -55,6 +64,10 @@ function EditPhoto({ navigation, route }) {
   let onMessage = async (event) => {
     let tmp;
     let data = JSON.parse(event.nativeEvent.data);
+    if (!data.base64) {
+      showSnackbar('Ошибка сохранения.', 'error');
+      return;
+    }
     try {
       if (route.params?.path) {
         tmp = await saveImageFromBase64(data.base64, route.params.path);
@@ -69,7 +82,7 @@ function EditPhoto({ navigation, route }) {
 
       setPathFile(tmp);
       setBase64(data.base64);
-      setSize({width: data.width, height: data.height});
+      setSize({ width: data.width, height: data.height });
       showSnackbar('Изменения сохранены.', 'success');
     } catch (error) {
       console.error(
@@ -107,22 +120,26 @@ function EditPhoto({ navigation, route }) {
     });
   };
 
-  let pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.75,
-      base64: true,
-    });
-
-    // let result = await ImagePicker.launchCameraAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //   allowsEditing: true,
-    //   aspect: [1, 1],
-    //   quality: 0.75,
-    //   base64: true,
-    // });
+  let pickImage = async (way) => {
+    let result;
+    if (way == 'gallary') {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.75,
+        base64: true,
+      });
+    } else if (way == 'camera') {
+      requestPermission();
+      result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.75,
+        base64: true,
+      });
+    }
 
     if (!result.canceled) {
       webViewRef.current.postMessage(
@@ -141,7 +158,19 @@ function EditPhoto({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Button title="Выберите изображение" onPress={pickImage} />
+      <PopupChoicePicker
+        label="Выберите изображение"
+        icons={ICONS}
+        labels={['Камера', 'Галерея']}
+        functions={[
+          () => {
+            pickImage('camera');
+          },
+          () => {
+            pickImage('gallary');
+          },
+        ]}
+      />
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}
@@ -178,11 +207,20 @@ function EditPhoto({ navigation, route }) {
           <Button
             title="Сохранить"
             onPress={() => {
-              let js = `window.ReactNativeWebView.postMessage(JSON.stringify({
+              let js;
+              if (Platform.OS === 'android') {
+                js = `document.ReactNativeWebView.postMessage(JSON.stringify({
                 base64: canvas.toDataURL().split(';base64,')[1],
                 width: canvas.width,
                 height: canvas.height
                 }));`;
+              } else {
+                js = `window.ReactNativeWebView.postMessage(JSON.stringify({
+                base64: canvas.toDataURL().split(';base64,')[1],
+                width: canvas.width,
+                height: canvas.height
+                }));`;
+              }
               webViewRef.current.injectJavaScript(js);
             }}
           />
@@ -218,10 +256,15 @@ const styles = StyleSheet.create({
   },
   snackbar: {
     position: 'absolute',
+    opacity: 0.7,
+    bottom: 0,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 15,
+    paddingBottom: 25,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
   snackbarText: {
     fontSize: 18,
