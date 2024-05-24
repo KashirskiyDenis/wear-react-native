@@ -3,10 +3,10 @@ export default `
 body {
 	font-family: "Gill Sans", sans-serif;
 	font-size: 20px;
-	user-select: none;
-  -webkit-user-select: none;
   margin: 0px;
   padding: 0px;
+	user-select: none;
+  -webkit-user-select: none;
 }
 canvas {
 	background-image:

@@ -116,7 +116,7 @@ function Clothes({ navigation, route }) {
   };
 
   let removeClothesFromDB = () => {
-    deleteClothes(route.params.id)
+    deleteClothes([route.params.id])
       .then(() => {
         navigation.navigate('Home');
       })

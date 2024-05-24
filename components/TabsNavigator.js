@@ -11,30 +11,37 @@ function TabsNavigator() {
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        tabBarScrollEnabled: true,
-        tabBarLabelStyle: { fontSize: 16, fontWeight: 600 },
-        tabBarItemStyle: { width: 120 },
-        tabBarStyle: { backgroundColor: '#007aff' },
+        // headerStyle: { backgroundColor: '#007aff' },
+        headerBackTitleVisible: false,
+        orientation: 'portrait',
       }}>
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{ title: 'Гардероб' }}
+        options={{
+          headerTitle: 'Гардероб',
+        }}
       />
       <Stack.Screen
         name="EditPhotoScreen"
         component={EditPhotoScreen}
-        options={{ title: 'Редактировать фото' }}
+        options={{
+          headerTitle: 'Редактировать фото',
+        }}
       />
       <Stack.Screen
         name="EditClothesScreen"
         component={EditClothesScreen}
-        options={{ title: 'Вещь' }}
-      />      
+        options={{
+          headerTitle: 'Вещь',
+        }}
+      />
       <Stack.Screen
         name="EditOutfitScreen"
         component={EditOutfitScreen}
-        options={{ title: 'Добавить Образ' }}
+        options={{
+          headerTitle: 'Добавить Образ',
+        }}
       />
     </Stack.Navigator>
   );

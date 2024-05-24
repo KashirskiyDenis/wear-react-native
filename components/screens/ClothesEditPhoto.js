@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Button,
@@ -11,18 +11,13 @@ import { WebView } from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
-import PopupChoicePicker from '../PopupChoicePicker';
+import PopupPhotoPicker from '../PopupPhotoPicker';
 
 import htmlContent from '../../assets/webview/html/editPhoto';
 import cssContent from '../../assets/webview/css/editPhoto';
 import jsContent from '../../assets/webview/js/editPhoto';
 
 let HTML = htmlContent.replace('<style></style>', cssContent);
-
-const ICONS = [
-  require('../../assets/camera.png'),
-  require('../../assets/gallery.png'),
-];
 
 function EditPhoto({ navigation, route }) {
   let webViewRef = useRef();
@@ -36,7 +31,15 @@ function EditPhoto({ navigation, route }) {
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
-  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+  let [wayPick, setWeyPick] = useState(null);
+  let [status, requestPermission] = ImagePicker.useCameraPermissions();
+
+  useEffect(() => {
+    if (wayPick) {
+      pickImage(wayPick);
+      setWeyPick(null);
+    }
+  }, [wayPick]);
 
   let saveImageFromBase64 = async (base64Data, path, folderName, fileName) => {
     if (!path) {
@@ -63,6 +66,7 @@ function EditPhoto({ navigation, route }) {
 
   let onMessage = async (event) => {
     let tmp;
+    console.log('Message')
     let data = JSON.parse(event.nativeEvent.data);
     if (!data.base64) {
       showSnackbar('Ошибка сохранения.', 'error');
@@ -122,21 +126,20 @@ function EditPhoto({ navigation, route }) {
 
   let pickImage = async (way) => {
     let result;
-    if (way == 'gallary') {
+    if (way == 'gallery') {
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.75,
+        quality: 1.0,
         base64: true,
       });
     } else if (way == 'camera') {
       requestPermission();
       result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.75,
+        quality: 1.0,
         base64: true,
       });
     }
@@ -158,19 +161,15 @@ function EditPhoto({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <PopupChoicePicker
-        label="Выберите изображение"
-        icons={ICONS}
-        labels={['Камера', 'Галерея']}
-        functions={[
-          () => {
-            pickImage('camera');
-          },
-          () => {
-            pickImage('gallary');
-          },
-        ]}
-      />
+      {
+        // <Button
+        //   title="Выберите изображение"
+        //   onPress={() => {
+        //     pickImage('Галерея');
+        //   }}
+        // />
+      }
+      <PopupPhotoPicker label="Выберите изображение" onSelect={setWeyPick} />
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}
@@ -208,7 +207,7 @@ function EditPhoto({ navigation, route }) {
             title="Сохранить"
             onPress={() => {
               let js;
-              if (Platform.OS === 'android') {
+              if (Platform.OS != 'ios') {
                 js = `document.ReactNativeWebView.postMessage(JSON.stringify({
                 base64: canvas.toDataURL().split(';base64,')[1],
                 width: canvas.width,

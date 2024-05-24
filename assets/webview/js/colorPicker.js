@@ -25,17 +25,17 @@ export default `
 
 	grd = ctx.createLinearGradient(canvasWidth / 2, 0, canvasWidth / 2, canvasHeight);
 	grd.addColorStop(0.6, "#ffffff00");
-	grd.addColorStop(0.9, "#000000ff");
+	grd.addColorStop(0.85, "#000000ff");
 
 	ctx.fillStyle = grd;
 	ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
 	grd = ctx.createLinearGradient(canvasWidth / 2, 0, canvasWidth / 2, canvasHeight);
-	grd.addColorStop(0.9, "#ffffff00");
+	grd.addColorStop(0.85, "#ffffff00");
 	grd.addColorStop(1.0, "#ffffffff");
 
 	ctx.fillStyle = grd;
-	ctx.fillRect(0, 0.9 * canvasHeight, canvasWidth, canvasHeight);
+	ctx.fillRect(0, 0.85 * canvasHeight, canvasWidth, canvasHeight);
 	
 	grd = ctx.createLinearGradient(canvasWidth / 2, 0, canvasWidth / 2, canvasHeight);
 	grd.addColorStop(0, "#ffffffff");

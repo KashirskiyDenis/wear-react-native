@@ -250,9 +250,9 @@ function Outfit({ navigation, route }) {
   };
 
   let removeOutfit = () => {
-    deleteClothesInOutfit(route.params.id)
+    deleteClothesInOutfit([route.params.id])
       .then(() => {
-        deleteOutfit(route.params.id).then(() => {
+        deleteOutfit([route.params.id]).then(() => {
           navigation.navigate('Home');
         });
       })
@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
   snackbarSuccess: {
     backgroundColor: '#29BB42',
   },
+  
 });
 
 export default Outfit;

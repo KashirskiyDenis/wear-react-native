@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Button,
-  Image,
   Modal,
   StyleSheet,
   Text,
@@ -9,13 +8,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
 
-function PopupChoicePicker({
-  label = 'Select image',
-  icons = [],
-  labels = [],
-  functions = [],
-}) {
+function PopupPhotoPicker({ label = 'Select image', onSelect }) {
   let [visible, setVisible] = useState(false);
 
   let toggleModal = () => {
@@ -24,22 +19,6 @@ function PopupChoicePicker({
 
   let openModal = () => {
     setVisible(true);
-  };
-
-  let renderItem = () => {
-    return icons.map((item, index) => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            functions[index]();
-            setVisible(false);
-          }}
-          style={styles.item}>
-          <Image source={item} style={styles.itemImage} />
-          <Text>{labels[index]}</Text>
-        </TouchableOpacity>
-      );
-    });
   };
 
   let renderModal = () => {
@@ -60,7 +39,26 @@ function PopupChoicePicker({
             <TouchableWithoutFeedback>
               <View style={styles.modalView}>
                 <Text style={styles.titleModal}>Фото одежды</Text>
-                <View style={styles.scrollView}>{renderItem()}</View>
+                <View style={styles.scrollView}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onSelect('camera');
+                      setVisible(false);
+                    }}
+                    style={styles.item}>
+                    <Entypo name="camera" style={styles.icon} />
+                    <Text>Камера</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onSelect('gallery');
+                      setVisible(false);
+                    }}
+                    style={styles.item}>
+                    <Entypo name="images" style={styles.icon} />
+                    <Text>Галерея</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </TouchableOpacity>
@@ -106,11 +104,11 @@ let styles = StyleSheet.create({
   item: {
     margin: 1,
   },
-  itemImage: {
-    width: 50,
-    height: 50,
-    resizeMode: 'cover',
+  icon: {
+    color: '#007aff',
+    fontSize: 48,
+    marginBottom: 5,
   },
 });
 
-export default PopupChoicePicker;
+export default PopupPhotoPicker;

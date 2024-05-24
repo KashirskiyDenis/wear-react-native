@@ -11,7 +11,15 @@ function DatabaseProvider({ children }) {
   let [outfits, setOutfits] = useState([]);
   let [clothesInOutfit, setClothesInOutfit] = useState([]);
 
-  let createClothes = (pathToFile, type, category, season, color, width, height) => {
+  let createClothes = (
+    pathToFile,
+    type,
+    category,
+    season,
+    color,
+    width,
+    height
+  ) => {
     let id;
     return new Promise((resolve, reject) => {
       db.transaction(
@@ -259,13 +267,13 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  let deleteClothes = (id) => {
+  let deleteClothes = (ids) => {
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'DELETE FROM clothes WHERE id = ?',
-            [id],
+            `DELETE FROM clothes WHERE id IN (${ids.toString()})`,
+            [],
             () => {
               readClothes();
               resolve();
@@ -290,13 +298,13 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  let deleteOutfit = (id) => {
+  let deleteOutfit = (ids) => {
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'DELETE FROM outfits WHERE id = ?',
-            [id],
+            `DELETE FROM outfits WHERE id  IN (${ids.toString()})`,
+            [],
             () => {
               readOutfits();
               resolve();
@@ -318,13 +326,13 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  let deleteClothesInOutfit = (id) => {
+  let deleteClothesInOutfit = (ids) => {
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            'DELETE FROM clothesInOutfit WHERE idOutfit = ?',
-            [id],
+            `DELETE FROM clothesInOutfit WHERE idOutfit IN (${ids.toString()})`,
+            [],
             () => {
               resolve(id);
             },
