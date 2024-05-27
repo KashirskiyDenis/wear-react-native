@@ -1,5 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   FlatList,
   Image,
   StyleSheet,
@@ -21,6 +22,11 @@ function OutfitsScreen({ navigation }) {
   let [list, setList] = useState();
   let [isSelect, setIsSelect] = useState(false);
   let [selected, setSelected] = useState([]);
+
+  let fadeAnimate = useRef(new Animated.Value(0)).current;
+  let [snackbarText, setSnackbarText] = useState('');
+  let [snackbarStatus, setSnackbarStatus] = useState('');
+  let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   useEffect(() => {
     let parent = navigation.getParent();
@@ -78,6 +84,7 @@ function OutfitsScreen({ navigation }) {
       .then(() => {
         deleteOutfit(selected).then(() => {
           setSelected([]);
+          showSnackbar('Вещи удалены.', 'error');
         });
       })
       .catch((error) => {
@@ -85,8 +92,35 @@ function OutfitsScreen({ navigation }) {
           'Component "Outfit". Error when deleting.',
           error.message
         );
-        // showSnackbar('Карточка образа не была удалена.', 'error');
+        showSnackbar('Ошибка удаления.', 'error');
       });
+  };
+
+  let showSnackbar = (text, status) => {
+    setSnackbarVisible('block');
+    setSnackbarText(text);
+    setSnackbarStatus(status);
+    fadeIn();
+  };
+
+  let fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1.0,
+      duration: 0,
+      useNativeDriver: true,
+    }).start(() => {
+      fadeOut();
+    });
+  };
+
+  let fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0.85,
+      duration: 3000,
+      useNativeDriver: true,
+    }).start(() => {
+      setSnackbarVisible('none');
+    });
   };
 
   return (
@@ -138,6 +172,17 @@ function OutfitsScreen({ navigation }) {
         onPress={() => navigation.navigate('EditOutfitScreen')}>
         <AddButton />
       </TouchableOpacity>
+      <Animated.View
+        style={[
+          styles.snackbar,
+          snackbarStatus == 'error'
+            ? styles.snackbarError
+            : styles.snackbarSuccess,
+          { opacity: fadeAnimate },
+          { display: snackbarVisible },
+        ]}>
+        <Text style={styles.snackbarText}>{snackbarText}</Text>
+      </Animated.View>
     </View>
   );
 }
@@ -186,6 +231,28 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     margin: 'auto',
     // paddingLeft: 0.5,
+  },
+  snackbar: {
+    position: 'absolute',
+    opacity: 0.7,
+    bottom: 0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 15,
+    paddingBottom: 25,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  snackbarText: {
+    fontSize: 18,
+    color: '#ffffff',
+  },
+  snackbarError: {
+    backgroundColor: '#f44336',
+  },
+  snackbarSuccess: {
+    backgroundColor: '#29BB42',
   },
 });
 

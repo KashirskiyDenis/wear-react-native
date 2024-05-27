@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as FileSystem from 'expo-file-system';
 
-import TabsNavigator from './components/TabsNavigator';
+import StacksNavigator from './components/StacksNavigator';
 import { DatabaseProvider } from './DatabaseContext';
 import { VariableProvider } from './VariableContext';
 
@@ -33,7 +33,7 @@ function App() {
       <VariableProvider>
         <SafeAreaProvider>
           <NavigationContainer>
-            <TabsNavigator />
+            <StacksNavigator />
           </NavigationContainer>
         </SafeAreaProvider>
       </VariableProvider>

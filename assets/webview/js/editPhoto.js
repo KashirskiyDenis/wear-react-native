@@ -16,7 +16,7 @@ export default `
         let image = new Image();
         image.src = event.data;
         image.onload = draw.bind(image);
-      });      
+      });
     }
 
     let tools = {

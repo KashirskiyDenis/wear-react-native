@@ -6,7 +6,7 @@ import ListOutfits from './screens/OutfitsList';
 
 const Tab = createMaterialTopTabNavigator();
 
-function Home() {
+function TabsNavigator() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Обзор" component={Wardrobe} />
@@ -16,4 +16,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default TabsNavigator;

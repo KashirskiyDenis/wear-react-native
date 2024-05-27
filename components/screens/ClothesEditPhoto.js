@@ -26,7 +26,7 @@ function EditPhoto({ navigation, route }) {
   let [base64, setBase64] = useState(route.params?.uri ? route.params.uri : '');
   let [size, setSize] = useState();
 
-  let fadeAnim = useRef(new Animated.Value(0)).current;
+  let fadeAnimate = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
@@ -105,7 +105,7 @@ function EditPhoto({ navigation, route }) {
   };
 
   let fadeIn = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 1.0,
       duration: 0,
       useNativeDriver: true,
@@ -115,7 +115,7 @@ function EditPhoto({ navigation, route }) {
   };
 
   let fadeOut = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 0.85,
       duration: 3000,
       useNativeDriver: true,
@@ -231,7 +231,7 @@ function EditPhoto({ navigation, route }) {
           snackbarStatus == 'error'
             ? styles.snackbarError
             : styles.snackbarSuccess,
-          { opacity: fadeAnim },
+          { opacity: fadeAnimate },
           { display: snackbarVisible },
         ]}>
         <Text style={styles.snackbarText}>{snackbarText}</Text>

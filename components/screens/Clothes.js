@@ -236,7 +236,7 @@ function Clothes({ navigation, route }) {
             onPress={() => {
               removeClothes();
             }}
-            color="#FF3B30"
+            color="#ff3b30"
             disabled={route.params?.id ? false : true}
           />
         </View>
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f44336',
   },
   snackbarSuccess: {
-    backgroundColor: '#29BB42',
+    backgroundColor: '#29bb42',
   },
 });
 

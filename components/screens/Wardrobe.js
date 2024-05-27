@@ -88,7 +88,7 @@ function WardrobeScreen({ navigation }) {
         activeOpacity={0.8}
         style={styles.addButton}
         onPress={() => navigation.navigate('EditClothesScreen')}>
-        <AddButton />
+          <AddButton />
       </TouchableOpacity>
     </View>
   );

@@ -53,7 +53,7 @@ function Outfit({ navigation, route }) {
   let [figures, setFigures] = useState([]);
   let [hideTools, setHideTools] = useState(false);
 
-  let fadeAnim = useRef(new Animated.Value(0)).current;
+  let fadeAnimate = useRef(new Animated.Value(0)).current;
   let [snackbarText, setSnackbarText] = useState('');
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
@@ -292,7 +292,7 @@ function Outfit({ navigation, route }) {
   };
 
   let fadeIn = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 1.0,
       duration: 0,
       useNativeDriver: true,
@@ -302,7 +302,7 @@ function Outfit({ navigation, route }) {
   };
 
   let fadeOut = () => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimate, {
       toValue: 0.85,
       duration: 3000,
       useNativeDriver: true,
@@ -373,7 +373,7 @@ function Outfit({ navigation, route }) {
           snackbarStatus == 'error'
             ? styles.snackbarError
             : styles.snackbarSuccess,
-          { opacity: fadeAnim },
+          { opacity: fadeAnimate },
           { display: snackbarVisible },
         ]}>
         <Text style={styles.snackbarText}>{snackbarText}</Text>
@@ -430,7 +430,6 @@ const styles = StyleSheet.create({
   snackbarSuccess: {
     backgroundColor: '#29BB42',
   },
-  
 });
 
 export default Outfit;

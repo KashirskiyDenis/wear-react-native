@@ -1,12 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from './Home';
+import TabsNavigator from './TabsNavigator';
 import EditPhotoScreen from './screens/ClothesEditPhoto';
 import EditClothesScreen from './screens/Clothes';
 import EditOutfitScreen from './screens/Outfit';
 
 const Stack = createNativeStackNavigator();
 
-function TabsNavigator() {
+function StacksNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -17,7 +17,7 @@ function TabsNavigator() {
       }}>
       <Stack.Screen
         name="Home"
-        component={Home}
+        component={TabsNavigator}
         options={{
           headerTitle: 'Гардероб',
         }}
@@ -47,4 +47,4 @@ function TabsNavigator() {
   );
 }
 
-export default TabsNavigator;
+export default StacksNavigator;
