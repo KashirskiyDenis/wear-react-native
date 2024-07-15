@@ -59,8 +59,6 @@ function Outfit({ navigation, route }) {
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
   useEffect(() => {
-    createClothesImageList();
-
     if (route.params?.id) {
       readClothesInOutfit(route.params.id).then((resolve) => {
         let array = [];
@@ -86,6 +84,10 @@ function Outfit({ navigation, route }) {
   useEffect(() => {
     addClothesToOutfit(image);
   }, [image]);
+  
+  useEffect(() => {
+    createClothesImageList();
+  }, [clothes]);
 
   let addClothesToOutfit = () => {
     if (image) {

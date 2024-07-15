@@ -9,7 +9,7 @@ let clothes = `CREATE TABLE IF NOT EXISTS clothes (
   height INTEGER NOT NULL
 );`;
 
-let outfits = `CREATE TABLE outfits (
+let outfits = `CREATE TABLE IF NOT EXISTS outfits (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
   pathToFile TEXT NOT NULL,
 	season TEXT NOT NULL,

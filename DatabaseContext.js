@@ -3,7 +3,7 @@ import * as SQLite from 'expo-sqlite';
 
 import * as createTable from './resources/CreateTables';
 
-const db = SQLite.openDatabase('mydb.db');
+const db = SQLite.openDatabase('mydb');
 const DatabaseContext = createContext(db);
 
 function DatabaseProvider({ children }) {
@@ -356,7 +356,7 @@ function DatabaseProvider({ children }) {
     });
   };
 
-  let createNecessaryTables = () => {
+  let createNecessaryTables = async () => {
     db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {});
     db.transaction((tx) => {
       tx.executeSql('DROP TABLE IF EXISTS clothes;');

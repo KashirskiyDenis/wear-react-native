@@ -32,24 +32,24 @@ function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
   };
 
   let renderItem = () => {
-    if (uriList.length) {
-      uriList.map((item) => {
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              onItemPress(item);
-            }}
-            style={styles.item}>
-            <Image
-              style={styles.itemImage}
-              source={{ uri: 'data:image/png;base64,' + item.value }}
-            />
-          </TouchableOpacity>
-        );
-      });
-    } else {
-      return <Text>У Вас нет картинок для выбора</Text>;
-    }
+    uriList.map((item) => {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            onItemPress(item);
+          }}
+          style={styles.item}>
+          <Image
+            style={styles.itemImage}
+            source={{ uri: 'data:image/png;base64,' + item.value }}
+          />
+        </TouchableOpacity>
+      );
+    });
+  };
+
+  let renderNoImageMessage = () => {
+    return <Text>У Вас нет картинок для выбора</Text>;
   };
 
   let renderModal = () => {
@@ -70,7 +70,26 @@ function PopupImageSelect({ label = 'Select image', uriList = [], onSelect }) {
             <TouchableWithoutFeedback>
               <View style={styles.modalView}>
                 <ScrollView>
-                  <View style={styles.scrollView}>{renderItem()}</View>
+                  <View style={styles.scrollView}>
+                    {uriList.length
+                      ? uriList.map((item) => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => {
+                                onItemPress(item);
+                              }}
+                              style={styles.item}>
+                              <Image
+                                style={styles.itemImage}
+                                source={{
+                                  uri: 'data:image/png;base64,' + item.value,
+                                }}
+                              />
+                            </TouchableOpacity>
+                          );
+                        })
+                      : renderNoImageMessage()}
+                  </View>
                 </ScrollView>
               </View>
             </TouchableWithoutFeedback>
@@ -102,6 +121,7 @@ let styles = StyleSheet.create({
     padding: 10,
     borderRadius: 7,
     width: '80%',
+    maxHeight: width * 0.8,
   },
   scrollView: {
     flexDirection: 'row',

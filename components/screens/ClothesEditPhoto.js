@@ -66,7 +66,6 @@ function EditPhoto({ navigation, route }) {
 
   let onMessage = async (event) => {
     let tmp;
-    console.log('Message')
     let data = JSON.parse(event.nativeEvent.data);
     if (!data.base64) {
       showSnackbar('Ошибка сохранения.', 'error');
