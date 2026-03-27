@@ -16,6 +16,19 @@ import MultiSwitch from '../MultiSwitch';
 
 const WIDTH = Dimensions.get('window').width;
 
+const SEASON_COLORS = new Map([
+  ['Зимняя', '#6e9abc'],
+  ['Весенне-осенняя', '#bfff00'],
+  ['Летняя', '#d20117'],
+  ['Всесезонная', '#c0c0c0'],
+]);
+
+const GROUP_BY_OPTIONS = [
+  { key: 'category', value: 'Категории' },
+  { key: 'season', value: 'Сезоны' },
+  { key: 'color', value: 'Цвета' },
+];
+
 let getRandom = () => {
   return Math.floor(Math.random() * 256);
 };
@@ -27,19 +40,6 @@ let getRandomColor = () => {
 
   return `rgba(${red}, ${green}, ${blue}, 0.60)`;
 };
-
-let seasonColor = new Map([
-  ['Зимняя', '#6e9abc'],
-  ['Весенне-осенняя', '#bfff00'],
-  ['Летняя', '#d20117'],
-  ['Всесезонная', '#c0c0c0'],
-]);
-
-let groupByList = [
-  { key: 'category', value: 'Категории' },
-  { key: 'season', value: 'Сезоны' },
-  { key: 'color', value: 'Цвета' },
-];
 
 function WardrobeScreen({ navigation }) {
   let { clothes, outfits, readClothesGroupBy } = useContext(DatabaseContext);
@@ -64,7 +64,7 @@ function WardrobeScreen({ navigation }) {
           return {
             title: item.season,
             value: item.count,
-            color: seasonColor.get(item.season),
+            color: SEASON_COLORS.get(item.season),
           };
         });
         setGroupData(arr);
@@ -76,7 +76,7 @@ function WardrobeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <MultiSwitch
-        data={groupByList}
+        data={GROUP_BY_OPTIONS}
         activeKey={groupBy}
         onChange={setGroupBy}
       />

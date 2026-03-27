@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 
 import PopupPhotoPicker from '../PopupPhotoPicker';
@@ -31,13 +31,12 @@ function EditPhoto({ navigation, route }) {
   let [snackbarStatus, setSnackbarStatus] = useState('');
   let [snackbarVisible, setSnackbarVisible] = useState('none');
 
-  let [wayPick, setWeyPick] = useState(null);
+  let [wayPick, setWayPick] = useState('');
   let [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   useEffect(() => {
     if (wayPick) {
       pickImage(wayPick);
-      setWeyPick(null);
     }
   }, [wayPick]);
 
@@ -148,6 +147,7 @@ function EditPhoto({ navigation, route }) {
         'data:image/png;base64,' + result.assets[0].base64
       );
     }
+    //setWayPick('');
   };
 
   navigation.addListener('blur', () => {
@@ -168,7 +168,7 @@ function EditPhoto({ navigation, route }) {
         //   }}
         // />
       }
-      <PopupPhotoPicker label="Выберите изображение" onSelect={setWeyPick} />
+      <PopupPhotoPicker label="Выберите изображение" onSelect={setWayPick} />
       <WebView
         ref={webViewRef}
         originWhitelist={['*']}

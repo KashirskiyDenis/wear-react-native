@@ -131,40 +131,43 @@ function OutfitsScreen({ navigation }) {
       }}>
       <FlatList
         data={list}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => {
-              if (!isSelect) {
-                navigation.navigate('EditOutfitScreen', { ...item });
-              } else {
+        renderItem={({ item }) => {
+          let isSelected = selected.includes(item.id);
+          return (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                if (!isSelect) {
+                  navigation.navigate('EditOutfitScreen', { ...item });
+                } else {
+                  toggleCheckStatus(item);
+                }
+              }}
+              onLongPress={() => {
                 toggleCheckStatus(item);
-              }
-            }}
-            onLongPress={() => {
-              toggleCheckStatus(item);
-            }}>
-            <View style={[styles.item, isSelected && styles.selectedItem]}>
-              <View>
-                <Image
-                  style={styles.itemImage}
-                  source={{ uri: 'data:image/png;base64,' + item.uri }}
-                />
-                {isSelected && (
-                  <View style={styles.selectedIconView}>
-                    <AntDesign
-                      name="checkcircleo"
-                      style={styles.selectedIcon}
-                    />
-                  </View>
-                )}
+              }}>
+              <View style={[styles.item, isSelected && styles.selectedItem]}>
+                <View>
+                  <Image
+                    style={styles.itemImage}
+                    source={{ uri: 'data:image/png;base64,' + item.uri }}
+                  />
+                  {isSelected && (
+                    <View style={styles.selectedIconView}>
+                      <AntDesign
+                        name="checkcircleo"
+                        style={styles.selectedIcon}
+                      />
+                    </View>
+                  )}
+                </View>
+                <View>
+                  <Text style={styles.thingTitle}>{item.event}</Text>
+                </View>
               </View>
-              <View>
-                <Text style={styles.thingTitle}>{item.event}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          );
+        }}
       />
       <TouchableOpacity
         activeOpacity={0.8}

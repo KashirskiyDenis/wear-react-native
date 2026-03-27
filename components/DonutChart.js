@@ -1,18 +1,18 @@
 import { View } from 'react-native';
 import Svg, { Circle, Defs, G, RadialGradient, Stop } from 'react-native-svg';
 
-let roundTo = (num, to = 0) => {
+const roundTo = (num, to = 0) => {
   to = Math.pow(10, to);
   return Math.round(num * to) / to;
 };
 
-function DonutChart({ size, data }) {
-  const radius = 35;
-  const strokeWidth = 25;
-  const cxy = 47.5;
-  const cxyShadow = 52.5;
-  const length = roundTo(2 * Math.PI * radius, 4);
+const radius = 35;
+const strokeWidth = 25;
+const cxy = 47.5;
+const cxyShadow = 52.5;
+const length = roundTo(2 * Math.PI * radius, 4);
 
+function DonutChart({ size, data }) {
   let dataSum = 0;
   let corner = [];
   let newData = [];

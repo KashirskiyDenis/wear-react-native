@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 import CustomSVG from '../CustomSVG';
 import PopupPicker from '../PopupPicker';
@@ -19,6 +19,14 @@ import PopupImagePicker from '../PopupImagePicker';
 
 import { DatabaseContext } from '../../DatabaseContext';
 import { VariableContext } from '../../VariableContext';
+
+const seasonList = [
+  { label: 'Зимняя', value: 'Зимняя' },
+  { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
+  { label: 'Летняя', value: 'Летняя' },
+  { label: 'Всесезонная', value: 'Всесезонная' },
+];
+const WIDTH = Dimensions.get('window').width;
 
 function Outfit({ navigation, route }) {
   const {
@@ -31,13 +39,6 @@ function Outfit({ navigation, route }) {
     deleteOutfit,
   } = useContext(DatabaseContext);
   const { mapImageClothes, mapImageOutfitsPOST } = useContext(VariableContext);
-  const seasonList = [
-    { label: 'Зимняя', value: 'Зимняя' },
-    { label: 'Весенне-осенняя', value: 'Весенне-осенняя' },
-    { label: 'Летняя', value: 'Летняя' },
-    { label: 'Всесезонная', value: 'Всесезонная' },
-  ];
-  const WIDTH = Dimensions.get('window').width;
 
   let imageRef = useRef();
   let [clothesImageList, setClothesImageList] = useState([]);
@@ -84,7 +85,7 @@ function Outfit({ navigation, route }) {
   useEffect(() => {
     addClothesToOutfit(image);
   }, [image]);
-  
+
   useEffect(() => {
     createClothesImageList();
   }, [clothes]);
@@ -94,8 +95,8 @@ function Outfit({ navigation, route }) {
       let newFigure = { type: 'image' };
       newFigure.id = +new Date();
       newFigure.idClothes = image.key;
-      newFigure.x = WIDTH * 0.2 / 2;
-      newFigure.y = WIDTH * 0.2 / 2;
+      newFigure.x = (WIDTH * 0.2) / 2;
+      newFigure.y = (WIDTH * 0.2) / 2;
       newFigure.width = image.width * 0.8;
       newFigure.height = image.height * 0.8;
       newFigure.base64 = image.value;
@@ -232,6 +233,7 @@ function Outfit({ navigation, route }) {
       updateOutfitInDB(image);
     } else {
       createOutiftInDB(image);
+      console.log(image);
     }
   };
 

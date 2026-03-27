@@ -33,7 +33,7 @@ function StacksNavigator() {
         name="EditClothesScreen"
         component={EditClothesScreen}
         options={{
-          headerTitle: 'Вещь',
+          headerTitle: 'Добавить Одежду',
         }}
       />
       <Stack.Screen

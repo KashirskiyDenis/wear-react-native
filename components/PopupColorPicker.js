@@ -17,9 +17,9 @@ import cssContent from '../assets/webview/css/colorPicker';
 import jsContent from '../assets/webview/js/colorPicker';
 
 const { width } = Dimensions.get('window');
-let canvasWidth = width * 0.8 - 20 - 2;
-let canvasHeight = canvasWidth - 30 - 2 - 5;
-let modalViewHeight = width * 0.9;
+const canvasWidth = width * 0.8 - 20 - 2;
+const canvasHeight = canvasWidth - 30 - 2 - 5;
+const modalViewHeight = width * 0.9;
 
 let newCSS = `${cssContent}`.replace('canvasSize', `${canvasWidth}px;`);
 let newJS = `${jsContent}`
